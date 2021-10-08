@@ -1,0 +1,81 @@
+package controller
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Button
+import java.util.concurrent.atomic.AtomicBoolean
+import io.sarl.javafx.FxViewerController
+import javafx.scene.canvas.Canvas
+import javafx.animation.AnimationTimer
+import agents.AppManager
+import gui.DroneBody
+import java.util.UUID
+import java.util.Map
+import java.util.TreeMap
+import gui.MainApp
+
+class MainWindowController extends FxViewerController {
+	var bodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
+
+	var mainApp : MainApp;
+	@FXML
+	var startButton : Button
+	val started = new AtomicBoolean
+	
+	@FXML
+	var drawZone : Canvas
+	
+	
+	@Pure
+	def setMainApp(mainApp : MainApp ) {
+		this.mainApp = mainApp;
+	}
+
+	/* 
+	def initialize {
+	
+		if (!started.getAndSet(true)) {			
+			startAgentApplication(typeof(HelloAgent)) [
+				//
+			]
+		}
+	 * }
+	 */
+	 
+	@FXML
+	def startAgent {
+		this.startButton.setVisible(false);
+		if (!started.getAndSet(true)) {
+			startAgentApplication(typeof(AppManager)) [
+			]
+			this.startSimulation();
+		}
+	}
+
+	def addBody(body : DroneBody) {
+		this.bodies.put(body.getId, body)	
+	}
+
+	def startSimulation() {
+	       	var timer = new AnimationTimer() {
+            @Override
+            def handle(now : long) {
+				var lastUpdate = 0l;
+				if (now - lastUpdate >= 28_000_000) {
+					update();
+					lastUpdate = now;
+				}
+			}
+        };
+        timer.start();
+	}
+
+	def update() {
+		val gc = drawZone.graphicsContext2D
+		gc.clearRect(0, 0, drawZone.width, drawZone.height)
+		for (b : this.bodies.values()) {
+			gc.drawImage(b.image, b.position.getX(), b.position.getY());
+		}
+		
+	}
+
+}
