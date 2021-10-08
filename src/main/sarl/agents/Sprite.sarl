@@ -47,69 +47,58 @@ agent Sprite {
 		// You should put all the initialization statements in this block of code.
 		info("The agent was started.")
 	}
-	
+
 	on Destroy {
 		// Event trigger when the agent is destroyed from the system.
 		// You should put all the resource releasing statements in this block of code.
 		info("The agent was stopped.")
 	}
 
-	def setImage(i : Image ): void
-    {
-        image = i;
-        width = i.getWidth();
-        height = i.getHeight();
-    }
+	def setImage(i : Image) : void {
+		image = i;
+		width = i.getWidth();
+		height = i.getHeight();
+	}
 
-	def setImage(filename : String)	
-    {
-        var i = new Image (filename);
-        setImage(i);
-    }
+	def setImage(filename : String) {
+		var i = new Image(filename);
+		setImage(i);
+	}
 
-	def setPosition(x : double, y : double) : void
-    {
-        positionX = x;
-        positionY = y;
-    }
+	def setPosition(x : double, y : double) : void {
+		positionX = x;
+		positionY = y;
+	}
 
-	def setVelocity(x : double, y : double) : void
-    {
-        velocityX = x;
-        velocityY = y;
-    }
+	def setVelocity(x : double, y : double) : void {
+		velocityX = x;
+		velocityY = y;
+	}
 
-	def addVelocity(x : double, y : double) : void
-    {
-        velocityX += x;
-        velocityY += y;
-    }
+	def addVelocity(x : double, y : double) : void {
+		velocityX += x;
+		velocityY += y;
+	}
 
-	def update(time : double) : void
-    {
-        positionX += velocityX * time;
-        positionY += velocityY * time;
-    }
+	def update(time : double) : void {
+		positionX += velocityX * time;
+		positionY += velocityY * time;
+	}
 
-	def render(gc : GraphicsContext) : void 
-    {
-        gc.drawImage( image, positionX, positionY );
-    }
+	def render(gc : GraphicsContext) : void {
+		gc.drawImage(image, positionX, positionY);
+	}
 
-	def getBoundary() : Rectangle2D 
-    {
-        return new Rectangle2D(positionX,positionY,width,height);
-    }
+	def getBoundary() : Rectangle2D {
+		return new Rectangle2D(positionX, positionY, width, height);
+	}
 
-	def intersects(s : Sprite) : boolean
-    {
-        return s.getBoundary().intersects( this.getBoundary() );
-    }
+	def intersects(s : Sprite) : boolean {
+		return s.getBoundary().intersects(this.getBoundary());
+	}
 
-	
-	def displayAsString() : String 
-    {
-        return " Position: [" + positionX + "," + positionY + "]" 
+	def displayAsString() : String {
+		return " Position: [" + positionX + "," + positionY + "]" 
         + " Velocity: [" + velocityX + "," + velocityY + "]";
     }
 
