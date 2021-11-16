@@ -1,13 +1,15 @@
 package agents
 
-import io.sarl.core.Destroy
-import io.sarl.core.Initialize
+import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
-import io.sarl.core.DefaultContextInteractions
-import java.util.UUID
-import gui.DroneBody
+import map.SimulationMap
+import io.sarl.core.Initialize
 import controller.MainWindowController
+import gui.DroneBody
+import java.util.UUID
+import io.sarl.core.Destroy
+import org.arakhne.afc.math.geometry.d2.i.Point2i
 
 /** 
  * @author arnaud
@@ -16,6 +18,8 @@ import controller.MainWindowController
 agent AppManager {
 	uses Logging, Lifecycle, DefaultContextInteractions
 
+	var map : SimulationMap
+
 	on Initialize {
 		loggingName = "AppManager"
 		info("AppManager created!")
@@ -23,9 +27,16 @@ agent AppManager {
 		var droneBody = new DroneBody(200, 200, UUID::randomUUID)
 		controller.addBody(droneBody)
 		spawnInContext(1, Drone, defaultContext, droneBody)
+		var t  : Point2i = new Point2i(0, 0)
+		
+		map = new SimulationMap(10,1) //10 Clients + 1 Warehouse
 	}
 
 	on Destroy {
+	}
+	
+	def initMap(){
+		
 	}
 }
 
