@@ -7,14 +7,16 @@ import io.sarl.javafx.FxViewerController
 import javafx.scene.canvas.Canvas
 import javafx.animation.AnimationTimer
 import agents.AppManager
+import gui.Body
 import gui.DroneBody
+import gui.WarehouseBody
 import java.util.UUID
 import java.util.Map
 import java.util.TreeMap
 import gui.MainApp
 
 class MainWindowController extends FxViewerController {
-	var bodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
+	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
 
 	var mainApp : MainApp;
 	@FXML
@@ -51,8 +53,12 @@ class MainWindowController extends FxViewerController {
 		}
 	}
 
-	def addBody(body : DroneBody) {
-		this.bodies.put(body.getId, body)	
+	def addDroneBody(DBody : DroneBody) {
+		this.bodies.put(DBody.id, DBody)	
+	}
+	
+	def addWarehouseBody(WBody : WarehouseBody){
+		this.bodies.put(WBody.id, WBody)
 	}
 
 	def startSimulation() {
@@ -73,7 +79,7 @@ class MainWindowController extends FxViewerController {
 		val gc = drawZone.graphicsContext2D
 		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		for (b : this.bodies.values()) {
-			gc.drawImage(b.image, b.position.getX(), b.position.getY());
+			gc.drawImage(b.image, b.position.x, b.position.y);
 		}
 		
 	}

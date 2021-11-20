@@ -15,10 +15,10 @@ import io.sarl.core.SpaceCreated
 import io.sarl.core.SpaceDestroyed
 
 /** 
- * @author arnaud
+ * @author vlt
  * 
  */
-agent Drone extends DeliveryEntity {
+agent Warehouse extends DeliveryEntity {
 	uses Logging
 
 	on Initialize {

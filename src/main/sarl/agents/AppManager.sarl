@@ -7,6 +7,7 @@ import map.SimulationMap
 import io.sarl.core.Initialize
 import controller.MainWindowController
 import gui.DroneBody
+import gui.WarehouseBody
 import java.util.UUID
 import io.sarl.core.Destroy
 import org.arakhne.afc.math.geometry.d2.i.Point2i
@@ -24,9 +25,12 @@ agent AppManager {
 		loggingName = "AppManager"
 		info("AppManager created!")
 		var controller = occurrence.parameters.get(0) as MainWindowController
-		var droneBody = new DroneBody(200, 200, UUID::randomUUID)
-		controller.addBody(droneBody)
+		var droneBody = new DroneBody(200, 200)
+		var warehouseBody : WarehouseBody = new WarehouseBody(600,600)
+		controller.addDroneBody(droneBody)
+		controller.addWarehouseBody(warehouseBody)
 		spawnInContext(1, Drone, defaultContext, droneBody)
+		spawnInContext(1, Warehouse, defaultContext, warehouseBody)
 		var t  : Point2i = new Point2i(0, 0)
 		
 		map = new SimulationMap(10,1) //10 Clients + 1 Warehouse
