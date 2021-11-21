@@ -29,13 +29,29 @@ public abstract class SolutionSolver {
 		return consumptionPerKm * km;
 	}
 	
+	public static double lerp(double a, double b, double alpha) {
+		return a + alpha * (b - a);
+	}
+	
 	public static double pathEnergyCost(List<MapPoint> deliveryOrder) {
-		//calculate the cost of a path depending on packages and distances
-		//Example of path : w0 -> c1 -> c3 -> w0 (first and last point aren't necessary the same)
+		// Calculate the cost of a path depending on packages and distances
+		// Example of path : w0 -> c1 -> c3 -> w0 (first and last point aren't necessary the same)
+		int energyCost = 0;
+		int totalWeight = 0;
 		
-		//TODO : do the function
+		// Get total package weight
+		for (int i = 1; i < deliveryOrder.size() - 1 ; i++) {
+			totalWeight += deliveryOrder.get(i).getPackageWeight();
+		}
 		
-		return 0;
+		for (int i = 0; i < deliveryOrder.size() - 1 ; i++) {
+			// Calculate energy between the 2 points
+			double distance = getDistanceBetweenTwoPoints(deliveryOrder.get(i), deliveryOrder.get(i+1));
+			energyCost += droneEnergyCost(totalWeight, distance);
+			// Reduce total package weight
+			totalWeight = totalWeight - deliveryOrder.get(i+1).getPackageWeight();
+		}
+		return energyCost;
 	}
 	
 	public static double solutionCost(List<List<MapPoint>> s) {
@@ -52,10 +68,6 @@ public abstract class SolutionSolver {
 		return cost;
 	}
 	
-	public static double lerp(double a, double b, double alpha) {
-		return a + alpha * (b - a);
-	}
-	
 	public static MapPoint getClosestWharehouse(MapPoint p, FakeSimulationMap map) {
 	    // Return the closest warehouse to the MapPoint p
 		List<MapPoint> warehouses = map.getWareHouses();
@@ -63,7 +75,7 @@ public abstract class SolutionSolver {
 		MapPoint closestWarehouse = null;
 		for (MapPoint warehouse : warehouses) {
 			// Calculate the distance
-			double distance = Math.sqrt(Math.pow((warehouse.getX() - p.getX()),2) + Math.pow((warehouse.getY() - p.getY()),2));
+			double distance = getDistanceBetweenTwoPoints(warehouse, p);
 			if (minimalDistance > distance || minimalDistance == -1) {
 				// New minimal distance
 				minimalDistance = distance;
@@ -71,5 +83,9 @@ public abstract class SolutionSolver {
 			}
 		}
 	    return closestWarehouse;
+	}
+	
+	public static double getDistanceBetweenTwoPoints(MapPoint a, MapPoint b) {
+		return Math.sqrt(Math.pow((a.getX() - b.getX()),2) + Math.pow((a.getY() - b.getY()),2));
 	}
 }
