@@ -6,9 +6,9 @@ import java.util.List;
 
 public abstract class SolutionSolver {
 	
-	protected SimulationMap map;
+	protected FakeSimulationMap map;
 	
-	public SolutionSolver(SimulationMap map) {
+	public SolutionSolver(FakeSimulationMap map) {
 		this.map = map;
 	}
 	

@@ -10,6 +10,7 @@ import gui.DroneBody
 import java.util.UUID
 import io.sarl.core.Destroy
 import org.arakhne.afc.math.geometry.d2.i.Point2i
+import solutionSolver.FakeSimulationMap
 
 /** 
  * @author arnaud
@@ -29,7 +30,7 @@ agent AppManager {
 		spawnInContext(1, Drone, defaultContext, droneBody)
 		var t  : Point2i = new Point2i(0, 0)
 		
-		map = new SimulationMap(10,1) //10 Clients + 1 Warehouse
+		map = new FakeSimulationMap(10,1) //10 Clients + 1 Warehouse
 	}
 
 	on Destroy {
