@@ -37,16 +37,24 @@ public class SimulatedAnnealing extends SolutionSolver {
 				List<List<MapPoint>> sPrime = getRandomNeighbor(s);
 				
 				//test si le voisin est gardé
-				double deltaF = solutionCost(sPrime) - solutionCost(s);
-				if(deltaF < 0 ) {					
-					//le voisin est meilleur
-					s = sPrime;
-				}
-				else {
-					//le voisin est moins bon, on le prend avec une certaine probabilité
-					double r = random.nextDouble();
-					if(r < Math.exp(- deltaF / t)) {
+				double costSPrime = solutionCost(sPrime);
+				if(costSPrime == -1) {
+					//costSPrime = -1 veut dire que la solution générer ne 
+					//respect pas les contraintes de l'exercice
+					//exemple : le cout en energie d'une livraison dépasse la capacité d'un drone
+					
+					double costS = solutionCost(s);
+					double deltaF = costS - costSPrime;
+					if(deltaF < 0 ) {					
+						//le voisin est meilleur
 						s = sPrime;
+					}
+					else{
+						//le voisin est moins bon, on le prend avec une certaine probabilité
+						double r = random.nextDouble();
+						if(r < Math.exp(- deltaF / t)) {
+							s = sPrime;
+						}
 					}
 				}
 			}
@@ -74,6 +82,18 @@ public class SimulatedAnnealing extends SolutionSolver {
 	
 	private List<List<MapPoint>> getRandomNeighbor(List<List<MapPoint>> s) {
 		return null;
+	}
+	
+	private List<List<Object>> swap(List<List<Object>> solution, int idx0, int idx1) {
+		return solution;
+	}
+	
+	private List<List<Object>> relocate(List<List<Object>> solution) {
+		return solution;
+	}
+	
+	private List<List<Object>> TwoOpt(List<List<Object>> solution) {
+		return solution;
 	}
 
 }
