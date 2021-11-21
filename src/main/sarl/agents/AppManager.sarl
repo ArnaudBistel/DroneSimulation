@@ -13,6 +13,11 @@ import org.arakhne.afc.math.geometry.d2.i.Point2i
 import solutionSolver.FakeSimulationMap
 import solutionSolver.simulatedAnnealing.SimulatedAnnealing
 import solutionSolver.SolutionSolver
+import java.util.ArrayList
+import java.util.List
+import map.MapPoint
+import map.MapPointType
+import java.util.Arrays
 
 /** 
  * @author arnaud
@@ -33,15 +38,6 @@ agent AppManager {
 		var t  : Point2i = new Point2i(0, 0)
 		
 		map = new FakeSimulationMap(10,1) //10 Clients + 1 Warehouse
-		
-		/* Testing droneEnergyCost function : Should print drone's max battery (1628)
-		var simulatedAnnealing = new SimulatedAnnealing(map)
-		info(SolutionSolver.droneEnergyCost(0.0, 11.0))
-		info(SolutionSolver.droneEnergyCost(1.0, 95.0))
-		info(SolutionSolver.droneEnergyCost(2.0, 90.0))
-		info(SolutionSolver.droneEnergyCost(3.0, 85.0))
-		info(SolutionSolver.droneEnergyCost(4.0, 80.0))
-		info(SolutionSolver.droneEnergyCost(5.0, 75.0)) */
 	}
 
 	on Destroy {
