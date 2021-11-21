@@ -17,7 +17,6 @@ public class SimulatedAnnealing extends SolutionSolver {
 	@Override
 	public List<List<MapPoint>> Solve() {
 		//Fonction solve avec des paramètres par défauts
-		
 		return Solve(5.0, 0.5);
 	}
 
