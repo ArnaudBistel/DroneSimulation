@@ -29,6 +29,29 @@ public abstract class SolutionSolver {
 		return consumptionPerKm * km;
 	}
 	
+	public static double pathEnergyCost(List<MapPoint> deliveryOrder) {
+		//calculate the cost of a path depending on packages and distances
+		//Example of path : w0 -> c1 -> c3 -> w0 (first and last point aren't necessary the same)
+		
+		//TODO : do the function
+		
+		return 0;
+	}
+	
+	public static double solutionCost(List<List<MapPoint>> s) {
+		//calculate the cost of a deliveries solution
+		
+		double cost = 0;
+		for(List<MapPoint> deliveryOrder : s) {
+			if(deliveryOrder.size() > 2) {
+				//assuming there are atleast 3 point : wharehouse -> client -> wharehouse
+				
+				cost += pathEnergyCost(deliveryOrder);
+			}
+		}
+		return cost;
+	}
+	
 	public static double lerp(double a, double b, double alpha) {
 		return a + alpha * (b - a);
 	}

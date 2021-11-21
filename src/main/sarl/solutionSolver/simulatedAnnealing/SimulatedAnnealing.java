@@ -2,6 +2,7 @@ package solutionSolver.simulatedAnnealing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import map.MapPoint;
 import map.SimulationMap;
@@ -26,23 +27,32 @@ public class SimulatedAnnealing extends SolutionSolver {
 		//initialisation
 		double t = tempInit;
 		List<List<MapPoint>> s = getInitialSolution(); //s initialiser a la solution initial
+		Random random = new Random();
 		
 		//boucle sur la temperature
 		while(t > treshold) {
 			//boucle sur n iteration par palier de temperature
 			for(int i = 0; i < nbItPalier; i++) {
 				//selection d'un voisin de s
-				List<List<MapPoint>> neighbor = getRandomNeighbor(s);
+				List<List<MapPoint>> sPrime = getRandomNeighbor(s);
 				
-				//test si le voisin est garder
-				
-				
+				//test si le voisin est gardé
+				double deltaF = solutionCost(sPrime) - solutionCost(s);
+				if(deltaF < 0 ) {					
+					//le voisin est meilleur
+					s = sPrime;
+				}
+				else {
+					//le voisin est moins bon, on le prend avec une certaine probabilité
+					double r = random.nextDouble();
+					if(r < Math.exp(- deltaF / t)) {
+						s = sPrime;
+					}
+				}
 			}
-			
 			//reduction de la temperature
 			t = t * alpha;
 		}
-		
 		return s;
 	}
 	
@@ -53,7 +63,7 @@ public class SimulatedAnnealing extends SolutionSolver {
 		List<List<MapPoint>> res = new ArrayList<List<MapPoint>>();
 		for(MapPoint p : map.getClients()) {
 			ArrayList<MapPoint> list = new ArrayList<>();
-			MapPoint cW = SolutionSolver.getClosestWharehouse(p, map);
+			MapPoint cW = getClosestWharehouse(p, map);
 			list.add(cW);
 			list.add(p);
 			list.add(cW);
