@@ -31,6 +31,15 @@ agent AppManager {
 		var t  : Point2i = new Point2i(0, 0)
 		
 		map = new FakeSimulationMap(10,1) //10 Clients + 1 Warehouse
+		
+		/* Testing droneEnergyCost function : Should print drone's max battery (1628)
+		var simulatedAnnealing = new SimulatedAnnealing(map)
+		info(simulatedAnnealing.droneEnergyCost(0, 110))
+		info(simulatedAnnealing.droneEnergyCost(1, 95))
+		info(simulatedAnnealing.droneEnergyCost(2, 90))
+		info(simulatedAnnealing.droneEnergyCost(3, 85))
+		info(simulatedAnnealing.droneEnergyCost(4, 80))
+		info(simulatedAnnealing.droneEnergyCost(5, 75))*/
 	}
 
 	on Destroy {
