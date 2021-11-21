@@ -17,7 +17,6 @@ public class SimulatedAnnealing extends SolutionSolver {
 	@Override
 	public List<List<MapPoint>> Solve() {
 		//Fonction solve avec des paramètres par défauts
-		
 		return Solve(5.0, 0.5, 0.9, 5);
 	}
 
@@ -54,7 +53,7 @@ public class SimulatedAnnealing extends SolutionSolver {
 		List<List<MapPoint>> res = new ArrayList<List<MapPoint>>();
 		for(MapPoint p : map.getClients()) {
 			ArrayList<MapPoint> list = new ArrayList<>();
-			MapPoint cW = getClosestWharehouse(p);
+			MapPoint cW = SolutionSolver.getClosestWharehouse(p, map);
 			list.add(cW);
 			list.add(p);
 			list.add(cW);
@@ -64,12 +63,6 @@ public class SimulatedAnnealing extends SolutionSolver {
 	}
 	
 	private List<List<MapPoint>> getRandomNeighbor(List<List<MapPoint>> s) {
-		return null;
-	}
-	
-	static private MapPoint getClosestWharehouse(MapPoint p) {
-		//return le depot le plus proche d'un point de livraison
-		
 		return null;
 	}
 

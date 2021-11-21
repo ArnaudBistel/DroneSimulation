@@ -14,7 +14,7 @@ public abstract class SolutionSolver {
 	
 	abstract public List<List<MapPoint>> Solve();
 	
-	public double droneEnergyCost(double kg, double km) {
+	public static double droneEnergyCost(double kg, double km) {
 		double droneBattery = 814*2;
 		// linear function for 1 to 5 kg and for 0 to 1 kg
 		double c1 = 95; // Drone's consumption for 1 kg for 1 km
@@ -29,7 +29,24 @@ public abstract class SolutionSolver {
 		return consumptionPerKm * km;
 	}
 	
-	public double lerp(double a, double b, double alpha) {
+	public static double lerp(double a, double b, double alpha) {
 		return a + alpha * (b - a);
+	}
+	
+	public static MapPoint getClosestWharehouse(MapPoint p, FakeSimulationMap map) {
+	    // Return the closest warehouse to the MapPoint p
+		List<MapPoint> warehouses = map.getWareHouses();
+		double minimalDistance = -1;
+		MapPoint closestWarehouse = null;
+		for (MapPoint warehouse : warehouses) {
+			// Calculate the distance
+			double distance = Math.sqrt(Math.pow((warehouse.getX() - p.getX()),2) + Math.pow((warehouse.getY() - p.getY()),2));
+			if (minimalDistance > distance || minimalDistance == -1) {
+				// New minimal distance
+				minimalDistance = distance;
+				closestWarehouse = warehouse;
+			}
+		}
+	    return closestWarehouse;
 	}
 }
