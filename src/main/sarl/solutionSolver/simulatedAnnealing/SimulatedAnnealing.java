@@ -35,19 +35,13 @@ public class SimulatedAnnealing extends SolutionSolver {
 		List<List<MapPoint>> res = new ArrayList<List<MapPoint>>();
 		for(MapPoint p : map.getClients()) {
 			ArrayList<MapPoint> list = new ArrayList<>();
-			MapPoint cW = getClosestWharehouse(p);
+			MapPoint cW = SolutionSolver.getClosestWharehouse(p, map);
 			list.add(cW);
 			list.add(p);
 			list.add(cW);
 			res.add(list);
 		}
 		return res;
-	}
-	
-	static private MapPoint getClosestWharehouse(MapPoint p) {
-		//return le depot le plus proche d'un point de livraison
-		
-		return null;
 	}
 
 }

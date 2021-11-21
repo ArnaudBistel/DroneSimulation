@@ -32,4 +32,21 @@ public abstract class SolutionSolver {
 	public static double lerp(double a, double b, double alpha) {
 		return a + alpha * (b - a);
 	}
+	
+	public static MapPoint getClosestWharehouse(MapPoint p, FakeSimulationMap map) {
+	    // Return the closest warehouse to the MapPoint p
+		List<MapPoint> warehouses = map.getWareHouses();
+		double minimalDistance = -1;
+		MapPoint closestWarehouse = null;
+		for (MapPoint warehouse : warehouses) {
+			// Calculate the distance
+			double distance = Math.sqrt(Math.pow((warehouse.getX() - p.getX()),2) + Math.pow((warehouse.getY() - p.getY()),2));
+			if (minimalDistance > distance || minimalDistance == -1) {
+				// New minimal distance
+				minimalDistance = distance;
+				closestWarehouse = warehouse;
+			}
+		}
+	    return closestWarehouse;
+	}
 }
