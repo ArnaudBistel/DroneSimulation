@@ -1,0 +1,66 @@
+package gui
+
+import java.util.UUID
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import org.arakhne.afc.math.geometry.d2.i.Point2i
+
+/** 
+ * @author vlt
+ * 
+ */
+class Body {
+	val id : UUID
+	var position : Point2i
+	var height : int
+	var width : int
+	var image : Image
+	var imageView : ImageView
+	
+	new(x : int, y : int, height : int, width : int, imagePath : String) {
+		this(x, y, UUID.randomUUID(), height, width, imagePath)
+	}
+
+	new(x : int, y : int, id : UUID, height : int, width : int, imagePath : String) {
+		this.id = id
+		this.position = new Point2i(x, y)
+		this.height = height
+		this.width = width
+		this.image = new Image(imagePath, this.height, this.width, true, true)
+		this.imageView = new ImageView(this.image)
+	}
+
+	def getId() : UUID {
+		return this.id
+	}
+
+	def getPosition() : Point2i {
+		return this.position
+	}
+
+	def setPosition(p : Point2i) {
+		this.position = p
+	}
+
+	def getHeight() : int {
+		return this.height;
+	}
+
+	def getWidth() : int {
+		return this.width;
+	}
+
+	def getImage() : Image{
+		return this.image
+	}
+
+	def getImageView() : ImageView {
+		return this.imageView
+	}
+	
+	def setImage(imagePath : String) {
+		this.image = new Image(imagePath, this.height, this.width, true, true)
+		this.imageView = new ImageView(this.image)
+	}
+
+}

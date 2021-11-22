@@ -63,4 +63,8 @@ public class SimulationMap {
 			System.out.println("Vertex #" + i + " : " + str);
 		}
 	}
+	
+	public List<MapPoint> getWarehouses(){
+		return this.warehouseList;
+	}
 }

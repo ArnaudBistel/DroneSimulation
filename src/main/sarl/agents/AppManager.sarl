@@ -3,41 +3,127 @@ package agents
 import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
-import map.SimulationMap
+import io.sarl.core.Schedules
 import io.sarl.core.Initialize
-import controller.MainWindowController
-import gui.DroneBody
-import java.util.UUID
 import io.sarl.core.Destroy
+
+import controller.MainWindowController
+
+import map.SimulationMap
+import gui.DroneBody
+import gui.WarehouseBody
+import actionparam.MoveActionParams
+
+import java.util.UUID
 import org.arakhne.afc.math.geometry.d2.i.Point2i
+import java.util.ArrayList
+import java.util.List
+import java.util.Map
+import java.util.TreeMap
+import gui.Body
 
 /** 
  * @author arnaud
  * 
  */
+ 
+
 agent AppManager {
-	uses Logging, Lifecycle, DefaultContextInteractions
+	uses Logging, Lifecycle, DefaultContextInteractions, Schedules
 
 	var map : SimulationMap
 
+	var stepTime = 30
+	var stepCounter = 0
+
+	var controller : MainWindowController
+	var width : Integer
+	var height : Integer
+	val perceptionDistance : int = 200
+	
+	val warehouseNb = 1
+
+	var actionList = new ArrayList<Action>
+
+	var droneList : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
+	var warehouseList : Map<UUID, WarehouseBody> = new TreeMap<UUID, WarehouseBody>
+	var objectsList : Map<UUID, Body> = new TreeMap<UUID, Body>
+
 	on Initialize {
-		loggingName = "AppManager"
-		info("AppManager created!")
-		var controller = occurrence.parameters.get(0) as MainWindowController
-		var droneBody = new DroneBody(200, 200, UUID::randomUUID)
-		controller.addBody(droneBody)
-		spawnInContext(1, Drone, defaultContext, droneBody)
-		var t  : Point2i = new Point2i(0, 0)
-		
-		map = new SimulationMap(10,1) //10 Clients + 1 Warehouse
+		synchronized (this) {
+			this.controller = occurrence.parameters.get(0) as MainWindowController
+			
+			this.width = this.controller.width as Integer
+			this.height = this.controller.height as Integer
+			this.map = new SimulationMap(10, 1, this.width, this.height) // 10 Clients + 1 Warehouse
+			for (wh : this.map.getWarehouses()) {
+				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 50, 50)
+				spawnInContext(Warehouse, defaultContext, warehouseBody, 10, this.controller)
+				controller.addBody(warehouseBody, "WAREHOUSE")
+				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
+			}
+			every(this.stepTime)[newStep]
+		}
+	}
+
+	on NewDrone {
+		synchronized (this) {
+			this.controller.addBody(occurrence.droneBody, "DRONE")
+			this.droneList.put(occurrence.droneBody.getId, occurrence.droneBody as DroneBody)
+		}
+	}
+
+	on ActionEvent {
+		synchronized (this) {
+			this.actionList.add(occurrence.action)
+		}
+	}
+
+	def newStep : void {
+		synchronized (this) {
+			applyActions(actionList, this.stepCounter)
+			actionList.clear
+			
+			// perception de warehouse ?
+
+			// On met à jour la perception de chaque agent drone
+			for (e : getDronePerceptions.entrySet) {
+				var eventPerception = new DronePerception(e.key, e.value, this.stepCounter)
+				emit(eventPerception)[it.getID == e.key]
+			}
+			this.stepCounter++
+		}
+	}
+
+	def applyActions(actionList : List<Action>, step : int){
+		for (action : actionList) {
+			if (action.type == ActionType.MOVE) {
+				var params = action.params as MoveActionParams
+				var dronebody = this.droneList.get(params.droneId)
+				dronebody.move(params.x, params.y)				
+			}
+		}
+	}
+
+	def getDronePerceptions() : Map<UUID, List<Body>> {
+		synchronized (this) {
+			var ret = new TreeMap<UUID, List<Body>>		
+			for (body : this.droneList.entrySet) {
+				var perceived = new ArrayList<Body>
+				for (perceivedObject : this.droneList.values) {
+					if (perceivedObject.id != body.value.id) {
+						perceived.add(perceivedObject as Body)
+					}
+				}		 
+			 ret.put(body.key, perceived)
+			}
+			return ret
+		}
 	}
 
 	on Destroy {
 	}
 	
-	def initMap(){
-		
-	}
 }
 
 

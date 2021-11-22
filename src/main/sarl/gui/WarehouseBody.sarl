@@ -1,0 +1,24 @@
+package gui
+
+import java.util.UUID
+import java.util.Map
+import java.util.TreeMap
+
+/** 
+ * @author vlt
+ * 
+ */
+class WarehouseBody extends Body {
+
+	var droneBodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
+	
+	
+	new (x : int, y : int, h : int, w : int) {
+		super(x, y, h, w, PathEnum.WAREHOUSE.getPath)
+		System.out.println("New WarehouseBody created")
+	}
+	
+	def addDrone(drone : DroneBody){
+		this.droneBodies.put(drone.getId, drone)
+	}
+}

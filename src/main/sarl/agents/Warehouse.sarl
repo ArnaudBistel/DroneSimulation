@@ -13,54 +13,61 @@ import io.sarl.core.ParticipantJoined
 import io.sarl.core.ParticipantLeft
 import io.sarl.core.SpaceCreated
 import io.sarl.core.SpaceDestroyed
-import gui.DroneBody
-import gui.WarehouseBody
+
+import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
-import io.sarl.core.DefaultContextInteractions
+
+import controller.MainWindowController
+
+import gui.WarehouseBody
+import java.util.Random
+import gui.DroneBody
 
 /** 
  * @author arnaud
  * 
  */
-agent Drone {
-	uses Logging, Lifecycle, Schedules, DefaultContextInteractions
+agent Warehouse {
+	uses Logging, Lifecycle, DefaultContextInteractions, Schedules
 
-	var body : DroneBody
 	var warehouseBody : WarehouseBody
+	var droneNb : Integer
+	var random : Random
+	var controller : MainWindowController
 
 	on Initialize {
 		synchronized (this) {
 		
 			// Event trigger before the agent begin to live or to be used.
 			// You should put all the initialization statements in this block of code.
-			info("The agent Drone was started : " + this.getID)
-			this.body = occurrence.parameters.get(0) as DroneBody
-			this.warehouseBody = occurrence.parameters.get(1) as WarehouseBody
-			
-		}	
-	}
+			//info("The agent Warehouse was started.")
 	
-	on DronePerception {
-		synchronized (this) {
-			if (this.body.position.x >= 1020 || this.body.position.x <= 0) {
-				this.body.switchVelocity
+			this.warehouseBody = occurrence.parameters.get(0) as WarehouseBody
+			this.droneNb = occurrence.parameters.get(1) as Integer
+			this.controller = occurrence.parameters.get(2) as MainWindowController
+			var x : int
+			var y : int
+			this.random = new Random
+	
+			for (i : 0 .. this.droneNb-1) {
+	
+				x = (this.random.nextInt(400))
+				y = (this.random.nextInt(400))
+				var droneBody = new DroneBody(x, y, 30, 30)
+				this.warehouseBody.addDrone(droneBody)
+				spawnInContextWithID(Drone, droneBody.id, defaultContext, droneBody, this.warehouseBody)
+				var newDroneEvent = new NewDrone(droneBody)
+				emit(newDroneEvent)
 			}
-			var x = this.body.position.x + this.body.velocity	
-			if (this.body.position.y >= 790 || this.body.position.y <= 0) {
-				this.body.switchVelocity
-			}
-			var y = this.body.position.y + this.body.velocity	
-			var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
-			var actionEvent = new ActionEvent(action)
-			emit(actionEvent)	
 		}
 	}
+
 
 	on Destroy {
 		// Event trigger when the agent is destroyed from the system.
 		// You should put all the resource releasing statements in this block of code.
-		info("The agent Drone was stopped.")
+		info("The agent Warehouse was stopped.")
 	}
 
 	on AgentSpawned {
