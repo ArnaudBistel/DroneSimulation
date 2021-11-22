@@ -1,0 +1,25 @@
+/** 
+ * 
+ */
+package gui
+import org.arakhne.afc.math.geometry.d2.i.Point2i
+import javafx.scene.image.Image
+
+/** 
+ * @author vlt
+ * 
+ */
+class WarehouseBody extends Body {
+	val image : Image
+	
+	new(x : int, y : int){
+		super(x,y)
+		this.position = new Point2i(x, y)
+		this.image = new Image("/resources/img/warehouse_rose.png", 30, 30, true, true)
+	}
+
+	@Pure
+	def getPosition() : Point2i {
+		return this.position
+	}
+}

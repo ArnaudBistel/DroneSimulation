@@ -8,32 +8,18 @@ import javafx.scene.image.Image
  * @author arnaud
  * 
  */
-class DroneBody {
-	val id : UUID
+class DroneBody extends Body {
 	val image : Image
-	var position : Point2i
 	var velocity = 3
 
-	new (x : int, y : int, id : UUID) {
-		this.position = new Point2i(x, y)
-		this.id = id
-		System.out.println("New body created")
+	new (x : int, y : int) {
+		super(x,y)
 		this.image = new Image("/resources/img/drone_blue.png", 30, 30, true, true)
 	}
 
 	@Pure
-	def getId() : UUID {
-		return this.id
-	}
+	def getPosition() : Point2i {
 
-	@Pure
-	def getImage() : Image {
-		return this.image
-	}
-
-	@Pure
-	def getPosition() : Point2i{
-		
 		if (this.position.x >= 1020 || this.position.x <= 0) {
 			this.velocity *= -1
 		}

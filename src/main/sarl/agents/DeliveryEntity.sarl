@@ -1,3 +1,6 @@
+/** 
+ * 
+ */
 package agents
 
 import io.sarl.core.AgentKilled
@@ -15,22 +18,22 @@ import io.sarl.core.SpaceCreated
 import io.sarl.core.SpaceDestroyed
 
 /** 
- * @author arnaud
+ * @author vlt
  * 
  */
-agent Drone extends DeliveryEntity {
+agent DeliveryEntity {
 	uses Logging
 
 	on Initialize {
 		// Event trigger before the agent begin to live or to be used.
 		// You should put all the initialization statements in this block of code.
-		info("The agent was started.")
+		info("The super agent was started.")
 	}
 
 	on Destroy {
 		// Event trigger when the agent is destroyed from the system.
 		// You should put all the resource releasing statements in this block of code.
-		info("The agent was stopped.")
+		info("The super agent was stopped.")
 	}
 
 	on AgentSpawned {

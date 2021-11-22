@@ -1,0 +1,53 @@
+/** 
+ * 
+ */
+package gui
+
+import io.sarl.core.AgentKilled
+import io.sarl.core.AgentSpawned
+import io.sarl.core.ContextJoined
+import io.sarl.core.ContextLeft
+import io.sarl.core.Destroy
+import io.sarl.core.Initialize
+import io.sarl.core.Logging
+import io.sarl.core.MemberJoined
+import io.sarl.core.MemberLeft
+import io.sarl.core.ParticipantJoined
+import io.sarl.core.ParticipantLeft
+import io.sarl.core.SpaceCreated
+import io.sarl.core.SpaceDestroyed
+import java.util.UUID
+import javafx.scene.image.Image
+import org.arakhne.afc.math.geometry.d2.i.Point2i
+
+
+/** 
+ * @author vlt
+ * 
+ */
+class Body {
+	var position : Point2i
+	val id : UUID
+	
+	new(x:int,y:int){
+		this.id = UUID.randomUUID();
+		this.position = new Point2i(x, y)
+		System.out.println("New body created")
+	}
+
+	def getImage() : Image {
+		return this.image
+	}
+	
+	def getId() : UUID {
+		return this.id
+	}
+	
+	def getPosition() : Point2i {
+	}
+
+	def setPosition(p : Point2i) {
+		this.position = p
+	}
+	
+}
