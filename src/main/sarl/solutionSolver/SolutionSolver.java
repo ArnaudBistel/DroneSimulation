@@ -6,9 +6,9 @@ import java.util.List;
 
 public abstract class SolutionSolver {
 	
-	protected FakeSimulationMap map;
+	protected SimulationMap map;
 	
-	public SolutionSolver(FakeSimulationMap map) {
+	public SolutionSolver(SimulationMap map) {
 		this.map = map;
 	}
 	
@@ -68,9 +68,9 @@ public abstract class SolutionSolver {
 		return cost;
 	}
 	
-	public static MapPoint getClosestWharehouse(MapPoint p, FakeSimulationMap map) {
+	public static MapPoint getClosestWharehouse(MapPoint p, SimulationMap map) {
 	    // Return the closest warehouse to the MapPoint p
-		List<MapPoint> warehouses = map.getWareHouses();
+		List<MapPoint> warehouses = map.getWarehouses();
 		double minimalDistance = -1;
 		MapPoint closestWarehouse = null;
 		for (MapPoint warehouse : warehouses) {
@@ -86,6 +86,10 @@ public abstract class SolutionSolver {
 	}
 	
 	public static double getDistanceBetweenTwoPoints(MapPoint a, MapPoint b) {
-		return Math.sqrt(Math.pow((a.getX() - b.getX()),2) + Math.pow((a.getY() - b.getY()),2));
+		return Math.sqrt(Math.pow((a.getScaledX() - b.getScaledX()),2) + Math.pow((a.getScaledY() - b.getScaledY()),2));
+	}
+	
+	public static boolean isValidPath(List<MapPoint> deliveryOrder) {
+		return pathEnergyCost(deliveryOrder) < 814*2;
 	}
 }
