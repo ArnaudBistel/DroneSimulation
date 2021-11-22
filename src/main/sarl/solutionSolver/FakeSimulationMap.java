@@ -65,23 +65,23 @@ public class FakeSimulationMap extends SimulationMap {
 			MapPoint closestWarehouse = SolutionSolver.getClosestWharehouse(getClients().get(i), this);
 			System.out.println("Closest Warehouse : " + closestWarehouse.getX() + "-" + closestWarehouse.getY()); */
 		}
-		fgenerateGraph();
+		//fgenerateGraph();
 	}
 	
-	public void fgenerateGraph() {
-		graph = new Graph();
-		graph.addVertex(0, this.warehouseList.get(0));
-		for(int i = 0; i < this.clientList.size(); i++) {
-			graph.addVertex(i+1, this.clientList.get(i));
-		}
-		for (int i = 0; i<this.nbClients+this.nbWarehouse;i++) {
-			List<Vertex> list = graph.getVertex(i).getConnectedVertices();
-			String str = "";
-			for(Vertex v : list) {
-				str += v.getId() + " ";
-			}
-			System.out.println("Vertex #" + i + " : " + str);
-		}
-	}
+//	public void fgenerateGraph() {
+//		graph = new Graph();
+//		graph.addVertex(0, this.warehouseList.get(0));
+//		for(int i = 0; i < this.clientList.size(); i++) {
+//			graph.addVertex(i+1, this.clientList.get(i));
+//		}
+//		for (int i = 0; i<this.nbClients+this.nbWarehouse;i++) {
+//			List<Vertex> list = graph.getVertex(i).getConnectedVertices();
+//			String str = "";
+//			for(Vertex v : list) {
+//				str += v.getId() + " ";
+//			}
+//			System.out.println("Vertex #" + i + " : " + str);
+//		}
+//	}
 
 }

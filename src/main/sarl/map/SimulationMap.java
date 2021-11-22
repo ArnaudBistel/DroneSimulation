@@ -49,7 +49,7 @@ public class SimulationMap {
 	}
 	
 	public void generateGraph() {
-		graph = new Graph();
+		graph = new Graph(this);
 		for(int i = 0; i < this.warehouseList.size(); i++) {
 			graph.addVertex(i, this.warehouseList.get(i));
 		}

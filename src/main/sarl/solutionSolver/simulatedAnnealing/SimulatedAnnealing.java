@@ -11,7 +11,7 @@ import solutionSolver.SolutionSolver;
 
 public class SimulatedAnnealing extends SolutionSolver {
 
-	public SimulatedAnnealing(FakeSimulationMap map) {
+	public SimulatedAnnealing(SimulationMap map) {
 		super(map);
 	}
 	

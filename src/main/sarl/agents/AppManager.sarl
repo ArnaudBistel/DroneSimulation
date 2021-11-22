@@ -1,24 +1,15 @@
 package agents
 
-import io.sarl.core.DefaultContextInteractions
-import io.sarl.core.Lifecycle
-import io.sarl.core.Logging
-import map.SimulationMap
-import io.sarl.core.Initialize
 import controller.MainWindowController
 import gui.DroneBody
 import gui.WarehouseBody
-import java.util.UUID
+import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.Destroy
+import io.sarl.core.Initialize
+import io.sarl.core.Lifecycle
+import io.sarl.core.Logging
+import map.SimulationMap
 import org.arakhne.afc.math.geometry.d2.i.Point2i
-import solutionSolver.FakeSimulationMap
-import solutionSolver.simulatedAnnealing.SimulatedAnnealing
-import solutionSolver.SolutionSolver
-import java.util.ArrayList
-import java.util.List
-import map.MapPoint
-import map.MapPointType
-import java.util.Arrays
 
 /** 
  * @author arnaud
@@ -27,7 +18,7 @@ import java.util.Arrays
 agent AppManager {
 	uses Logging, Lifecycle, DefaultContextInteractions
 
-	var map : FakeSimulationMap
+	var map : SimulationMap
 
 	on Initialize {
 		loggingName = "AppManager"
@@ -41,8 +32,7 @@ agent AppManager {
 		spawnInContext(1, Warehouse, defaultContext, warehouseBody)
 		var t  : Point2i = new Point2i(0, 0)
 		
-		map = new FakeSimulationMap(10,1) //10 Clients + 1 Warehouse
-		map = new SimulationMap(10,3) //10 Clients + 1 Warehouse
+		map = new SimulationMap(15,4) //10 Clients + 1 Warehouse
 	}
 
 	on Destroy {
