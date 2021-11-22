@@ -1,14 +1,18 @@
 package gui
 
+import java.util.UUID
+
 /** 
  * @author arnaud
  * 
  */
 class DroneBody extends Body{
 	var velocity : Integer = -3
+	var warehouseId : UUID
 
-	new (x : int, y : int, h : int, w : int) {
+	new (x : int, y : int, h : int, w : int, warehouseId : UUID) {
 		super(x, y, h, w, PathEnum.DRONE_LOADED.getPath)
+		this.warehouseId = warehouseId
 	}
 	
 	def move() {
