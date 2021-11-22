@@ -7,6 +7,7 @@ import io.sarl.javafx.FxViewerController
 import javafx.scene.canvas.Canvas
 import javafx.animation.AnimationTimer
 import agents.AppManager
+import gui.Body
 import gui.DroneBody
 import gui.WarehouseBody
 import gui.Body
@@ -69,7 +70,6 @@ class MainWindowController extends FxViewerController {
 		} else if (type.equals("WAREHOUSE")) {
 			this.warehouseBodies.put(body.getId, body as WarehouseBody)
 		}
-		 
 	}
 
 	def startSimulation() {
@@ -92,7 +92,6 @@ class MainWindowController extends FxViewerController {
 		for (b : this.bodies.values()) {
 			gc.drawImage(b.image, b.position.x, b.position.y);
 		}   
-	 	
 	}
 
 	def getHeight() {

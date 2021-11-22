@@ -9,7 +9,6 @@ import java.util.TreeMap
  * 
  */
 class WarehouseBody extends Body {
-
 	var droneBodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
 	
 	

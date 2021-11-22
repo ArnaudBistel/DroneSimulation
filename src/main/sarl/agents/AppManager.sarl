@@ -1,18 +1,20 @@
 package agents
 
 import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Destroy
+import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
 import io.sarl.core.Schedules
-import io.sarl.core.Initialize
-import io.sarl.core.Destroy
 
+import gui.DroneBody
+import gui.WarehouseBody
 import controller.MainWindowController
-
 import map.SimulationMap
 import gui.DroneBody
 import gui.WarehouseBody
 import actionparam.MoveActionParams
+import gui.Body
 
 import java.util.UUID
 import org.arakhne.afc.math.geometry.d2.i.Point2i
@@ -20,7 +22,6 @@ import java.util.ArrayList
 import java.util.List
 import java.util.Map
 import java.util.TreeMap
-import gui.Body
 
 /** 
  * @author arnaud
@@ -52,10 +53,9 @@ agent AppManager {
 	on Initialize {
 		synchronized (this) {
 			this.controller = occurrence.parameters.get(0) as MainWindowController
-			
 			this.width = this.controller.width as Integer
 			this.height = this.controller.height as Integer
-			this.map = new SimulationMap(10, 1, this.width, this.height) // 10 Clients + 1 Warehouse
+			map = new SimulationMap(15, 4) // 10 Clients + 1 Warehouse
 			for (wh : this.map.getWarehouses()) {
 				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 50, 50)
 				spawnInContext(Warehouse, defaultContext, warehouseBody, 10, this.controller)
@@ -65,6 +65,7 @@ agent AppManager {
 			every(this.stepTime)[newStep]
 		}
 	}
+
 
 	on NewDrone {
 		synchronized (this) {

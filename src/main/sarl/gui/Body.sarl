@@ -4,7 +4,6 @@ import java.util.UUID
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import org.arakhne.afc.math.geometry.d2.i.Point2i
-
 /** 
  * @author vlt
  * 
@@ -64,3 +63,4 @@ class Body {
 	}
 
 }
+
