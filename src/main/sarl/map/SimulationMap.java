@@ -36,23 +36,25 @@ public class SimulationMap {
 			x = random.nextInt(this.width);
 			y = random.nextInt(this.height);
 			this.warehouseList.add(new MapPoint(x, y, MapPointType.WAREHOUSE, null));
-			System.out.println("Warehouse #" + i + " : " + x + "-" + y);
+			//System.out.println("Warehouse #" + i + " : " + x + "-" + y);
 		}
 		for(int i = 0;i<this.nbClients;i++) {
 			x = random.nextInt(this.width);
 			y = random.nextInt(this.height);
 			packageWeight = random.nextInt(4) + 1;
 			this.clientList.add(new MapPoint(x, y, MapPointType.CLIENT, Arrays.asList(packageWeight)));
-			System.out.println("Client #" + i + " : " + x + "-" + y + " --- Package Weight : " + packageWeight);
+			//System.out.println("Client #" + i + " : " + x + "-" + y + " --- Package Weight : " + packageWeight);
 		}
 		generateGraph();
 	}
 	
 	public void generateGraph() {
 		graph = new Graph();
-		graph.addVertex(0, this.warehouseList.get(0));
+		for(int i = 0; i < this.warehouseList.size(); i++) {
+			graph.addVertex(i, this.warehouseList.get(i));
+		}
 		for(int i = 0; i < this.clientList.size(); i++) {
-			graph.addVertex(i+1, this.clientList.get(i));
+			graph.addVertex(i + this.warehouseList.size(), this.clientList.get(i));
 		}
 		for (int i = 0; i<this.nbClients+this.nbWarehouse;i++) {
 			List<Vertex> list = graph.getVertex(i).getConnectedVertices();
@@ -60,7 +62,19 @@ public class SimulationMap {
 			for(Vertex v : list) {
 				str += v.getId() + " ";
 			}
-			System.out.println("Vertex #" + i + " : " + str);
+			//System.out.println("Vertex #" + i + " : " + str);
 		}
+	}
+	
+	public Graph getGraph() {
+		return this.graph;
+	}
+	
+	public List<MapPoint> getClients(){
+		return this.clientList;
+	}
+	
+	public List<MapPoint> getWarehouses(){
+		return this.warehouseList;
 	}
 }

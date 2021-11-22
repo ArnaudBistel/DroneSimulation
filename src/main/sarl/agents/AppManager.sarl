@@ -33,7 +33,7 @@ agent AppManager {
 		spawnInContext(1, Warehouse, defaultContext, warehouseBody)
 		var t  : Point2i = new Point2i(0, 0)
 		
-		map = new SimulationMap(10,1) //10 Clients + 1 Warehouse
+		map = new SimulationMap(10,3) //10 Clients + 1 Warehouse
 	}
 
 	on Destroy {
