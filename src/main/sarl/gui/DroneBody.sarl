@@ -1,47 +1,48 @@
 package gui
 
 import java.util.UUID
-import org.arakhne.afc.math.geometry.d2.i.Point2i
-import javafx.scene.image.Image
 
 /** 
  * @author arnaud
  * 
  */
-class DroneBody {
-	val id : UUID
-	val image : Image
-	var position : Point2i
-	var velocity = 3
+class DroneBody extends Body{
+	var velocity : Integer = -3
+	var warehouseId : UUID
 
-	new (x : int, y : int, id : UUID) {
-		this.position = new Point2i(x, y)
-		this.id = id
-		System.out.println("New body created")
-		this.image = new Image("/resources/img/drone_blue.png", 30, 30, true, true)
+	new (x : int, y : int, h : int, w : int, warehouseId : UUID) {
+		super(x, y, h, w, PathEnum.DRONE_LOADED.getPath)
+		this.warehouseId = warehouseId
 	}
-
-	@Pure
-	def getId() : UUID {
-		return this.id
-	}
-
-	@Pure
-	def getImage() : Image {
-		return this.image
-	}
-
-	@Pure
-	def getPosition() : Point2i{
-		
+	
+	def move() {
 		if (this.position.x >= 1020 || this.position.x <= 0) {
-			this.velocity *= -1
+			this.velocity = this.velocity * -1 as Integer
 		}
 		this.position.x = this.position.x + this.velocity
-		return this.position
 	}
 
-	def setPosition(p : Point2i) {
-		this.position = p
+	def move(x : int, y : int) {
+		this.position.x = x
+		this.position.y = y
 	}
+	
+	def switchStateView(state : DroneState){
+		switch(state) {
+			case DroneState.DRONE_LOADED :
+				setImage(PathEnum.DRONE_EMPTY.getPath)
+				
+			case DroneState.DRONE_EMPTY :
+				setImage(PathEnum.DRONE_EMPTY.getPath)
+		}		
+	}
+	
+	def getVelocity() : Integer{
+		return this.velocity
+	}
+
+	def switchVelocity() : Integer {
+		this.velocity = this.velocity * -1
+	}
+
 }

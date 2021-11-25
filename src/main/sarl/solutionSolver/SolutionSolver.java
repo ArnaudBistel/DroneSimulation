@@ -10,7 +10,7 @@ import java.util.Random;
 
 public abstract class SolutionSolver {
 	
-	protected FakeSimulationMap map;
+	protected SimulationMap map;
 	protected Random random;
 	
 	protected static final double DRONE_MAX_ENERGY = 1628;
@@ -19,13 +19,12 @@ public abstract class SolutionSolver {
 	protected static int nbCapacityE;
 	protected static int nbEnergyE;
 
-	public SolutionSolver(FakeSimulationMap map, Random random) {
+	public SolutionSolver(SimulationMap map, Random random) {
 		this.map = map;
 		this.random = random;
 	}
 	
-
-	public SolutionSolver(FakeSimulationMap map) {
+	public SolutionSolver(SimulationMap map) {
 		this.map = map;
 		this.random = new Random();
 	}
@@ -177,7 +176,6 @@ public abstract class SolutionSolver {
 		return cost;
 	}
 	
-	
 	public List<List<MapPoint>> convertListToListOfList(List<MapPoint> solution){
 		//convert a simple list like 0,1,2,0,1,2,3,0,1 where 0 is a warehouse
 		//to a list of list like : {{0,1,2,0},{0,1,2,3,0},{0,1,0}}
@@ -213,9 +211,9 @@ public abstract class SolutionSolver {
 		return res;
 	}
 	
-	public static MapPoint getClosestWharehouse(MapPoint p, FakeSimulationMap map) {
+	public static MapPoint getClosestWharehouse(MapPoint p, SimulationMap map) {
 	    // Return the closest warehouse to the MapPoint p
-		List<MapPoint> warehouses = map.getWareHouses();
+		List<MapPoint> warehouses = map.getWarehouses();
 		double minimalDistance = -1;
 		MapPoint closestWarehouse = null;
 		for (MapPoint warehouse : warehouses) {
@@ -231,6 +229,10 @@ public abstract class SolutionSolver {
 	}
 	
 	public static double getDistanceBetweenTwoPoints(MapPoint a, MapPoint b) {
-		return Math.sqrt(Math.pow((a.getX() - b.getX()),2) + Math.pow((a.getY() - b.getY()),2));
+		return Math.sqrt(Math.pow((a.getScaledX() - b.getScaledX()),2) + Math.pow((a.getScaledY() - b.getScaledY()),2));
+	}
+	
+	public static boolean isValidPath(List<MapPoint> deliveryOrder) {
+		return pathEnergyCost(deliveryOrder) < 814*2;
 	}
 }

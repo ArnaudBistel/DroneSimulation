@@ -24,7 +24,7 @@ public class SimulatedAnnealing extends SolutionSolver {
 		super(map, random);
 	}
 
-	public SimulatedAnnealing(FakeSimulationMap map) {
+	public SimulatedAnnealing(SimulationMap map) {
 		super(map);
 	}
 	
@@ -218,7 +218,7 @@ public class SimulatedAnnealing extends SolutionSolver {
 			for(MapPoint e : l) {
 				System.out.print(((j != 0)? "," : "") + 
 						((e.getType() == MapPointType.WAREHOUSE)?
-								"W" : ("[" + e.getX() + ";" + e.getY() + "]"))
+								"W" : ("[" + e.getScaledX() + ";" + e.getScaledY() + "]"))
 						);
 				j++;
 			}
@@ -235,7 +235,7 @@ public class SimulatedAnnealing extends SolutionSolver {
 		for(MapPoint e : s) {
 			System.out.print(((j != 0)? "," : "") + 
 					((e.getType() == MapPointType.WAREHOUSE)?
-							"W" : ("[" + e.getX() + ";" + e.getY() + "]"))
+							"W" : ("[" + e.getScaledX() + ";" + e.getScaledY() + "]"))
 					);
 			j++;
 		}

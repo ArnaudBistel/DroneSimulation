@@ -1,3 +1,6 @@
+/** 
+ * 
+ */
 package agents
 
 import io.sarl.core.AgentKilled
@@ -13,54 +16,24 @@ import io.sarl.core.ParticipantJoined
 import io.sarl.core.ParticipantLeft
 import io.sarl.core.SpaceCreated
 import io.sarl.core.SpaceDestroyed
-import gui.DroneBody
-import gui.WarehouseBody
-import io.sarl.core.Lifecycle
-import io.sarl.core.Schedules
-import io.sarl.core.DefaultContextInteractions
 
 /** 
- * @author arnaud
+ * @author vlt
  * 
  */
-agent Drone {
-	uses Logging, Lifecycle, Schedules, DefaultContextInteractions
-
-	var body : DroneBody
-	var warehouseBody : WarehouseBody
+agent DeliveryEntity {
+	uses Logging
 
 	on Initialize {
-		synchronized (this) {
-		
-			// Event trigger before the agent begin to live or to be used.
-			// You should put all the initialization statements in this block of code.
-			info("The agent Drone was started : " + this.getID)
-			this.body = occurrence.parameters.get(0) as DroneBody
-			this.warehouseBody = occurrence.parameters.get(1) as WarehouseBody
-			
-		}	
-	}
-	
-	on DronePerception {
-		synchronized (this) {
-			if (this.body.position.x >= 1020 || this.body.position.x <= 0) {
-				this.body.switchVelocity
-			}
-			var x = this.body.position.x + this.body.velocity	
-			if (this.body.position.y >= 790 || this.body.position.y <= 0) {
-				this.body.switchVelocity
-			}
-			var y = this.body.position.y + this.body.velocity	
-			var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
-			var actionEvent = new ActionEvent(action)
-			emit(actionEvent)	
-		}
+		// Event trigger before the agent begin to live or to be used.
+		// You should put all the initialization statements in this block of code.
+		info("The super agent was started.")
 	}
 
 	on Destroy {
 		// Event trigger when the agent is destroyed from the system.
 		// You should put all the resource releasing statements in this block of code.
-		info("The agent Drone was stopped.")
+		info("The super agent was stopped.")
 	}
 
 	on AgentSpawned {

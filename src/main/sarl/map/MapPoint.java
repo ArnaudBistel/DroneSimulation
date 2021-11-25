@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.arakhne.afc.math.geometry.d2.i.Point2i;
 
+import utils.variables.SimulationParameters;
+
 public class MapPoint {
 	
 	MapPointType type;
@@ -28,12 +30,20 @@ public class MapPoint {
 		return this.position;
 	}
 	
-	public int getX() {
+	public int getPixelX() {
 		return (int) this.position.getX();
 	}
 	
-	public int getY() {
+	public int getPixelY() {
 		return (int) this.position.getY();
+	}
+	
+	public double getScaledX() {
+		return this.position.getX() / SimulationParameters.mapRatio;
+	}
+	
+	public double getScaledY() {
+		return this.position.getY() / SimulationParameters.mapRatio;
 	}
 	
 	public int getPackageWeight () {
