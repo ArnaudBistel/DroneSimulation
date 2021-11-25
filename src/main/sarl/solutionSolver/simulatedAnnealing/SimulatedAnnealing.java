@@ -9,18 +9,12 @@ import java.util.Random;
 import map.MapPoint;
 import map.MapPointType;
 import map.SimulationMap;
-import solutionSolver.FakeSimulationMap;
 import solutionSolver.SolutionSolver;
+import utils.variables.SimulationParameters;
 
 public class SimulatedAnnealing extends SolutionSolver {
 	
-	private int valueChange = 0;
-	private int avalueNeg = 0;
-	private int warehouseStart = 0;
-	
-	private int test = 0;
-	
-	public SimulatedAnnealing(FakeSimulationMap map, Random random) {
+	public SimulatedAnnealing(SimulationMap map, Random random) {
 		super(map, random);
 	}
 
@@ -37,19 +31,14 @@ public class SimulatedAnnealing extends SolutionSolver {
 	public List<List<MapPoint>> Solve(double tempInit, double treshold, double alpha, int nbItPalier) {
 		//résolution par recuit simulé
 		
-		valueChange = 0;
-		
 		//initialisation
 		double t = tempInit;
 		List<MapPoint> s = getInitialSolution(); //s initialiser a la solution initial
-		
-		int counter = 0;
 		
 		//boucle sur la temperature
 		while(t > treshold) {
 			//boucle sur n iteration par palier de temperature
 			for(int i = 0; i < nbItPalier; i++) {
-				counter++;
 				//selection d'un voisin de s
 				List<MapPoint> sPrime = getRandomNeighbor(s);
 				
@@ -65,14 +54,12 @@ public class SimulatedAnnealing extends SolutionSolver {
 					if(deltaF < 0 ) {					
 						//le voisin est meilleur
 						s = sPrime;
-						valueChange++;
 					}
 					else {
 						//le voisin est moins bon, on le prend avec une certaine probabilité
 						double r = random.nextDouble();
 						if(r < Math.exp(deltaF / t)) {
 							s = sPrime;
-							valueChange++;
 						}
 					}
 				}
@@ -80,13 +67,6 @@ public class SimulatedAnnealing extends SolutionSolver {
 			//reduction de la temperature
 			t = t * alpha;
 		}
-		System.out.println("nbIter : " + counter);
-		System.out.println("value changes : " + valueChange);
-		System.out.println("avalueNeg : " + avalueNeg);
-		System.out.println("	- nbEnergyeE : " + nbEnergyE);
-		System.out.println("	- nbCapacityE : " + nbCapacityE);
-		System.out.println("	- nbWeighE : " + nbWeighE);
-		System.out.println("warehouseStart : " + warehouseStart);
 		return convertListToListOfList(s);
 	}
 	
@@ -126,7 +106,7 @@ public class SimulatedAnnealing extends SolutionSolver {
 		//remove inaccessible clients
 		for(int i = res.size() - 1; i >= 0 ; i -= 2) {
 			double d = pathEnergyCost(Arrays.asList( res.get(i-1), res.get(i), res.get(i-1)));
-			if(d > DRONE_MAX_ENERGY) {
+			if(d > SimulationParameters.DRONE_MAX_ENERGY) {
 				res.remove(i);
 				res.remove(i-1);
 			}
@@ -135,6 +115,8 @@ public class SimulatedAnnealing extends SolutionSolver {
 	}
 	
 	private List<MapPoint> getRandomNeighbor(List<MapPoint> s) {
+		//get a neighbor solution by using a random neighbor function
+		
 		int choice = random.nextInt(3);
 		int idx0 = random.nextInt(s.size());
 		int idx1 = random.nextInt(s.size());
@@ -181,65 +163,4 @@ public class SimulatedAnnealing extends SolutionSolver {
 		}
 		return solution;
 	}
-	
-	/*
-	private <T> int[] getIdx(List<List<T>> s, int id) {
-		//return the coordinates of the i-th element of the 2DList s
-		//by skipping first and last element of each list
-		//example : s = {{0,5,7,0},{0,1,3,0}}
-		//			id = 3
-		//			return : [1,1]
-		
-		int[] idx = {0, 0};
-		int currentId = 0;
-		for(List<T> e : s) {
-			if(currentId + e.size() - 2 > id) {//-2 to ignore first and last elem
-				idx[1] = id - currentId + 1; 	//+1 because we skip the first elem
-				return idx; //id founded
-			}
-			currentId += e.size() - 2;//-2 to ignore first and last elem
-			idx[0]++;
-		}
-		
-		//not found
-		idx[0] = idx[1] = -1;
-		return idx;
-	}*/
-	
-	///////////////////////test area///////////////////////
-	
-	public void printSolution2d(List<List<MapPoint>> s) {
-		int i = 0;
-		int j = 0;
-		System.out.print("{");
-		for(List<MapPoint> l : s) {
-			j = 0;
-			System.out.print(((i != 0)? "," : "") + "{");
-			for(MapPoint e : l) {
-				System.out.print(((j != 0)? "," : "") + 
-						((e.getType() == MapPointType.WAREHOUSE)?
-								"W" : ("[" + e.getScaledX() + ";" + e.getScaledY() + "]"))
-						);
-				j++;
-			}
-			System.out.print("}");
-			i++;
-		}
-		System.out.println("}");
-	}
-	
-	public void printSolution(List<MapPoint> s) {
-		int i = 0;
-		int j = 0;
-		System.out.print("{");
-		for(MapPoint e : s) {
-			System.out.print(((j != 0)? "," : "") + 
-					((e.getType() == MapPointType.WAREHOUSE)?
-							"W" : ("[" + e.getScaledX() + ";" + e.getScaledY() + "]"))
-					);
-			j++;
-		}
-		System.out.println("}");
-	}
-
 }

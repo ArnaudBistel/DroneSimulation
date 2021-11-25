@@ -3,6 +3,7 @@ package solutionSolver;
 import map.MapPoint;
 import map.MapPointType;
 import map.SimulationMap;
+import utils.variables.SimulationParameters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,6 @@ public abstract class SolutionSolver {
 	
 	protected SimulationMap map;
 	protected Random random;
-	
-	protected static final double DRONE_MAX_ENERGY = 1628;
 
 	protected static int nbWeighE;
 	protected static int nbCapacityE;
@@ -83,7 +82,7 @@ public abstract class SolutionSolver {
 		//TODO : replace with global constants
 		int nbMaxPackages = 3;
 		double maxWeight = 5;
-		double maxEnergy = DRONE_MAX_ENERGY;
+		double maxEnergy = SimulationParameters.DRONE_MAX_ENERGY;
 		double coef = 1;
 		
 		double cost = 0;
@@ -138,7 +137,7 @@ public abstract class SolutionSolver {
 		//TODO : replace with global constants
 		int nbMaxPackages = 3;
 		double maxWeight = 5;
-		double maxEnergy = DRONE_MAX_ENERGY;
+		double maxEnergy = SimulationParameters.DRONE_MAX_ENERGY;
 		
 		double cost = 0;
 		double currentWeight = 0;
