@@ -21,8 +21,19 @@ public class FakeSimulationMap extends SimulationMap {
 		super(nbClients, nbWarehouse);
 		this.nbClients = nbClients;
 		this.nbWarehouse = nbWarehouse;
-		this.width = 1020;
-		this.height = 791;
+		this.width = 50;
+		this.height = 50;
+		clientList = new ArrayList<MapPoint>();
+		warehouseList = new ArrayList<MapPoint>();
+		fakeGenerateMap();
+	}
+	
+	public FakeSimulationMap(int nbClients, int nbWarehouse, int width, int height) {
+		super(nbClients, nbWarehouse);
+		this.nbClients = nbClients;
+		this.nbWarehouse = nbWarehouse;
+		this.width = width;
+		this.height = height;
 		clientList = new ArrayList<MapPoint>();
 		warehouseList = new ArrayList<MapPoint>();
 		fakeGenerateMap();

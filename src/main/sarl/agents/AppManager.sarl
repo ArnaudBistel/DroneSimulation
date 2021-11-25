@@ -18,6 +18,7 @@ import java.util.List
 import map.MapPoint
 import map.MapPointType
 import java.util.Arrays
+import java.text.DecimalFormat
 
 /** 
  * @author arnaud
@@ -37,7 +38,27 @@ agent AppManager {
 		spawnInContext(1, Drone, defaultContext, droneBody)
 		var t  : Point2i = new Point2i(0, 0)
 		
-		map = new FakeSimulationMap(10,1) //10 Clients + 1 Warehouse
+		map = new FakeSimulationMap(100,1,50,50); //10 Clients + 1 Warehouse
+		
+		
+		var startTime = System.nanoTime();
+		var sim = new SimulatedAnnealing(map);
+		var df = new DecimalFormat("0.00")
+		var initCost = SolutionSolver.solutionCost(sim.convertListToListOfList(sim.initialSolution))
+		info("initial cost : " + df.format(initCost));
+		//sim.printSolution(sim.initialSolution)
+		var solution = sim.Solve(500,0.05,0.9999,10)
+		//sim.printSolution2d(solution)
+		var finalCost = SolutionSolver.solutionCost(solution) 
+		info("final cost : " + df.format(finalCost));
+		info("improve : " + df.format((initCost - finalCost)))
+		
+		var clts = new ArrayList<MapPoint>(map.clients);
+		for(e : solution)
+			clts.removeAll(e);
+		info("clients ignored : " + clts.size)
+		var stopTime = System.nanoTime();
+		info("exec (ms) : " + ((stopTime - startTime) / 1000000))
 	}
 
 	on Destroy {
