@@ -65,7 +65,7 @@ agent AppManager {
 			map = new SimulationMap(15, 2) // 10 Clients + 1 Warehouse
 			for (wh : this.map.getWarehouses()) {
 				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 50, 50)
-				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, 10, this.controller)
+				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, 1, this.controller)
 				controller.addBody(warehouseBody, "WAREHOUSE")
 				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
 			}
@@ -73,7 +73,10 @@ agent AppManager {
 			
 			
 		 	//test Simulated annealing
+		 	//SimulatedAnnealingAnalyser.test(map);
 		 	SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_output");
+			
+			
 		}
 	}
 
