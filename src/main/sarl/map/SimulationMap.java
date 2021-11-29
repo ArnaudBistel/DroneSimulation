@@ -12,25 +12,38 @@ public class SimulationMap {
 
 	int nbClients, nbWarehouse, width, height;
 	List<MapPoint> clientList, warehouseList;
+	Random random;
 	
 	Graph graph;
 	
 	public SimulationMap(int nbClients, int nbWarehouse) {
-		this(nbClients, nbWarehouse, 1020, 791);
+		this(nbClients, nbWarehouse, 1020, 791, 0);
+	}
+	
+	public SimulationMap(int nbClients, int nbWarehouse, int seed) {
+		this(nbClients, nbWarehouse, 1020, 791, seed);
 	}
 	
 	public SimulationMap(int nbClients, int nbWarehouse, int width, int height) {
+		this(nbClients, nbWarehouse, width, height, 0);
+	}
+	
+	public SimulationMap(int nbClients, int nbWarehouse, int width, int height, int seed) {
 		this.nbClients = nbClients;
 		this.nbWarehouse = nbWarehouse;
 		this.width = width;
 		this.height = height;
 		this.clientList = new ArrayList<MapPoint>();
 		this.warehouseList = new ArrayList<MapPoint>();
+		if(seed == 0) {
+			random = new Random();
+		} else {
+			random = new Random(seed);
+		}
 		generateMap();
 	}
 	
 	public void generateMap() {
-		Random random = new Random();
 		int x, y, packageWeight;
 		for(int i = 0;i<this.nbWarehouse;i++) {
 			x = random.nextInt(this.width);
