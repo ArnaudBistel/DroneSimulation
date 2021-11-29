@@ -1,0 +1,36 @@
+package agents
+
+import gui.DroneBody
+import java.util.UUID
+import gui.Body
+import java.util.List
+
+event NewDrone {
+	var droneBody : DroneBody
+	new (drone : DroneBody) {
+		this.droneBody = drone
+	}
+	
+}
+
+event DronePerception {
+	var id : UUID
+	var perceived : List<Body>
+	var step : int
+
+	new (id : UUID, perceived : List<Body>, step : int) {
+		this.id = id
+		this.perceived = perceived
+		this.step = step
+	}
+
+}
+
+event ActionEvent {
+	var action : Action
+
+	new (action : Action) {
+		this.action = action
+	}
+
+}

@@ -1,0 +1,48 @@
+package gui
+
+import java.util.UUID
+
+/** 
+ * @author arnaud
+ * 
+ */
+class DroneBody extends Body{
+	var velocity : Integer = -3
+	var warehouseId : UUID
+
+	new (x : int, y : int, h : int, w : int, warehouseId : UUID) {
+		super(x, y, h, w, PathEnum.DRONE_LOADED.getPath)
+		this.warehouseId = warehouseId
+	}
+	
+	def move() {
+		if (this.position.x >= 1020 || this.position.x <= 0) {
+			this.velocity = this.velocity * -1 as Integer
+		}
+		this.position.x = this.position.x + this.velocity
+	}
+
+	def move(x : int, y : int) {
+		this.position.x = x
+		this.position.y = y
+	}
+	
+	def switchStateView(state : DroneState){
+		switch(state) {
+			case DroneState.DRONE_LOADED :
+				setImage(PathEnum.DRONE_EMPTY.getPath)
+				
+			case DroneState.DRONE_EMPTY :
+				setImage(PathEnum.DRONE_EMPTY.getPath)
+		}		
+	}
+	
+	def getVelocity() : Integer{
+		return this.velocity
+	}
+
+	def switchVelocity() : Integer {
+		this.velocity = this.velocity * -1
+	}
+
+}

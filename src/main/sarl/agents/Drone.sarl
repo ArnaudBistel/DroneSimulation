@@ -1,0 +1,114 @@
+package agents
+
+import io.sarl.core.AgentKilled
+import io.sarl.core.AgentSpawned
+import io.sarl.core.ContextJoined
+import io.sarl.core.ContextLeft
+import io.sarl.core.Destroy
+import io.sarl.core.Initialize
+import io.sarl.core.Logging
+import io.sarl.core.MemberJoined
+import io.sarl.core.MemberLeft
+import io.sarl.core.ParticipantJoined
+import io.sarl.core.ParticipantLeft
+import io.sarl.core.SpaceCreated
+import io.sarl.core.SpaceDestroyed
+import gui.DroneBody
+import gui.WarehouseBody
+import io.sarl.core.Lifecycle
+import io.sarl.core.Schedules
+import io.sarl.core.DefaultContextInteractions
+
+/** 
+ * @author arnaud
+ * 
+ */
+agent Drone {
+	uses Logging, Lifecycle, Schedules, DefaultContextInteractions
+
+	var body : DroneBody
+	var warehouseBody : WarehouseBody
+
+	on Initialize {
+		synchronized (this) {
+		
+			// Event trigger before the agent begin to live or to be used.
+			// You should put all the initialization statements in this block of code.
+			info("The agent Drone was started : " + this.getID)
+			this.body = occurrence.parameters.get(0) as DroneBody
+			this.warehouseBody = occurrence.parameters.get(1) as WarehouseBody
+			
+		}	
+	}
+	
+	on DronePerception {
+		synchronized (this) {
+			if (this.body.position.x >= 1020 || this.body.position.x <= 0) {
+				this.body.switchVelocity
+			}
+			var x = this.body.position.x + this.body.velocity	
+			if (this.body.position.y >= 790 || this.body.position.y <= 0) {
+				this.body.switchVelocity
+			}
+			var y = this.body.position.y + this.body.velocity	
+			var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
+			var actionEvent = new ActionEvent(action)
+			emit(actionEvent)	
+		}
+	}
+
+	on Destroy {
+		// Event trigger when the agent is destroyed from the system.
+		// You should put all the resource releasing statements in this block of code.
+		info("The agent Drone was stopped.")
+	}
+
+	on AgentSpawned {
+		// A new agent has been spawned in our context.
+	}
+
+	on AgentKilled {
+		// A new agent has been killed in our context.
+	}
+
+	on ContextJoined {
+		// Event trigger when an agent of the level joins a shared context.
+		// Sent to a agent of the same level.
+	}
+
+	on ContextLeft {
+		// Event trigger when an agent of the level jleaves a shared context.
+		// Sent to a agent of the same level.
+	}
+
+	on MemberJoined {
+		// Event trigger when an agent joins one of our shared super-holons.
+		// Sent to all members of the considered super-holon.
+	}
+
+	on MemberLeft {
+		// Event trigger when an agent leaves one of our shared super-holons.
+		// Sent to all members of the considered super-holon.
+	}
+
+	on MemberLeft {
+		// Event trigger when an agent leaves one of our shared super-holons.
+		// Sent to all members of the considered super-holon.
+	}
+
+	on SpaceCreated {
+		// Event trigger when a space is created into one of the contexts where the agent is.
+	}
+
+	on SpaceDestroyed {
+		// Event trigger when a space is destroyed from one of the contexts where the agent is.
+	}
+
+	on ParticipantJoined {
+		// Event trigger when a participant has joined a space.
+	}
+
+	on ParticipantLeft {
+		// Event trigger when a participant has left a space.
+	}
+}

@@ -1,0 +1,105 @@
+package controller
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Button
+import java.util.concurrent.atomic.AtomicBoolean
+import io.sarl.javafx.FxViewerController
+import javafx.scene.canvas.Canvas
+import javafx.animation.AnimationTimer
+import agents.AppManager
+import gui.Body
+import gui.DroneBody
+import gui.WarehouseBody
+import gui.Body
+
+import java.util.UUID
+import java.util.Map
+import java.util.TreeMap
+import gui.MainApp
+
+class MainWindowController extends FxViewerController {
+	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
+	var droneBodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
+	var warehouseBodies : Map<UUID, WarehouseBody> = new TreeMap<UUID, WarehouseBody>
+
+	var mainApp : MainApp;
+	@FXML
+	var startButton : Button
+	val started = new AtomicBoolean
+	var width : Integer
+	var height : Integer
+	
+	
+	@FXML
+	var drawZone : Canvas
+	
+	
+	@Pure
+	def setMainApp(mainApp : MainApp ) {
+		this.mainApp = mainApp;
+		this.width = drawZone.width as Integer;
+		this.height = drawZone.height as Integer;
+	}
+
+	/* 
+	def initialize {
+	
+		if (!started.getAndSet(true)) {			
+			startAgentApplication(typeof(HelloAgent)) [
+				//
+			]
+		}
+	 * }
+	 */
+	 
+	@FXML
+	def startAgent {
+		this.startButton.setVisible(false);
+		if (!started.getAndSet(true)) {
+			startAgentApplication(typeof(AppManager)) [
+			]
+			this.startSimulation();
+		}
+	}
+
+	def addBody(body : Body, type : String) {
+		this.bodies.put(body.getId, body)
+		
+		if (type.equals("DRONE")){
+			this.droneBodies.put(body.getId, body as DroneBody)
+		} else if (type.equals("WAREHOUSE")) {
+			this.warehouseBodies.put(body.getId, body as WarehouseBody)
+		}
+	}
+
+	def startSimulation() {
+	       	var timer = new AnimationTimer() {
+            @Override
+            def handle(now : long) {
+				var lastUpdate = 0l;
+				if (now - lastUpdate >= 28_000_000) {
+					update();
+					lastUpdate = now;
+				}
+			}
+        };
+        timer.start();
+	}
+
+	def update() {
+		val gc = drawZone.graphicsContext2D
+		gc.clearRect(0, 0, drawZone.width, drawZone.height)
+		for (b : this.bodies.values()) {
+			gc.drawImage(b.image, b.position.x, b.position.y);
+		}   
+	}
+
+	def getHeight() {
+		return this.height;
+	}
+
+	def getWidth() {
+		return this.width;
+	}
+
+}

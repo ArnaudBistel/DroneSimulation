@@ -1,0 +1,120 @@
+package agents
+
+import io.sarl.core.AgentKilled
+import io.sarl.core.AgentSpawned
+import io.sarl.core.ContextJoined
+import io.sarl.core.ContextLeft
+import io.sarl.core.Destroy
+import io.sarl.core.Initialize
+import io.sarl.core.Logging
+import io.sarl.core.MemberJoined
+import io.sarl.core.MemberLeft
+import io.sarl.core.ParticipantJoined
+import io.sarl.core.ParticipantLeft
+import io.sarl.core.SpaceCreated
+import io.sarl.core.SpaceDestroyed
+import io.sarl.core.DefaultContextInteractions
+import io.sarl.core.Lifecycle
+import io.sarl.core.Schedules
+
+import controller.MainWindowController
+
+import gui.WarehouseBody
+import java.util.Random
+import gui.DroneBody
+
+/** 
+ * @author arnaud
+ * 
+ */
+agent Warehouse {
+	uses Logging, Lifecycle, DefaultContextInteractions, Schedules
+
+	var warehouseBody : WarehouseBody
+	var droneNb : Integer
+	var random : Random
+	var controller : MainWindowController
+
+	on Initialize {
+		synchronized (this) {
+		
+			// Event trigger before the agent begin to live or to be used.
+			// You should put all the initialization statements in this block of code.
+			//info("The agent Warehouse was started.")
+	
+			this.warehouseBody = occurrence.parameters.get(0) as WarehouseBody
+			this.droneNb = occurrence.parameters.get(1) as Integer
+			this.controller = occurrence.parameters.get(2) as MainWindowController
+			var x : int
+			var y : int
+			this.random = new Random
+	
+			for (i : 0 .. this.droneNb-1) {
+	
+				x = (this.random.nextInt(400))
+				y = (this.random.nextInt(400))
+				var droneBody = new DroneBody(x, y, 30, 30, this.getID)
+				this.warehouseBody.addDrone(droneBody)
+				spawnInContextWithID(Drone, droneBody.id, defaultContext, droneBody, this.warehouseBody)
+				var newDroneEvent = new NewDrone(droneBody)
+				emit(newDroneEvent)
+			}
+		}
+	}
+
+
+	on Destroy {
+		// Event trigger when the agent is destroyed from the system.
+		// You should put all the resource releasing statements in this block of code.
+		info("The agent Warehouse was stopped.")
+	}
+
+	on AgentSpawned {
+		// A new agent has been spawned in our context.
+	}
+
+	on AgentKilled {
+		// A new agent has been killed in our context.
+	}
+
+	on ContextJoined {
+		// Event trigger when an agent of the level joins a shared context.
+		// Sent to a agent of the same level.
+	}
+
+	on ContextLeft {
+		// Event trigger when an agent of the level jleaves a shared context.
+		// Sent to a agent of the same level.
+	}
+
+	on MemberJoined {
+		// Event trigger when an agent joins one of our shared super-holons.
+		// Sent to all members of the considered super-holon.
+	}
+
+	on MemberLeft {
+		// Event trigger when an agent leaves one of our shared super-holons.
+		// Sent to all members of the considered super-holon.
+	}
+
+	on MemberLeft {
+		// Event trigger when an agent leaves one of our shared super-holons.
+		// Sent to all members of the considered super-holon.
+	}
+
+	on SpaceCreated {
+		// Event trigger when a space is created into one of the contexts where the agent is.
+	}
+
+	on SpaceDestroyed {
+		// Event trigger when a space is destroyed from one of the contexts where the agent is.
+	}
+
+	on ParticipantJoined {
+		// Event trigger when a participant has joined a space.
+	}
+
+	on ParticipantLeft {
+		// Event trigger when a participant has left a space.
+	}
+}
