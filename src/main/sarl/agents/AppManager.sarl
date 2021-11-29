@@ -20,8 +20,15 @@ import java.util.UUID
 import org.arakhne.afc.math.geometry.d2.i.Point2i
 import java.util.ArrayList
 import java.util.List
+import map.MapPoint
+import map.MapPointType
+import java.util.Arrays
+import java.text.DecimalFormat
 import java.util.Map
 import java.util.TreeMap
+import solutionSolver.simulatedAnnealing.SimulatedAnnealing
+import solutionSolver.SolutionSolver
+import solutionSolver.simulatedAnnealing.SimulatedAnnealingAnalyser
 
 /** 
  * @author arnaud
@@ -55,14 +62,21 @@ agent AppManager {
 			this.controller = occurrence.parameters.get(0) as MainWindowController
 			this.width = this.controller.width as Integer
 			this.height = this.controller.height as Integer
-			map = new SimulationMap(15, 4) // 10 Clients + 1 Warehouse
+			map = new SimulationMap(15, 2) // 10 Clients + 1 Warehouse
 			for (wh : this.map.getWarehouses()) {
 				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 50, 50)
-				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, 10, this.controller)
+				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, 1, this.controller)
 				controller.addBody(warehouseBody, "WAREHOUSE")
 				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
 			}
 			every(this.stepTime)[newStep]
+			
+			
+		 	//test Simulated annealing
+		 	//SimulatedAnnealingAnalyser.test(map);
+		 	SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_output");
+			
+			
 		}
 	}
 
