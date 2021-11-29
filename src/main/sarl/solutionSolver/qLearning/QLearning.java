@@ -1,4 +1,4 @@
-package solutionSolver.qLearning;
+/*package solutionSolver.qLearning;
 
 import map.SimulationMap;
 
@@ -98,4 +98,5 @@ public class QLearning extends SolutionSolver {
 	private int nbTotalState(SimulationMap map) {
 		return map.getWidth()*map.getHeight();
 	}
-}
+
+}*/

@@ -74,7 +74,7 @@ agent AppManager {
 			
 		 	//test Simulated annealing
 		 	//SimulatedAnnealingAnalyser.test(map);
-		 	SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_output");
+		 	//SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_outputs");
 			
 			
 		}
