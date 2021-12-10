@@ -29,6 +29,8 @@ import java.util.TreeMap
 import solutionSolver.simulatedAnnealing.SimulatedAnnealing
 import solutionSolver.SolutionSolver
 import solutionSolver.simulatedAnnealing.SimulatedAnnealingAnalyser
+import gui.Client
+import java.util.Random
 
 /** 
  * @author arnaud
@@ -54,12 +56,15 @@ agent AppManager {
 	var droneList : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
 	var warehouseList : Map<UUID, WarehouseBody> = new TreeMap<UUID, WarehouseBody>
 	var objectsList : Map<UUID, Body> = new TreeMap<UUID, Body>
+	var random : Random
 
 	on Initialize {
 		synchronized (this) {
 			this.controller = occurrence.parameters.get(0) as MainWindowController
 			this.width = this.controller.width as Integer
 			this.height = this.controller.height as Integer
+			this.random = new Random
+			
 			map = new SimulationMap(15, 2) // 10 Clients + 1 Warehouse
 			for (wh : this.map.getWarehouses()) {
 				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 50, 50)
@@ -67,6 +72,10 @@ agent AppManager {
 				controller.addBody(warehouseBody, "WAREHOUSE")
 				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
 			}
+			for (cl : this.map.getClients()) {
+				var client = new Client(cl)
+				controller.addClient(client)
+			}			
 			every(this.stepTime)[newStep]
 
 			// test Simulated annealing
@@ -100,6 +109,13 @@ agent AppManager {
 				var eventPerception = new DronePerception(e.key, e.value, this.stepCounter)
 				emit(eventPerception)[it.getID == e.key]
 			}
+			
+			// test livraison
+			if (this.stepCounter % 100 == 0) {
+				var rd = this.random.nextInt(this.controller.clients.size)
+				this.controller.clients.get(rd).delivered = true
+			}
+			
 			this.stepCounter++
 		}
 	}

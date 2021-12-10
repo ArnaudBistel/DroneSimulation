@@ -16,12 +16,16 @@ import java.util.UUID
 import java.util.Map
 import java.util.TreeMap
 import gui.MainApp
+import gui.Client
+import java.util.List
+import java.util.ArrayList
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
 	var droneBodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
 	var warehouseBodies : Map<UUID, WarehouseBody> = new TreeMap<UUID, WarehouseBody>
-
+	var clients : List<Client> = new ArrayList<Client>()
+	
 	var mainApp : MainApp;
 	@FXML
 	var startButton : Button
@@ -62,6 +66,10 @@ class MainWindowController extends FxViewerController {
 		}
 	}
 
+	def addClient(client : Client) {
+		this.clients.add(client)
+	}
+
 	def addBody(body : Body, type : String) {
 		this.bodies.put(body.getId, body)
 		
@@ -91,7 +99,11 @@ class MainWindowController extends FxViewerController {
 		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		for (b : this.bodies.values()) {
 			gc.drawImage(b.image, b.position.x, b.position.y);
-		}   
+		}
+		for (c : this.clients) {
+			c.drawItself(gc);
+
+		}		
 	}
 
 	def getHeight() {
@@ -100,6 +112,10 @@ class MainWindowController extends FxViewerController {
 
 	def getWidth() {
 		return this.width;
+	}
+	
+	def getClients() : List<Client>{
+		return this.clients;
 	}
 
 }
