@@ -65,10 +65,14 @@ agent AppManager {
 			this.height = this.controller.height as Integer
 			this.random = new Random
 			
-			map = new SimulationMap(15, 2) // 10 Clients + 1 Warehouse
+			var nbDrones = this.controller.nbDronesInput
+			var nbEntrepots = this.controller.nbEntrepotsInput
+			var nbClients = this.controller.nbClientsInput
+			
+			map = new SimulationMap(nbClients, nbEntrepots)
 			for (wh : this.map.getWarehouses()) {
 				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 50, 50)
-				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, 1, this.controller)
+				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, nbDrones, this.controller)
 				controller.addBody(warehouseBody, "WAREHOUSE")
 				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
 			}

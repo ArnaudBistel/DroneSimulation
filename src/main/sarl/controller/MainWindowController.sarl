@@ -19,6 +19,7 @@ import gui.MainApp
 import gui.Client
 import java.util.List
 import java.util.ArrayList
+import javafx.scene.control.TextField
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -30,13 +31,23 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	var startButton : Button
 	val started = new AtomicBoolean
+	var startedBool = false
+	
 	var width : Integer
 	var height : Integer
 	
 	
 	@FXML
 	var drawZone : Canvas
+
+	@FXML
+	var nbDronesTextField : TextField
 	
+	@FXML
+	var nbEntrepotsTextField : TextField
+	
+	@FXML
+	var nbClientsTextField : TextField
 	
 	@Pure
 	def setMainApp(mainApp : MainApp ) {
@@ -58,12 +69,23 @@ class MainWindowController extends FxViewerController {
 	 
 	@FXML
 	def startAgent {
-		this.startButton.setVisible(false);
+		// lance la simulation
 		if (!started.getAndSet(true)) {
+			this.startButton.setText("Stop");
+			
+			// récupérer les inputs de réglages			
+			
 			startAgentApplication(typeof(AppManager)) [
 			]
 			this.startSimulation();
+			
+		// arrete la simulation
+		} else if (started.getAndSet(false)){
+			this.startButton.setText("Start");
+			// enlever cette ligne quand arret et début de l'app seront en place
+			this.startButton.setDisable(true)
 		}
+
 	}
 
 	def addClient(client : Client) {
@@ -116,6 +138,28 @@ class MainWindowController extends FxViewerController {
 	
 	def getClients() : List<Client>{
 		return this.clients;
+	}
+
+	def getNbDronesInput() : int {
+		return checkNumbers(this.nbDronesTextField.text)
+	}
+
+	def getNbEntrepotsInput() : int {
+		return checkNumbers(this.nbEntrepotsTextField.text)
+	}
+	
+	def getNbClientsInput() : int {
+		return checkNumbers(this.nbClientsTextField.text)
+	}
+	
+	def checkNumbers(text : String) : int {
+		var temp : int
+		try {
+			temp = Integer.parseInt(text);
+		} catch (ex : NumberFormatException) {
+			temp = 1
+		} 
+		return temp
 	}
 
 }
