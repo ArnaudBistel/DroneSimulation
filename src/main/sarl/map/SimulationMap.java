@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import solutionSolver.SolutionSolver;
 import utils.graph.Graph;
 import utils.graph.Vertex;
+import utils.variables.SimulationParameters;
 
 public class SimulationMap {
 
@@ -52,10 +54,19 @@ public class SimulationMap {
 			//System.out.println("Warehouse #" + i + " : " + x + "-" + y);
 		}
 		for(int i = 0;i<this.nbClients;i++) {
-			x = random.nextInt(this.width);
-			y = random.nextInt(this.height);
-			packageWeight = random.nextInt(4) + 1;
-			this.clientList.add(new MapPoint(x, y, MapPointType.CLIENT, Arrays.asList(packageWeight)));
+			MapPoint tmp_client = null;
+			boolean cond = false;
+			while(!cond) 
+			{
+				x = random.nextInt(this.width);
+				y = random.nextInt(this.height);
+				packageWeight = random.nextInt(4) + 1;
+				tmp_client = new MapPoint(x, y, MapPointType.CLIENT, Arrays.asList(packageWeight));
+				MapPoint closest_warehouse = SolutionSolver.getClosestWharehouse(tmp_client, this);
+				cond = SolutionSolver.isValidPath(Arrays.asList(closest_warehouse, tmp_client, closest_warehouse));
+			}
+			
+			this.clientList.add(tmp_client);
 			//System.out.println("Client #" + i + " : " + x + "-" + y + " --- Package Weight : " + packageWeight);
 		}
 		generateGraph();

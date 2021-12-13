@@ -232,6 +232,6 @@ public abstract class SolutionSolver {
 	}
 	
 	public static boolean isValidPath(List<MapPoint> deliveryOrder) {
-		return pathEnergyCost(deliveryOrder) < 814*2;
+		return pathEnergyCost(deliveryOrder) <= SimulationParameters.DRONE_MAX_ENERGY;
 	}
 }
