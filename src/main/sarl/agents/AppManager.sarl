@@ -6,6 +6,7 @@ import io.sarl.core.Initialize
 import io.sarl.core.Lifecycle
 import io.sarl.core.Logging
 import io.sarl.core.Schedules
+import io.sarl.javafx.AppExit
 
 import gui.DroneBody
 import gui.WarehouseBody
@@ -150,7 +151,9 @@ agent AppManager {
 		}
 	}
 
-	on Destroy {
+	on AppExit {
+		info("App is exiting")
+		killMe
 	}
 
 }

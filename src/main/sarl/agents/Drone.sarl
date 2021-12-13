@@ -18,6 +18,7 @@ import gui.WarehouseBody
 import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
 import io.sarl.core.DefaultContextInteractions
+import io.sarl.javafx.AppExit
 
 /** 
  * @author arnaud
@@ -57,10 +58,9 @@ agent Drone {
 		}
 	}
 
-	on Destroy {
-		// Event trigger when the agent is destroyed from the system.
-		// You should put all the resource releasing statements in this block of code.
-		info("The agent Drone was stopped.")
+	on AppExit {
+		info("The agent Drone is stopping.")
+		killMe
 	}
 
 	on AgentSpawned {

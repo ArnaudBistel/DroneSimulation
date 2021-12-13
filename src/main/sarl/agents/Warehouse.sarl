@@ -16,6 +16,7 @@ import io.sarl.core.SpaceDestroyed
 import io.sarl.core.DefaultContextInteractions
 import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
+import io.sarl.javafx.AppExit
 
 import controller.MainWindowController
 
@@ -63,10 +64,9 @@ agent Warehouse {
 	}
 
 
-	on Destroy {
-		// Event trigger when the agent is destroyed from the system.
-		// You should put all the resource releasing statements in this block of code.
-		info("The agent Warehouse was stopped.")
+	on AppExit {
+		info("The agent Warehouse is stopping.")
+		killMe
 	}
 
 	on AgentSpawned {

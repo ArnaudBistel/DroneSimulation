@@ -4,31 +4,45 @@ import java.io.IOException;
 import controller.MainWindowController;
 import controller.RootLayoutController;
 import controller.StatisticsController;
-import javafx.application.Application;
+import io.sarl.javafx.FxApplication;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javafx.fxml.JavaFXBuilderFactory;
+
 
 /** 
  * @author arnaud
  * 
  */
-public class MainApp extends Application {
+public class MainApp extends FxApplication {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
 
     @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
+    protected FXMLLoader doApplicationStart(Stage stage) {
+
+    	this.primaryStage = stage;
         this.primaryStage.setTitle("Drone Simulation");
 
         initRootLayout();
 
-        loadAndDisplayUI();
+        FXMLLoader loader = loadAndDisplayUI();
+        /*stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        	@Override
+        	public void handle(WindowEvent event) {
+        		
+        	}
+        	
+        });*/
+        
+        return loader;
     }
     
     /**
@@ -37,24 +51,29 @@ public class MainApp extends Application {
     public void initRootLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
+            loader.setBuilderFactory(new JavaFXBuilderFactory());
             loader.setLocation(MainApp.class.getResource("/resources/fxml/RootLayout.fxml"));
             rootLayout = (BorderPane) loader.load();
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
+            primaryStage.setHeight(600);
+            primaryStage.setWidth(800);
             
             RootLayoutController controller = loader.getController();
             controller.setMainApp(this);
             
+            
             primaryStage.show();
+            
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Shows the main window inside the root layout.
      */
-    public void loadAndDisplayUI() {
+    public FXMLLoader loadAndDisplayUI() {
         try {
         	FXMLLoader loader = new FXMLLoader();
         	loader.setLocation(MainApp.class.getResource("/resources/fxml/MainWindow.fxml"));
@@ -65,8 +84,10 @@ public class MainApp extends Application {
             MainWindowController controller = loader.getController();
             controller.setMainApp(this);
             
+            return loader;
+            
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
     
@@ -100,6 +121,11 @@ public class MainApp extends Application {
 	 */
 	public Stage getPrimaryStage() {
 		return primaryStage;
+	}
+	
+	public void stop() {
+		super.stop();
+		System.out.println("App is stopping");
 	}
 
 }
