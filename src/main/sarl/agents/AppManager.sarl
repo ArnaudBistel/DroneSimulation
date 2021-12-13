@@ -71,7 +71,7 @@ agent AppManager {
 			
 			map = new SimulationMap(nbClients, nbEntrepots)
 			for (wh : this.map.getWarehouses()) {
-				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 50, 50)
+				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30)
 				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, nbDrones, this.controller)
 				controller.addBody(warehouseBody, "WAREHOUSE")
 				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)

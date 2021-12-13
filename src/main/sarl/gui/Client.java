@@ -16,7 +16,7 @@ public class Client extends Circle{
 		this.mapPoint = mapPoint;
 		this.setCenterX(this.mapPoint.getPosition().getX());
 		this.setCenterY(this.mapPoint.getPosition().getY());
-		this.setRadius(20);
+		this.setRadius(10);
 		this.setFill(Color.RED);
 	}
 	

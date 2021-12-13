@@ -53,7 +53,7 @@ agent Warehouse {
 	
 				x = (this.random.nextInt(400))
 				y = (this.random.nextInt(400))
-				var droneBody = new DroneBody(x, y, 30, 30, this.getID)
+				var droneBody = new DroneBody(x, y, 20, 20, this.getID)
 				this.warehouseBody.addDrone(droneBody)
 				spawnInContextWithID(Drone, droneBody.id, defaultContext, droneBody, this.warehouseBody)
 				var newDroneEvent = new NewDrone(droneBody)
