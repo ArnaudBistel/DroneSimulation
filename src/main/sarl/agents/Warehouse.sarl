@@ -26,6 +26,7 @@ import gui.DroneBody
 import java.util.ArrayList
 import java.util.List
 import map.MapPoint
+import java.util.Iterator
 
 /** 
  * @author arnaud
@@ -69,7 +70,12 @@ agent Warehouse {
 
 	on SendDeliveryList {
 		this.deliveryList = occurrence.deliveryList
-		//info("test"+this.deliveryList)
+		// info(this.deliveryList)
+		var emptyDelivery = new ArrayList<List<MapPoint>>
+		for (var i = 0; i < deliveryList.size(); i++) {
+			if(deliveryList.get(i).size() <= 2) emptyDelivery.add(deliveryList.get(i));
+		}
+		this.deliveryList.removeAll(emptyDelivery)
 	}
 
 	on AppExit {
