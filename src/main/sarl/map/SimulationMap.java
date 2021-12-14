@@ -19,11 +19,11 @@ public class SimulationMap {
 	Graph graph;
 	
 	public SimulationMap(int nbClients, int nbWarehouse) {
-		this(nbClients, nbWarehouse, 1020, 791, 0);
+		this(nbClients, nbWarehouse, SimulationParameters.mapWidth, SimulationParameters.mapHeight, 0);
 	}
 	
 	public SimulationMap(int nbClients, int nbWarehouse, int seed) {
-		this(nbClients, nbWarehouse, 1020, 791, seed);
+		this(nbClients, nbWarehouse, SimulationParameters.mapWidth, SimulationParameters.mapHeight, seed);
 	}
 	
 	public SimulationMap(int nbClients, int nbWarehouse, int width, int height) {

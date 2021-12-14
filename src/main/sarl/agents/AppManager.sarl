@@ -32,6 +32,8 @@ import solutionSolver.SolutionSolver
 import solutionSolver.simulatedAnnealing.SimulatedAnnealingAnalyser
 import gui.Client
 import java.util.Random
+import utils.variables.SimulationParameters
+import java.util.HashSet
 
 /** 
  * @author arnaud
@@ -41,6 +43,10 @@ agent AppManager {
 	uses Logging, Lifecycle, DefaultContextInteractions, Schedules
 
 	var map : SimulationMap
+	var perceptionMap : ArrayList<ArrayList<Body>>
+	var nbRowCell = 0
+	var nbColCell = 0
+	var nbCell = 0
 
 	var stepTime = 30
 	var stepCounter = 0
@@ -65,6 +71,16 @@ agent AppManager {
 			this.width = this.controller.width as Integer
 			this.height = this.controller.height as Integer
 			this.random = new Random
+			
+			this.perceptionMap = new ArrayList<ArrayList<Body>>
+			this.nbRowCell = Math.ceil(this.height as Double / SimulationParameters.perceptionMapCellSize) as Integer
+			this.nbColCell = Math.ceil(this.width as Double / SimulationParameters.perceptionMapCellSize) as Integer
+			this.nbCell = this.nbRowCell * this.nbColCell
+			for (var i = 0 ; i < this.nbCell; i++){
+				var tmp = new ArrayList<Body>
+				this.perceptionMap.add(tmp)
+			}
+			
 			
 			var nbDrones = this.controller.nbDronesInput
 			var nbEntrepots = this.controller.nbEntrepotsInput
@@ -94,6 +110,12 @@ agent AppManager {
 		synchronized (this) {
 			this.controller.addBody(occurrence.droneBody, "DRONE")
 			this.droneList.put(occurrence.droneBody.getId, occurrence.droneBody as DroneBody)
+			var body = occurrence.droneBody as DroneBody
+			var rowCell = Math.floor(body.position.y / SimulationParameters.perceptionMapCellSize) as Integer
+			var colCell = Math.floor(body.position.x / SimulationParameters.perceptionMapCellSize) as Integer
+			var index = rowCell * this.nbColCell + colCell
+			body.perceptionMapCellIndex = index
+			this.perceptionMap.get(index).add(body)			
 		}
 	}
 
@@ -130,7 +152,29 @@ agent AppManager {
 			if (action.type == ActionType.MOVE) {
 				var params = action.params as MoveActionParams
 				var dronebody = this.droneList.get(params.droneId)
-				dronebody.move(params.x, params.y)
+				var x = params.x
+				var y = params.y
+				if (x<0){
+					x = 0	
+				}
+				if (x>= this.width){
+					x = this.width -1
+				}
+				if (y < 0){
+					y = 0
+				}
+				if (y >= this.height){
+					y = this.height - 1 
+				}
+				dronebody.move(x, y)
+				var rowCell = Math.floor(dronebody.position.y / SimulationParameters.perceptionMapCellSize) as Integer
+				var colCell = Math.floor(dronebody.position.x / SimulationParameters.perceptionMapCellSize) as Integer
+				var index = rowCell * this.nbColCell + colCell
+				if (dronebody.perceptionMapCellIndex != index){
+					this.perceptionMap.get(dronebody.perceptionMapCellIndex).remove(dronebody)
+					this.perceptionMap.get(index).add(dronebody)
+					dronebody.perceptionMapCellIndex = index
+				}			
 			}
 		}
 	}
@@ -140,11 +184,50 @@ agent AppManager {
 			var ret = new TreeMap<UUID, List<Body>>
 			for (body : this.droneList.entrySet) {
 				var perceived = new ArrayList<Body>
-				for (perceivedObject : this.droneList.values) {
-					if (perceivedObject.id != body.value.id) {
-						perceived.add(perceivedObject as Body)
-					}
+				var cellIndex = body.value.perceptionMapCellIndex
+				var perceivedIndexes = new HashSet<Integer>
+				perceivedIndexes.add(cellIndex)
+				var leftCol = Arrays.asList(cellIndex - 1,
+						cellIndex - this.nbColCell - 1,
+						cellIndex + this.nbColCell - 1) 
+				var rightCol = Arrays.asList(cellIndex +1,
+						cellIndex - this.nbColCell +1,
+						cellIndex + this.nbColCell + 1)
+				var topRow = Arrays.asList(cellIndex - this.nbColCell,
+						cellIndex - this.nbColCell + 1,
+						cellIndex - this.nbColCell - 1)
+				var bottomRow = Arrays.asList(cellIndex + this.nbColCell,
+						cellIndex + this.nbColCell + 1,
+						cellIndex + this.nbColCell - 1)
+				perceivedIndexes.addAll(leftCol)
+				perceivedIndexes.addAll(rightCol)
+				perceivedIndexes.addAll(topRow)
+				perceivedIndexes.addAll(bottomRow)
+				//info("X : " + body.value.position.x + " -- Y : " + body.value.position.y + " ----  Cell Index : " + cellIndex)
+				if (cellIndex < this.nbColCell){
+					perceivedIndexes.removeAll(topRow)
+						// info("Remove Top Row")
+				
 				}
+				if (cellIndex >= this.nbCell - this.nbColCell){
+					perceivedIndexes.removeAll(bottomRow)
+						// info("Remove Bottom Row")
+					
+				}
+				if (cellIndex % this.nbColCell == 0){
+					perceivedIndexes.removeAll(leftCol)
+						// info("Remove Left Col")
+				}
+				if (cellIndex % this.nbColCell == this.nbColCell - 1){
+					perceivedIndexes.removeAll(rightCol)
+						// info("Remove Right Col")
+				}
+				// info(perceivedIndexes.size)
+				for (index : perceivedIndexes) {
+					perceived.addAll(this.perceptionMap.get(index))
+				}
+				perceived.remove(body.value)
+				info(perceived.size)
 				ret.put(body.key, perceived)
 			}
 			return ret

@@ -56,8 +56,8 @@ public class MainApp extends FxApplication {
             rootLayout = (BorderPane) loader.load();
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
-            primaryStage.setHeight(600);
-            primaryStage.setWidth(800);
+            primaryStage.setHeight(900);
+            primaryStage.setWidth(1540);
             
             RootLayoutController controller = loader.getController();
             controller.setMainApp(this);

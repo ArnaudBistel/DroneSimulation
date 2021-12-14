@@ -15,6 +15,7 @@ class Body {
 	var width : int
 	var image : Image
 	var imageView : ImageView
+	var perceptionMapCellIndex : int
 	
 	new(x : int, y : int, height : int, width : int, imagePath : String) {
 		this(x, y, UUID.randomUUID(), height, width, imagePath)
@@ -27,6 +28,7 @@ class Body {
 		this.width = width
 		this.image = new Image(imagePath, this.height, this.width, true, true)
 		this.imageView = new ImageView(this.image)
+		this.perceptionMapCellIndex = -1
 	}
 
 	def getId() : UUID {
@@ -62,5 +64,12 @@ class Body {
 		this.imageView = new ImageView(this.image)
 	}
 
+	def getPerceptionMapCellIndex(){
+		return this.perceptionMapCellIndex	
+	}
+	
+	def setPerceptionMapCellIndex(index : int){
+		this.perceptionMapCellIndex = index
+	}
 }
 
