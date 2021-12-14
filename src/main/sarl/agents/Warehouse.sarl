@@ -23,6 +23,9 @@ import controller.MainWindowController
 import gui.WarehouseBody
 import java.util.Random
 import gui.DroneBody
+import java.util.ArrayList
+import java.util.List
+import map.MapPoint
 
 /** 
  * @author arnaud
@@ -35,6 +38,7 @@ agent Warehouse {
 	var droneNb : Integer
 	var random : Random
 	var controller : MainWindowController
+	var deliveryList : ArrayList<List<MapPoint>>
 
 	on Initialize {
 		synchronized (this) {
@@ -63,6 +67,10 @@ agent Warehouse {
 		}
 	}
 
+	on SendDeliveryList {
+		this.deliveryList = occurrence.deliveryList
+		//info("test"+this.deliveryList)
+	}
 
 	on AppExit {
 		info("The agent Warehouse is stopping.")

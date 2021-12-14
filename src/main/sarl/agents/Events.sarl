@@ -4,6 +4,8 @@ import gui.DroneBody
 import java.util.UUID
 import gui.Body
 import java.util.List
+import map.MapPoint
+import java.util.ArrayList
 
 event NewDrone {
 	var droneBody : DroneBody
@@ -33,4 +35,12 @@ event ActionEvent {
 		this.action = action
 	}
 
+}
+
+event SendDeliveryList {
+	var deliveryList : ArrayList<List<MapPoint>>
+
+	new (deliveryList : ArrayList<List<MapPoint>>) {
+		this.deliveryList = deliveryList
+	}
 }
