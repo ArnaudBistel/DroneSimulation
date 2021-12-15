@@ -34,6 +34,7 @@ import gui.Client
 import java.util.Random
 import utils.variables.SimulationParameters
 import java.util.HashSet
+import java.util.Set
 
 /** 
  * @author arnaud
@@ -161,7 +162,14 @@ agent AppManager {
 
 	def newStep : void {
 		synchronized (this) {
-			if  (this.controller.started) {			
+			if (this.controller.started) {
+				// TODO send to warehouse the order to assign roads
+				for (wh : warehouseList.keySet()) {
+					var warehouseBody = warehouseList.get(wh)
+					var pathAssignment = new DronePathAssignment()
+					emit(pathAssignment)[it.getID == warehouseBody.id]
+		        }
+				
 				applyActions(actionList, this.stepCounter)
 				actionList.clear
 	
@@ -245,7 +253,7 @@ agent AppManager {
 				perceivedIndexes.addAll(rightCol)
 				perceivedIndexes.addAll(topRow)
 				perceivedIndexes.addAll(bottomRow)
-				//info("X : " + body.value.position.x + " -- Y : " + body.value.position.y + " ----  Cell Index : " + cellIndex)
+				//info("X : " + body.value.positixon.x + " -- Y : " + body.value.position.y + " ----  Cell Index : " + cellIndex)
 				if (cellIndex < this.nbColCell){
 					perceivedIndexes.removeAll(topRow)
 						// info("Remove Top Row")

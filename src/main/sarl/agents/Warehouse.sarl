@@ -54,12 +54,11 @@ agent Warehouse {
 			this.controller = occurrence.parameters.get(2) as MainWindowController
 			var x : int
 			var y : int
-			this.random = new Random
 	
 			for (i : 0 .. this.droneNb-1) {
 	
-				x = (this.random.nextInt(400))
-				y = (this.random.nextInt(400))
+				x = this.warehouseBody.getPosition().getX().intValue()
+				y = this.warehouseBody.getPosition().getY().intValue()
 				var droneBody = new DroneBody(x, y, 20, 20, this.getID)
 				this.warehouseBody.addDrone(droneBody)
 				spawnInContextWithID(Drone, droneBody.id, defaultContext, droneBody, this.warehouseBody)
@@ -70,13 +69,26 @@ agent Warehouse {
 	}
 
 	on SendDeliveryList {
-		this.deliveryList = occurrence.deliveryList
-		// info(this.deliveryList)
-		var emptyDelivery = new ArrayList<List<MapPoint>>
-		for (var i = 0; i < deliveryList.size(); i++) {
-			if(deliveryList.get(i).size() <= 2) emptyDelivery.add(deliveryList.get(i));
+		synchronized (this) {
+			this.deliveryList = occurrence.deliveryList
+			// info(this.deliveryList)
+			var emptyDelivery = new ArrayList<List<MapPoint>>
+			for (var i = 0; i < deliveryList.size(); i++) {
+				if(deliveryList.get(i).size() <= 2) emptyDelivery.add(deliveryList.get(i));
+			}
+			this.deliveryList.removeAll(emptyDelivery)
 		}
-		this.deliveryList.removeAll(emptyDelivery)
+	}
+	
+	on DronePathAssignment {
+		synchronized (this) {
+			// parcourt drones
+			for (drone : warehouseBody.droneBodies.keySet()) {
+				
+			}
+			// envoie à drone un chemin
+			// drone va s'auto-envoyer l'action move
+		}
 	}
 
 	on AppExit {

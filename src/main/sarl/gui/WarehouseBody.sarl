@@ -20,4 +20,8 @@ class WarehouseBody extends Body {
 	def addDrone(drone : DroneBody){
 		this.droneBodies.put(drone.getId, drone)
 	}
+	
+	def getDroneBodies() {
+		return droneBodies
+	}
 }

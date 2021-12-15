@@ -52,9 +52,9 @@ agent Drone {
 				this.body.switchVelocity
 			}
 			var y = this.body.position.y + this.body.velocity	
-			var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
+			/*var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
 			var actionEvent = new ActionEvent(action)
-			emit(actionEvent)	
+			emit(actionEvent)*/	
 		}
 	}
 
