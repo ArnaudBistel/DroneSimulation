@@ -45,7 +45,7 @@ public class RootLayoutController {
      */
     @FXML
     private void handleShowStatistics() {
-      mainApp.showStatistics();
+    	mainApp.showStatistics();
     }
     
 }

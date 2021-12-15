@@ -8,19 +8,19 @@
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu mnemonicParsing="false" text="Fichier">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Close" />
+              <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Fermer" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Statistics">
+          <Menu mnemonicParsing="false" text="Résultats de tests">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleShowStatistics" text="Show" />
+              <MenuItem mnemonicParsing="false" onAction="#handleShowStatistics" text="Voir" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Help">
+          <Menu mnemonicParsing="false" text="A propos">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About" />
+              <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="Read me" />
             </items>
           </Menu>
         </menus>

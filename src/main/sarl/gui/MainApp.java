@@ -1,6 +1,7 @@
 package gui;
 import java.io.IOException;
 
+
 import controller.MainWindowController;
 import controller.RootLayoutController;
 import controller.StatisticsController;
@@ -14,7 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.fxml.JavaFXBuilderFactory;
-
+import javafx.application.Platform;
 
 /** 
  * @author arnaud
@@ -24,7 +25,7 @@ public class MainApp extends FxApplication {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
-
+    private MainWindowController mainWindowController;
     @Override
     protected FXMLLoader doApplicationStart(Stage stage) {
 
@@ -56,9 +57,10 @@ public class MainApp extends FxApplication {
             rootLayout = (BorderPane) loader.load();
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
+            /*
             primaryStage.setHeight(900);
             primaryStage.setWidth(1540);
-            
+            */
             RootLayoutController controller = loader.getController();
             controller.setMainApp(this);
             
@@ -81,8 +83,8 @@ public class MainApp extends FxApplication {
         	
         	rootLayout.setCenter(mainApp);
             
-            MainWindowController controller = loader.getController();
-            controller.setMainApp(this);
+        	mainWindowController  = loader.getController();
+        	mainWindowController.setMainApp(this);
             
             return loader;
             
@@ -95,24 +97,50 @@ public class MainApp extends FxApplication {
      * Opens a dialog to show statistics.
      */
     public void showStatistics() {
+    	if (!mainWindowController.getStarted()) {
+    		mainWindowController.startAgent();
+    		if (mainWindowController.getSimulation()) {
+        		this.openResultsWindow();
+    		}
+    	} else {
+    		this.openResultsWindow();       		
+    	}
+    }
+    
+    
+    public void openResultsWindow() {
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("/resources/fxml/Statistics.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Statistics");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(page);
-            dialogStage.setScene(scene);
-
-            StatisticsController controller = loader.getController();
-
-            dialogStage.show();
-
+    		FXMLLoader loader = new FXMLLoader();
+    		loader.setLocation(MainApp.class.getResource("/resources/fxml/Statistics.fxml"));
+    		AnchorPane page = (AnchorPane) loader.load();
+    		Stage dialogStage = new Stage();
+    		dialogStage.setTitle("Résultats de tests");
+    		dialogStage.initModality(Modality.WINDOW_MODAL);
+    		dialogStage.initOwner(primaryStage);
+    		Scene scene = new Scene(page);
+    		dialogStage.setScene(scene);
+    		
+    		StatisticsController controller = loader.getController();
+    		
+    		dialogStage.show();
+    		
+    		dialogStage.setOnHiding(new EventHandler<WindowEvent>() {
+    			
+    			@Override
+    			public void handle(WindowEvent event) {
+    				Platform.runLater(new Runnable() {
+    					
+    					@Override
+    					public void run() {
+    						mainWindowController.startAgent();
+    						System.out.println("Results window Closed");
+    					}
+    				});
+    			}
+    		});
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }	
     }
     
 	/**

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
@@ -22,18 +23,39 @@
                                  <children>
                                     <Label styleClass="label-header" text="Réglages">
                                        <VBox.margin>
-                                          <Insets bottom="30.0" />
+                                          <Insets bottom="10.0" />
                                        </VBox.margin>
                                     </Label>
                                     <GridPane>
                                        <children>
-                                          <Label styleClass="label-bright" text="Nb de drones" GridPane.hgrow="ALWAYS" />
-                                          <TextField fx:id="nbDronesTextField" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
-                                          <Label styleClass="label-bright" text="Nb d'entrepôts" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                                          <TextField fx:id="nbEntrepotsTextField" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                                          <Label styleClass="label-bright" text="Nb de clients" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
-                                          <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <TextField fx:id="nbClientsTextField" layoutX="150.0" layoutY="57.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+                                          <RadioButton fx:id="simulationRb" mnemonicParsing="false" selected="true" styleClass="label-bright" text="Simulation" GridPane.vgrow="ALWAYS">
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="simulationRadioButtonGroup" />
+                                             </toggleGroup></RadioButton>
+                                          <RadioButton fx:id="multiTestsRadioButton" mnemonicParsing="false" styleClass="label-bright" text="Tests multiples" toggleGroup="$simulationRadioButtonGroup" GridPane.columnIndex="1" />
+                                          <Label styleClass="label-bright" text="Drone / entrepôtss" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+                                          <TextField fx:id="nbDronesTextField" promptText="ex: 5, 10..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+                                          <Label styleClass="label-bright" text="Nb d'entrepôts" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
+                                          <TextField fx:id="nbEntrepotsTextField" promptText="ex: 1, 3..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
+                                          <Label styleClass="label-bright" text="Nb de clients" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
+                                          <TextField fx:id="nbClientsTextField" layoutX="150.0" layoutY="57.0" promptText="ex: 10, 30..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
+                                          <Label styleClass="label-bright" text="Poids des colis" GridPane.rowIndex="6" />
+                                          <TextField fx:id="poidsColisTextField" promptText="ex: 1-5, 5..." GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                          <Label prefHeight="21.0" prefWidth="234.0" text="Paramètres généraux :" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                                          <RadioButton fx:id="recuitRb" mnemonicParsing="false" selected="true" styleClass="label-bright" text="Recuit simulé" GridPane.rowIndex="9">
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="aiRadioButtonGroup" />
+                                             </toggleGroup>
+                                          </RadioButton>
+                                          <RadioButton fx:id="qlearningRb" mnemonicParsing="false" styleClass="label-bright" text="Q-Learning" toggleGroup="$aiRadioButtonGroup" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                                          <Label layoutX="10.0" layoutY="60.0" prefHeight="21.0" prefWidth="234.0" text="Méthode d'IA :" GridPane.columnSpan="2" GridPane.rowIndex="8" />
+                                          <Label layoutX="10.0" layoutY="300.0" prefHeight="21.0" prefWidth="234.0" text="Paramètres de la méthode d'IA :" GridPane.columnSpan="2" GridPane.rowIndex="11" />
+                                          <TextField fx:id="paramTextField1" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 200..." GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                                          <TextField fx:id="paramTextField2" layoutX="135.0" layoutY="452.0" promptText="ex: 0.9, 3..." GridPane.columnIndex="1" GridPane.rowIndex="13" />
+                                          <TextField fx:id="paramTextField3" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="1" GridPane.rowIndex="14" />
+                                          <Label fx:id="paramLabel1" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="Temp.  initiale" GridPane.rowIndex="12" />
+                                          <Label fx:id="paramLabel2" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Alpha" GridPane.rowIndex="13" />
+                                          <Label fx:id="paramLabel3" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nb itér. par pallier" GridPane.rowIndex="14" />
                                        </children>
                                        <columnConstraints>
                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -51,9 +73,14 @@
                                           <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                     </GridPane>
-                                    <Button fx:id="startButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#startAgent" text="Start" textAlignment="CENTER" />
+                                    <Button fx:id="startButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#startAgent" styleClass="button-start" text="Start" textAlignment="CENTER" />
                                  </children>
                               </VBox>
                            </children>

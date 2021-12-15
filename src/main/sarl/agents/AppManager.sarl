@@ -67,6 +67,7 @@ agent AppManager {
 
 	on Initialize {
 		synchronized (this) {
+			info("AppManager restart")
 			this.controller = occurrence.parameters.get(0) as MainWindowController
 			this.width = this.controller.width as Integer
 			this.height = this.controller.height as Integer
@@ -82,37 +83,55 @@ agent AppManager {
 			}
 			
 			
-			var nbDrones = this.controller.nbDronesInput
-			var nbEntrepots = this.controller.nbEntrepotsInput
-			var nbClients = this.controller.nbClientsInput
+			var parameters = this.controller.parameters
+			// true pour simulation, false pour multitests 
+			var simulation = parameters.get(0) as Boolean
+			// true pour recuit simulé, false pour q-learning 
+			var recuit = parameters.get(1) as Boolean 
+			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+			var nbDrones = parameters.get(2) as List<Float> 
+			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+			var nbEntrepots = parameters.get(3) as List<Float>
+			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+			var nbClients = parameters.get(4) as List<Float>
+			// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
+			var poidsColis = parameters.get(5) as List<Float>
+			// temperature intiale si recuit, alpha si qlearning
+			var param1 = parameters.get(6) as Float
+			// alpha si recuit, gamme si qlearning
+			var param2 = parameters.get(7) as Float
+			// nombre d'itérations par palier si recuit, epsilon si qlearning
+			var param3 = parameters.get(8) as Float
 			
-			map = new SimulationMap(nbClients, nbEntrepots)
+			map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
 
 			var simulatedAnnealing = new SimulatedAnnealing(map);
 			var solution = simulatedAnnealing.Solve();
 			
-			for (wh : this.map.getWarehouses()) {
-				// Get delivery from this warehouse
-				var deliveryList = new ArrayList<List<MapPoint>>
-				for (i : solution) {
-					if (i.get(0).equals(wh)) {
-						deliveryList.add(i)
+			if (simulation) {
+				for (wh : this.map.getWarehouses()) {
+					// Get delivery from this warehouse
+					var deliveryList = new ArrayList<List<MapPoint>>
+					for (i : solution) {
+						if (i.get(0).equals(wh)) {
+							deliveryList.add(i)
+						}
 					}
+					var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30)
+					spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, nbDrones.get(0) as int, this.controller)
+					controller.addBody(warehouseBody, "WAREHOUSE")
+					this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
+					var eventDeliveryList = new SendDeliveryList(deliveryList)
+					info("event : " + eventDeliveryList)
+					emit(eventDeliveryList)[it.getID == warehouseBody.id]
 				}
-				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30)
-				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, nbDrones, this.controller)
-				controller.addBody(warehouseBody, "WAREHOUSE")
-				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
-				var eventDeliveryList = new SendDeliveryList(deliveryList)
-				info("event : " + eventDeliveryList)
-				emit(eventDeliveryList)[it.getID == warehouseBody.id]
+				for (cl : this.map.getClients()) {
+					var client = new Client(cl)
+					controller.addClient(client)
+				}	
+				
+				every(this.stepTime)[newStep]	
 			}
-			for (cl : this.map.getClients()) {
-				var client = new Client(cl)
-				controller.addClient(client)
-			}	
-			
-			every(this.stepTime)[newStep]
 
 			// test Simulated annealing
 			// SimulatedAnnealingAnalyser.test(map);
@@ -142,23 +161,31 @@ agent AppManager {
 
 	def newStep : void {
 		synchronized (this) {
-			applyActions(actionList, this.stepCounter)
-			actionList.clear
-
-			// perception de warehouse ?
-			// On met à jour la perception de chaque agent drone
-			for (e : getDronePerceptions.entrySet) {
-				var eventPerception = new DronePerception(e.key, e.value, this.stepCounter)
-				emit(eventPerception)[it.getID == e.key]
+			if  (this.controller.started) {			
+				applyActions(actionList, this.stepCounter)
+				actionList.clear
+	
+				// perception de warehouse ?
+				// On met à jour la perception de chaque agent drone
+				for (e : getDronePerceptions.entrySet) {
+					var eventPerception = new DronePerception(e.key, e.value, this.stepCounter)
+					emit(eventPerception)[it.getID == e.key]
+				}
+				
+				// test livraison
+				if (this.stepCounter % 100 == 0) {
+					var rd = this.random.nextInt(this.controller.clients.size)
+					this.controller.clients.get(rd).delivered = true
+				}
+				
+				this.stepCounter++
+				
+			} else {
+				emit(new Destroy)
+				
 			}
 			
-			// test livraison
-			if (this.stepCounter % 100 == 0) {
-				var rd = this.random.nextInt(this.controller.clients.size)
-				this.controller.clients.get(rd).delivered = true
-			}
 			
-			this.stepCounter++
 		}
 	}
 
@@ -242,11 +269,17 @@ agent AppManager {
 					perceived.addAll(this.perceptionMap.get(index))
 				}
 				perceived.remove(body.value)
-				info(perceived.size)
+				//info(perceived.size)
 				ret.put(body.key, perceived)
 			}
 			return ret
 		}
+	}
+
+
+	on Destroy {
+		info("AppManager destroy")
+		killMe
 	}
 
 	on AppExit {

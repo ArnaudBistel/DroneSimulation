@@ -2,6 +2,8 @@ package controller
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button
+import javafx.scene.control.ToggleGroup
+import javafx.scene.control.Label
 import java.util.concurrent.atomic.AtomicBoolean
 import io.sarl.javafx.FxViewerController
 import javafx.scene.canvas.Canvas
@@ -21,6 +23,22 @@ import java.util.List
 import java.util.ArrayList
 import javafx.scene.control.TextField
 
+import javafx.scene.control.Toggle
+import javafx.^event.ActionEvent
+import javafx.^event.*
+import javafx.collections.*
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+
+import javafx.collections.*;
+import javafx.stage.Stage;
+import javafx.scene.text.Text.*;
+import javafx.scene.text.*;
+import javafx.beans.value.*;
+
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
 	var droneBodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
@@ -36,32 +54,135 @@ class MainWindowController extends FxViewerController {
 	var width : Integer
 	var height : Integer
 	
-	
 	@FXML
 	var drawZone : Canvas
 
 	@FXML
+	var simulationRadioButtonGroup : ToggleGroup = new ToggleGroup
+	@FXML
+	var multiTestsRadioButton : RadioButton
+	@FXML
 	var nbDronesTextField : TextField
-	
 	@FXML
 	var nbEntrepotsTextField : TextField
-	
 	@FXML
 	var nbClientsTextField : TextField
+	@FXML
+	var poidsColisTextField : TextField
+
+	@FXML
+	var aiRadioButtonGroup : ToggleGroup = new ToggleGroup
+	@FXML
+	var paramTextField1 : TextField
+	@FXML
+	var paramTextField2 : TextField
+	@FXML
+	var paramTextField3 : TextField
+
+	@FXML
+	var paramLabel1 : Label
+	@FXML
+	var paramLabel2 : Label
+	@FXML
+	var paramLabel3 : Label
+	
+	var simulation : Boolean = true
+	var recuit : Boolean = true
+	var parameters : ArrayList = new ArrayList()
 	
 	@Pure
 	def setMainApp(mainApp : MainApp ) {
 		this.mainApp = mainApp;
 		this.width = drawZone.width as Integer;
 		this.height = drawZone.height as Integer;
+		
+		// radio button simulation ou multiple tests listener
+		this.simulationRadioButtonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() 
+        {
+			def changed(ob : ObservableValue<? extends Toggle>, o : Toggle, n:  Toggle)
+            {
+                var rb = simulationRadioButtonGroup.getSelectedToggle() as RadioButton
+  
+                if (rb != null) {
+                    var s = rb.getText();
+                    if (s.equals("Simulation")){
+                    	simulation = true
+                    }else{
+                    	simulation = false
+                    }
+					updateTextFields()                 
+				}
+            }
+        });
+
+		// radiobutton recuit simulé ou q-learning
+		this.aiRadioButtonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			def changed(ob : ObservableValue<? extends Toggle>, o : Toggle, n : Toggle) {
+				var rb = aiRadioButtonGroup.getSelectedToggle() as RadioButton
+				if (rb != null) {
+					var s = rb.getText();
+					if (s.equals("Recuit simulé")) {
+						recuit = true
+                    } else {
+						recuit = false
+					}
+					updateAIParamLabel
+					updateTextFields()
+				}
+			}
+		});
+	}
+	
+	
+	def updateTextFields() {
+	 	if (simulation) {		
+			nbDronesTextField.setPromptText("ex: 5, 10...")
+			nbEntrepotsTextField.setPromptText("ex: 1, 3...")
+			nbClientsTextField.setPromptText("ex: 10, 30...")
+			poidsColisTextField.setPromptText("ex: 1-5, 5...")
+		} else {
+			nbDronesTextField.setPromptText("ex: 5, 2-10...")
+			nbEntrepotsTextField.setPromptText("ex: 1, 1-3...")
+			nbClientsTextField.setPromptText("ex: 10, 10-30...")
+			poidsColisTextField.setPromptText("ex: 5, 0.5-5...")
+		}
+		
+		if (recuit) {
+			// température initiale
+			paramTextField1.setPromptText("ex: 600, 200...")
+			// alpha
+			paramTextField2.setPromptText("ex: 0.9, 3...")
+			// nombre itérations par pallier
+			paramTextField3.setPromptText("ex: 10, 2...")
+
+		} else {
+			// alpha
+			paramTextField1.setPromptText("ex: 0.1, 1...")
+			// gamma
+			paramTextField2.setPromptText("ex: 0.9, 0...")
+			// epsilon
+			paramTextField3.setPromptText("ex: ...")
+		}
+	}
+	
+	def updateAIParamLabel() {
+		if (recuit) {
+			paramLabel1.setText("Temp. initiale")
+			paramLabel2.setText("Alpha")
+			paramLabel3.setText("Itér. par pallier")
+		} else {
+			paramLabel1.setText("Alpha")
+			paramLabel2.setText("Gamma")
+			paramLabel3.setText("Epsilon")			
+		}
 	}
 
 	/* 
-	def initialize {
-	
-		if (!started.getAndSet(true)) {			
+	 * def initialize {
+	 * 
+	 * if (!started.getAndSet(true)) {			
 			startAgentApplication(typeof(HelloAgent)) [
-				//
+	 * //
 			]
 		}
 	 * }
@@ -69,23 +190,73 @@ class MainWindowController extends FxViewerController {
 	 
 	@FXML
 	def startAgent {
-		// lance la simulation
+		createParametersList()
+
+		// start
 		if (!started.getAndSet(true)) {
 			this.startButton.setText("Stop");
-			
-			// récupérer les inputs de réglages			
-			
-			startAgentApplication(typeof(AppManager)) [
-			]
-			this.startSimulation();
-			
-		// arrete la simulation
-		} else if (started.getAndSet(false)){
-			this.startButton.setText("Start");
-			// enlever cette ligne quand arret et début de l'app seront en place
-			this.startButton.setDisable(true)
-		}
+			this.startButton.getStyleClass().add("button-stop");
+			this.startButton.getStyleClass().remove("button-start");
+		
+			startAgentApplication(typeof(AppManager))[]
 
+			// lance la simulation
+			if (simulation) {
+				this.startSimulation();
+			// multi-test
+			} else {
+				mainApp.showStatistics();
+			}	
+
+		// stop
+		} else if (started.getAndSet(false)) {
+			this.bodies.clear
+			this.droneBodies.clear
+			this.warehouseBodies.clear
+			this.clients.clear
+
+			this.startButton.getStyleClass().add("button-start");
+			this.startButton.getStyleClass().remove("button-stop");
+			this.startButton.setText("Start");
+		}
+	}
+
+	def createParametersList() {
+		this.parameters.clear
+		this.parameters.add(simulation)
+		this.parameters.add(recuit)
+		this.parameters.add(createRange(getNbDronesInput))
+		this.parameters.add(createRange(getNbEntrepotsInput))
+		this.parameters.add(createRange(getNbClientsInput))
+		this.parameters.add(createRange(getPoidsColisInput))
+		this.parameters.add(getParam1Input)
+		this.parameters.add(getParam2Input)
+		this.parameters.add(getParam3Input)
+		for (var j = 0; j < this.parameters.size; j++) {
+			System.out.println("this.parameters["+j+"] : " + this.parameters.get(j))
+		}
+	}
+	
+	
+	def createRange(st : String) : List<Float> {
+		var ret : List<Float> = new ArrayList()
+		if (st.contains('-')) {
+    		var nb = ""
+	        for (var i = 0; i < st.length; i++) {
+	        	if (Character.compare(st.charAt(i) as char, '-') != 0) {
+	        		nb += st.charAt(i)          		      		
+	        	} else {
+	        		ret.add(nb as float)
+	        		nb = ""    		
+	        	}
+        		if (i == st.length - 1) {
+	        		ret.add(nb as float)        			
+        		}
+        	}
+		} else {
+			ret.add(checkNumbers(st) as float)
+		}
+		return ret
 	}
 
 	def addClient(client : Client) {
@@ -140,26 +311,58 @@ class MainWindowController extends FxViewerController {
 		return this.clients;
 	}
 
-	def getNbDronesInput() : int {
-		return checkNumbers(this.nbDronesTextField.text)
+	def getNbDronesInput() : String {
+		return this.nbDronesTextField.text
 	}
 
-	def getNbEntrepotsInput() : int {
-		return checkNumbers(this.nbEntrepotsTextField.text)
+	def getNbEntrepotsInput() : String {
+		return this.nbEntrepotsTextField.text
 	}
 	
-	def getNbClientsInput() : int {
-		return checkNumbers(this.nbClientsTextField.text)
+	def getNbClientsInput() : String {
+		return this.nbClientsTextField.text
+	}
+
+	def getPoidsColisInput() : String {
+		return this.poidsColisTextField.text
+	}	
+	
+	def getParam1Input() : float {
+		return checkNumbers(this.paramTextField1.text) as float
 	}
 	
-	def checkNumbers(text : String) : int {
-		var temp : int
+	def getParam2Input() : float {
+		return checkNumbers(this.paramTextField2.text) as float
+	}
+	
+	def getParam3Input() : float {
+		return checkNumbers(this.paramTextField3.text) as float
+	}
+	
+	def checkNumbers(text : String) : float {
+		var ret : float
 		try {
-			temp = Integer.parseInt(text);
+			ret = Float.parseFloat(text);
 		} catch (ex : NumberFormatException) {
-			temp = 1
+			ret = 1
 		} 
-		return temp
+		return ret
+	}
+	
+	def getStarted() : Boolean {
+		return this.started.get()
+	}
+	
+	def getParameters() : ArrayList {
+		return this.parameters
+	}
+	
+	def getMultiTestsRadioButton () : RadioButton {
+		return this.multiTestsRadioButton;
+	}
+
+	def getSimulation() : Boolean {
+		return this.simulation
 	}
 
 }

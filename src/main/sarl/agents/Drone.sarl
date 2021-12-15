@@ -63,6 +63,11 @@ agent Drone {
 		killMe
 	}
 
+	on Destroy {
+		info("Drone destroy")
+		killMe
+	}
+
 	on AgentSpawned {
 		// A new agent has been spawned in our context.
 	}

@@ -44,6 +44,7 @@ agent Warehouse {
 	on Initialize {
 		synchronized (this) {
 		
+
 			// Event trigger before the agent begin to live or to be used.
 			// You should put all the initialization statements in this block of code.
 			//info("The agent Warehouse was started.")
@@ -80,6 +81,11 @@ agent Warehouse {
 
 	on AppExit {
 		info("The agent Warehouse is stopping.")
+		killMe
+	}
+
+	on Destroy {
+		info("Warehouse destroy")
 		killMe
 	}
 
