@@ -7,7 +7,8 @@ import java.util.UUID
  * 
  */
 class DroneBody extends Body{
-	var velocity : Integer = -3
+	var velocityX : double = -3
+	var velocityY : double = -3
 	var warehouseId : UUID
 
 	new (x : int, y : int, h : int, w : int, warehouseId : UUID) {
@@ -17,9 +18,9 @@ class DroneBody extends Body{
 	
 	def move() {
 		if (this.position.x >= 1020 || this.position.x <= 0) {
-			this.velocity = this.velocity * -1 as Integer
+			this.velocityX = this.velocityX * -1 as Integer
 		}
-		this.position.x = this.position.x + this.velocity
+		this.position.x = this.position.x + this.velocityX
 	}
 
 	def move(x : int, y : int) {
@@ -37,12 +38,25 @@ class DroneBody extends Body{
 		}		
 	}
 	
-	def getVelocity() : Integer{
-		return this.velocity
+	def getVelocityX() : double {
+		return this.velocityX
 	}
 
-	def switchVelocity() : Integer {
-		this.velocity = this.velocity * -1
+	def getVelocityY() : double {
+		return this.velocityY
+	}
+
+	def setVelocityX(vX : double) {
+		this.velocityX = vX
+	}
+
+	def setVelocityY(vY : double) {
+		this.velocityY = vY
+	}
+
+	def switchVelocity() : double {
+		this.velocityX = this.velocityX * -1
+		this.velocityY = this.velocityY * -1
 	}
 
 }

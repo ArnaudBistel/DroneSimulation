@@ -52,6 +52,7 @@ agent Warehouse {
 			this.warehouseBody = occurrence.parameters.get(0) as WarehouseBody
 			this.droneNb = occurrence.parameters.get(1) as Integer
 			this.controller = occurrence.parameters.get(2) as MainWindowController
+			this.deliveryList = new ArrayList<List<MapPoint>>
 			var x : int
 			var y : int
 	
@@ -80,13 +81,27 @@ agent Warehouse {
 		}
 	}
 	
-	on DronePathAssignment {
+	on MakeAssignmentPaths {
 		synchronized (this) {
 			// parcourt drones
 			for (drone : warehouseBody.droneBodies.keySet()) {
-				
+				// check si dispo
+				var droneBody = warehouseBody.droneBodies.get(drone)
+				if(warehouseBody.getPosition().getX() == droneBody.getPosition.getX()
+					&& warehouseBody.getPosition().getY() == droneBody.getPosition.getY()
+				) {
+					// envoie path to drone
+					if (deliveryList.size() > 0) {
+						var pathAssignment = new DronePathAssignment(deliveryList.get(0))
+						emit(pathAssignment)[it.getID == droneBody.id]
+						// delete path
+						var emptyDelivery = new ArrayList<List<MapPoint>>
+						emptyDelivery.add(deliveryList.get(0));
+						this.deliveryList.removeAll(emptyDelivery)
+					}
+				}
 			}
-			// envoie à drone un chemin
+			
 			// drone va s'auto-envoyer l'action move
 		}
 	}

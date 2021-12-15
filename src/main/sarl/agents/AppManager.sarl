@@ -166,7 +166,7 @@ agent AppManager {
 				// TODO send to warehouse the order to assign roads
 				for (wh : warehouseList.keySet()) {
 					var warehouseBody = warehouseList.get(wh)
-					var pathAssignment = new DronePathAssignment()
+					var pathAssignment = new MakeAssignmentPaths()
 					emit(pathAssignment)[it.getID == warehouseBody.id]
 		        }
 				

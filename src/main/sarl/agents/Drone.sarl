@@ -19,6 +19,9 @@ import io.sarl.core.Lifecycle
 import io.sarl.core.Schedules
 import io.sarl.core.DefaultContextInteractions
 import io.sarl.javafx.AppExit
+import java.util.List
+import map.MapPoint
+import org.arakhne.afc.math.geometry.d2.i.Point2i
 
 /** 
  * @author arnaud
@@ -29,6 +32,8 @@ agent Drone {
 
 	var body : DroneBody
 	var warehouseBody : WarehouseBody
+	var path : List<MapPoint>
+	var nextDestination : Point2i = null
 
 	on Initialize {
 		synchronized (this) {
@@ -43,18 +48,64 @@ agent Drone {
 	}
 	
 	on DronePerception {
+		// TODO changed that
 		synchronized (this) {
-			if (this.body.position.x >= 1020 || this.body.position.x <= 0) {
-				this.body.switchVelocity
+			// Checking if we arrive to next destination
+			if (this.nextDestination !== null) {
+				if (this.body.position.x == this.nextDestination.getX() &&
+					this.body.position.y == this.nextDestination.getY()
+				) {
+					this.nextDestination = null
+					calcNextDestinationVelocity()
+				} else {
+					info("Je suis en : " + this.body.position.x + " / " + this.body.position.y + " --> Je vais en " +
+						this.nextDestination.getX() + " / " + this.nextDestination.getY())
+					/*if (this.body.position.x >= 1020 || this.body.position.x <= 0) {
+						this.body.switchVelocity
+					}*/
+					var x = this.body.position.x + this.body.velocityX
+					/*if (this.body.position.y >= 790 || this.body.position.y <= 0) {
+						this.body.switchVelocity
+					}*/
+					var y = this.body.position.y + this.body.velocityY
+	
+					var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
+					var actionEvent = new ActionEvent(action)
+					emit(actionEvent)
+				}
 			}
-			var x = this.body.position.x + this.body.velocity	
-			if (this.body.position.y >= 790 || this.body.position.y <= 0) {
-				this.body.switchVelocity
+
+				
+			
+		}
+	}
+	
+	on DronePathAssignment {
+		synchronized (this) {
+			info("coucou")
+			this.path = occurrence.path
+			// Deleting the initial warehouse
+			this.path.remove(0)
+			calcNextDestinationVelocity()
+		}
+	}
+	
+	def calcNextDestinationVelocity() {
+		if (this.path.size() > 0) {
+			this.nextDestination = this.path.remove(0).position
+			var distX = this.nextDestination.getX() - this.body.position.x
+			var distY = this.nextDestination.getY() - this.body.position.y
+			if (Math.abs(distX) >= Math.abs(distY)){
+				var vX = 3
+				if (distX < 0) vX = -3
+				this.body.velocityX = vX
+				this.body.velocityY = (vX * distY) / distX
+			} else {
+				var vY = 3
+				if(distY < 0) vY = -3
+				this.body.velocityX = vY
+				this.body.velocityX = (vY * distX) / distY
 			}
-			var y = this.body.position.y + this.body.velocity	
-			/*var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
-			var actionEvent = new ActionEvent(action)
-			emit(actionEvent)*/	
 		}
 	}
 

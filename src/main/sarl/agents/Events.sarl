@@ -46,5 +46,15 @@ event SendDeliveryList {
 }
 
 event DronePathAssignment {
-	new () {}
+	var path : List<MapPoint>
+
+	new (path : List<MapPoint>) {
+		this.path = path
+	}
 }
+
+event MakeAssignmentPaths {
+	new () {
+	}
+}
+
