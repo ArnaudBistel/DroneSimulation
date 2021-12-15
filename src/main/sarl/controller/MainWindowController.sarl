@@ -149,9 +149,9 @@ class MainWindowController extends FxViewerController {
 		
 		if (recuit) {
 			// température initiale
-			paramTextField1.setPromptText("ex: 600, 200...")
+			paramTextField1.setPromptText("ex: 600, 0.1-500..")
 			// alpha
-			paramTextField2.setPromptText("ex: 0.9, 3...")
+			paramTextField2.setPromptText("ex: 0, 0.9...")
 			// nombre itérations par pallier
 			paramTextField3.setPromptText("ex: 10, 2...")
 
@@ -161,13 +161,13 @@ class MainWindowController extends FxViewerController {
 			// gamma
 			paramTextField2.setPromptText("ex: 0.9, 0...")
 			// epsilon
-			paramTextField3.setPromptText("ex: ...")
+			paramTextField3.setPromptText("ex: 0.1, 1...")
 		}
 	}
 	
 	def updateAIParamLabel() {
 		if (recuit) {
-			paramLabel1.setText("Temp. initiale")
+			paramLabel1.setText("T° initiale/range")
 			paramLabel2.setText("Alpha")
 			paramLabel3.setText("Itér. par pallier")
 		} else {
@@ -229,7 +229,11 @@ class MainWindowController extends FxViewerController {
 		this.parameters.add(createRange(getNbEntrepotsInput))
 		this.parameters.add(createRange(getNbClientsInput))
 		this.parameters.add(createRange(getPoidsColisInput))
-		this.parameters.add(getParam1Input)
+		if (recuit){
+			this.parameters.add(createRange(getParam1Input))
+		} else {		
+			this.parameters.add(getParam1Input)
+		}
 		this.parameters.add(getParam2Input)
 		this.parameters.add(getParam3Input)
 		for (var j = 0; j < this.parameters.size; j++) {
@@ -246,11 +250,19 @@ class MainWindowController extends FxViewerController {
 	        	if (Character.compare(st.charAt(i) as char, '-') != 0) {
 	        		nb += st.charAt(i)          		      		
 	        	} else {
-	        		ret.add(nb as float)
+	        		if (0 >= nb as float) {
+	        			ret.add(1f)
+	        		} else {
+		        		ret.add(checkNumbers(nb) as float)	        			
+	        		}
 	        		nb = ""    		
 	        	}
         		if (i == st.length - 1) {
-	        		ret.add(nb as float)        			
+        			if (ret.get(0) > checkNumbers(nb) as float) {
+		        		ret.add(ret.get(0) + 1)        			
+        			} else {
+		        		ret.add(checkNumbers(nb) as float)      				
+        			}
         		}
         	}
 		} else {
@@ -325,24 +337,54 @@ class MainWindowController extends FxViewerController {
 
 	def getPoidsColisInput() : String {
 		return this.poidsColisTextField.text
-	}	
-	
-	def getParam1Input() : float {
-		return checkNumbers(this.paramTextField1.text) as float
+	}
+
+	def getParam1Input() : String {
+		return this.paramTextField1.text
 	}
 	
+	/* 
+	def getParam1Input() : float {
+		var ret = checkNumbers(this.paramTextField1.text) as float
+		if (recuit) {
+		} else {
+			
+		}
+		return ret
+	 * }
+	 */
+	
 	def getParam2Input() : float {
-		return checkNumbers(this.paramTextField2.text) as float
+		var ret = checkNumbers(this.paramTextField2.text) as float
+		if (recuit){
+			if (ret>=1){
+				ret = 0.9f
+			}
+		} else {
+			
+		}
+		return ret
 	}
 	
 	def getParam3Input() : float {
-		return checkNumbers(this.paramTextField3.text) as float
+		var ret = checkNumbers(this.paramTextField3.text) as float
+		if (recuit) {
+			if (ret < 1){
+				ret = 1
+			}
+		} else {
+			
+		}
+		return ret
 	}
 	
 	def checkNumbers(text : String) : float {
 		var ret : float
 		try {
 			ret = Float.parseFloat(text);
+			if (ret < 0){
+				ret = 0.9f
+			}
 		} catch (ex : NumberFormatException) {
 			ret = 1
 		} 

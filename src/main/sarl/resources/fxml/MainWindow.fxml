@@ -50,10 +50,10 @@
                                           <RadioButton fx:id="qlearningRb" mnemonicParsing="false" styleClass="label-bright" text="Q-Learning" toggleGroup="$aiRadioButtonGroup" GridPane.columnIndex="1" GridPane.rowIndex="9" />
                                           <Label layoutX="10.0" layoutY="60.0" prefHeight="21.0" prefWidth="234.0" text="Méthode d'IA :" GridPane.columnSpan="2" GridPane.rowIndex="8" />
                                           <Label layoutX="10.0" layoutY="300.0" prefHeight="21.0" prefWidth="234.0" text="Paramètres de la méthode d'IA :" GridPane.columnSpan="2" GridPane.rowIndex="11" />
-                                          <TextField fx:id="paramTextField1" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 200..." GridPane.columnIndex="1" GridPane.rowIndex="12" />
-                                          <TextField fx:id="paramTextField2" layoutX="135.0" layoutY="452.0" promptText="ex: 0.9, 3..." GridPane.columnIndex="1" GridPane.rowIndex="13" />
+                                          <TextField fx:id="paramTextField1" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 0.1-500.." GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                                          <TextField fx:id="paramTextField2" layoutX="135.0" layoutY="452.0" promptText="ex: 0, 0.9..." GridPane.columnIndex="1" GridPane.rowIndex="13" />
                                           <TextField fx:id="paramTextField3" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="1" GridPane.rowIndex="14" />
-                                          <Label fx:id="paramLabel1" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="Temp.  initiale" GridPane.rowIndex="12" />
+                                          <Label fx:id="paramLabel1" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="T° initiale/range" GridPane.rowIndex="12" />
                                           <Label fx:id="paramLabel2" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Alpha" GridPane.rowIndex="13" />
                                           <Label fx:id="paramLabel3" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nb itér. par pallier" GridPane.rowIndex="14" />
                                        </children>
