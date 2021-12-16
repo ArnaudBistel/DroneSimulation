@@ -61,9 +61,6 @@ agent Drone {
 					emit(actionEvent)
 					calcNextDestinationVelocity()
 				} else {
-					info("Je suis en : " + this.body.position.x + " / " + this.body.position.y + " --> Je vais en " +
-						this.nextDestination.getX() + " / " + this.nextDestination.getY() + "\n Vélocité : "+this.body.velocityX + " / "+ this.body.velocityY)
-					
 					var x = this.body.posX + this.body.velocityX
 					var y = this.body.posY + this.body.velocityY
 
@@ -109,14 +106,16 @@ agent Drone {
 				if (distX < 0) vX = -3
 				this.body.velocityX = vX
 				this.body.velocityY = (vX * distY) / distX
-				info("Je suis en : " + this.body.position.x + " / " + this.body.position.y + " --> Je vais en " +
-						this.nextDestination.getX() + " / " + this.nextDestination.getY() + "\n Vélocité : "+this.body.velocityX + " / "+ this.body.velocityY)
 			} else {
 				var vY = 3
 				if(distY < 0) vY = -3
 				this.body.velocityY = vY
 				this.body.velocityX = (vY * distX) / distY
 			}
+		} else { // back to warehouse
+			var action = new Action(ActionType.BACK_TO_WAREHOUSE, #[this.body])
+			var actionEvent = new ActionEvent(action)
+			emit(actionEvent)
 		}
 	}
 

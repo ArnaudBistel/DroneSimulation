@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.UUID;
 
 import actionparam.ActionParams;
+import actionparam.BackToWarehouseActionParams;
 import actionparam.DepositActionParams;
 import actionparam.MoveActionParams;
+import gui.DroneBody;
 
 public class Action {
 	
@@ -29,6 +31,10 @@ public class Action {
 				int x2 = (int) params.get(0);
 				int y2 = (int) params.get(1);
 				this.params = new DepositActionParams(x2, y2);
+				break;
+			case BACK_TO_WAREHOUSE :
+				DroneBody droneBody = (DroneBody) params.get(0);
+				this.params = new BackToWarehouseActionParams(droneBody);
 				break;
 		}
 	}

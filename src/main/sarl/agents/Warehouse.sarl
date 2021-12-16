@@ -27,6 +27,8 @@ import java.util.ArrayList
 import java.util.List
 import map.MapPoint
 import java.util.Iterator
+import java.util.UUID
+import actionparam.BackToWarehouseActionParams
 
 /** 
  * @author arnaud
@@ -75,7 +77,10 @@ agent Warehouse {
 			// info(this.deliveryList)
 			var emptyDelivery = new ArrayList<List<MapPoint>>
 			for (var i = 0; i < deliveryList.size(); i++) {
-				if(deliveryList.get(i).size() <= 2) emptyDelivery.add(deliveryList.get(i));
+				if (!deliveryList.get(i).get(0).equals(deliveryList.get(i).get(deliveryList.get(i).size()-1))) {
+					deliveryList.get(i).add(deliveryList.get(i).get(0))
+				}
+				if (deliveryList.get(i).size() <= 2) emptyDelivery.add(deliveryList.get(i));
 			}
 			this.deliveryList.removeAll(emptyDelivery)
 		}
@@ -83,26 +88,42 @@ agent Warehouse {
 	
 	on MakeAssignmentPaths {
 		synchronized (this) {
+			info(this.warehouseBody.droneBodies.size() + " | " + this.deliveryList)
 			// parcourt drones
+			var droneGone = new ArrayList<UUID>
 			for (drone : warehouseBody.droneBodies.keySet()) {
 				// check si dispo
 				var droneBody = warehouseBody.droneBodies.get(drone)
-				if(warehouseBody.getPosition().getX() == droneBody.getPosition.getX()
-					&& warehouseBody.getPosition().getY() == droneBody.getPosition.getY()
-				) {
-					// envoie path to drone
-					if (deliveryList.size() > 0) {
-						var pathAssignment = new DronePathAssignment(deliveryList.get(0))
-						emit(pathAssignment)[it.getID == droneBody.id]
-						// delete path
-						var emptyDelivery = new ArrayList<List<MapPoint>>
-						emptyDelivery.add(deliveryList.get(0));
-						this.deliveryList.removeAll(emptyDelivery)
-					}
+				// envoie path to drone
+				if (deliveryList.size() > 0) {
+					var pathAssignment = new DronePathAssignment(deliveryList.get(0))
+					emit(pathAssignment)[it.getID == droneBody.id]
+					// delete path
+					var emptyDelivery = new ArrayList<List<MapPoint>>
+					emptyDelivery.add(deliveryList.get(0));
+					this.deliveryList.removeAll(emptyDelivery)
+					droneGone.add(drone)
 				}
 			}
-			
+			for (i : droneGone) {
+				warehouseBody.droneBodies.remove(i)
+			}
 			// drone va s'auto-envoyer l'action move
+		}
+	}
+
+	on ActionEvent {
+		synchronized (this) {
+			var action = occurrence.action
+			if (action.type == ActionType.BACK_TO_WAREHOUSE) {
+				var params = action.params as BackToWarehouseActionParams
+				var droneBody = params.droneBody
+				if (warehouseBody.position.getX() == droneBody.position.getX() &&
+					warehouseBody.position.getY() == droneBody.position.getY()) {
+					// TODO
+					this.warehouseBody.addDrone(droneBody)
+				}
+			}
 		}
 	}
 

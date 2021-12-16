@@ -164,7 +164,7 @@ agent AppManager {
 	def newStep : void {
 		synchronized (this) {
 			if (this.controller.started) {
-				// TODO send to warehouse the order to assign roads
+				// send to warehouse the order to assign roads
 				for (wh : warehouseList.keySet()) {
 					var warehouseBody = warehouseList.get(wh)
 					var pathAssignment = new MakeAssignmentPaths()

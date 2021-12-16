@@ -3,7 +3,8 @@ package agents;
 public enum ActionType {
 	NEWDRONE("NEWDRONE"),
 	MOVE("MOVE"),
-	DEPOSIT("DEPOSIT");
+	DEPOSIT("DEPOSIT"),
+	BACK_TO_WAREHOUSE("BACK_TO_WAREHOUSE");
 	
 	private final String type;
 	
