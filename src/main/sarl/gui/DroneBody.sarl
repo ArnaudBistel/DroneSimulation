@@ -9,11 +9,15 @@ import java.util.UUID
 class DroneBody extends Body{
 	var velocityX : double = -3
 	var velocityY : double = -3
+	var posX : double = 0
+	var posY : double = 0
 	var warehouseId : UUID
 
 	new (x : int, y : int, h : int, w : int, warehouseId : UUID) {
 		super(x, y, h, w, PathEnum.DRONE_LOADED.getPath)
 		this.warehouseId = warehouseId
+		this.posX = x as double
+		this.posY = y as double
 	}
 	
 	def move() {
@@ -57,6 +61,22 @@ class DroneBody extends Body{
 	def switchVelocity() : double {
 		this.velocityX = this.velocityX * -1
 		this.velocityY = this.velocityY * -1
+	}
+
+	def getPosX() : double {
+		return this.posX 
+	}
+
+	def getPosY() : double {
+		return this.posY
+	}
+
+	def setPosX(x : double) {
+		this.posX = x
+	}
+
+	def setPosY(y : double) {
+		this.posY = y
 	}
 
 }

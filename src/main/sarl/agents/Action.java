@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import actionparam.ActionParams;
+import actionparam.DepositActionParams;
 import actionparam.MoveActionParams;
 
 public class Action {
@@ -23,6 +24,11 @@ public class Action {
 				int y = (int) params.get(1);
 				UUID droneId = (UUID) params.get(2);
 				this.params = new MoveActionParams(x, y, droneId);
+				break;
+			case DEPOSIT :
+				int x2 = (int) params.get(0);
+				int y2 = (int) params.get(1);
+				this.params = new DepositActionParams(x2, y2);
 				break;
 		}
 	}

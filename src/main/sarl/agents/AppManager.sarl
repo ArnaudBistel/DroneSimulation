@@ -15,6 +15,7 @@ import map.SimulationMap
 import gui.DroneBody
 import gui.WarehouseBody
 import actionparam.MoveActionParams
+import actionparam.DepositActionParams
 import gui.Body
 
 import java.util.UUID
@@ -181,10 +182,10 @@ agent AppManager {
 				}
 				
 				// test livraison
-				if (this.stepCounter % 100 == 0) {
+				/*if (this.stepCounter % 100 == 0) {
 					var rd = this.random.nextInt(this.controller.clients.size)
 					this.controller.clients.get(rd).delivered = true
-				}
+				}*/
 				
 				this.stepCounter++
 				
@@ -225,6 +226,19 @@ agent AppManager {
 					this.perceptionMap.get(index).add(dronebody)
 					dronebody.perceptionMapCellIndex = index
 				}			
+			} else if (action.type == ActionType.DEPOSIT) {
+				var params = action.params as DepositActionParams
+				var x = params.x
+				var y = params.y
+				var client = 0
+				var i = 0
+				for (cl : this.controller.clients) {
+					if (cl.getMapPoint().position.getX() == x && cl.getMapPoint().position.getY() == y) {
+						client = i
+					}		
+					i = i+1		
+				}
+				this.controller.clients.get(client).delivered = true
 			}
 		}
 	}

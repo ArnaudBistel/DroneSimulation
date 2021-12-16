@@ -42,5 +42,9 @@ public class Client extends Circle{
 		gc.stroke();	
 	}
 
+	public MapPoint getMapPoint() {
+		return mapPoint;
+	}
+
 	
 }

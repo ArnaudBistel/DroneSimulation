@@ -56,18 +56,37 @@ agent Drone {
 					this.body.position.y == this.nextDestination.getY()
 				) {
 					this.nextDestination = null
+					var action = new Action(ActionType.DEPOSIT, #[this.body.position.x as Integer, this.body.position.y as Integer])
+					var actionEvent = new ActionEvent(action)
+					emit(actionEvent)
 					calcNextDestinationVelocity()
 				} else {
 					info("Je suis en : " + this.body.position.x + " / " + this.body.position.y + " --> Je vais en " +
-						this.nextDestination.getX() + " / " + this.nextDestination.getY())
-					/*if (this.body.position.x >= 1020 || this.body.position.x <= 0) {
-						this.body.switchVelocity
-					}*/
-					var x = this.body.position.x + this.body.velocityX
-					/*if (this.body.position.y >= 790 || this.body.position.y <= 0) {
-						this.body.switchVelocity
-					}*/
-					var y = this.body.position.y + this.body.velocityY
+						this.nextDestination.getX() + " / " + this.nextDestination.getY() + "\n Vélocité : "+this.body.velocityX + " / "+ this.body.velocityY)
+					
+					var x = this.body.posX + this.body.velocityX
+					var y = this.body.posY + this.body.velocityY
+
+					if (this.body.velocityX > 0 && x > this.nextDestination.getX()) {
+						x = this.nextDestination.getX()
+						if (this.body.posY == this.nextDestination.getY()) y = this.body.posY
+					} 
+					if (this.body.velocityX < 0 && x < this.nextDestination.getX()) {
+						x = this.nextDestination.getX()
+						if (this.body.posY == this.nextDestination.getY()) y = this.body.posY
+					}
+					if (this.body.velocityY < 0 && y < this.nextDestination.getY()) {
+						y = this.nextDestination.getY()
+						if (this.body.posX == this.nextDestination.getX()) x = this.body.posX
+					} 
+					if (this.body.velocityY > 0 && y > this.nextDestination.getY()) {
+						y = this.nextDestination.getY()
+						if (this.body.posX == this.nextDestination.getX()) x = this.body.posX
+					}
+
+
+					this.body.setPosX(x)
+					this.body.setPosY(y)
 	
 					var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
 					var actionEvent = new ActionEvent(action)
@@ -82,7 +101,6 @@ agent Drone {
 	
 	on DronePathAssignment {
 		synchronized (this) {
-			info("coucou")
 			this.path = occurrence.path
 			// Deleting the initial warehouse
 			this.path.remove(0)
@@ -100,10 +118,12 @@ agent Drone {
 				if (distX < 0) vX = -3
 				this.body.velocityX = vX
 				this.body.velocityY = (vX * distY) / distX
+				info("Je suis en : " + this.body.position.x + " / " + this.body.position.y + " --> Je vais en " +
+						this.nextDestination.getX() + " / " + this.nextDestination.getY() + "\n Vélocité : "+this.body.velocityX + " / "+ this.body.velocityY)
 			} else {
 				var vY = 3
 				if(distY < 0) vY = -3
-				this.body.velocityX = vY
+				this.body.velocityY = vY
 				this.body.velocityX = (vY * distX) / distY
 			}
 		}
