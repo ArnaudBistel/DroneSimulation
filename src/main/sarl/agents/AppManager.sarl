@@ -107,8 +107,17 @@ agent AppManager {
 			
 			map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
 
-			var simulatedAnnealing = new SimulatedAnnealing(map);
-			var solution = simulatedAnnealing.Solve();
+			var solution : List<List<MapPoint>>
+
+			if (recuit) {
+				var simulatedAnnealing = new SimulatedAnnealing(map)
+				solution = simulatedAnnealing.Solve()
+			} else {
+				//var qLearning = null
+				//solution = new ArrayList<List<MapPoint>>
+			}
+
+			
 			
 			if (simulation) {
 				for (wh : this.map.getWarehouses()) {
