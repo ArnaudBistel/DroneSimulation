@@ -14,7 +14,7 @@ class DroneBody extends Body{
 	var warehouseId : UUID
 
 	new (x : int, y : int, h : int, w : int, warehouseId : UUID) {
-		super(x, y, h, w, PathEnum.DRONE_LOADED.getPath)
+		super(x, y, h, w, PathEnum.DRONE_EMPTY.getPath)
 		this.warehouseId = warehouseId
 		this.posX = x as double
 		this.posY = y as double

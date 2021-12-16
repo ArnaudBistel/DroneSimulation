@@ -22,6 +22,7 @@ import io.sarl.javafx.AppExit
 import java.util.List
 import map.MapPoint
 import org.arakhne.afc.math.geometry.d2.i.Point2i
+import gui.PathEnum
 
 /** 
  * @author arnaud
@@ -89,6 +90,7 @@ agent Drone {
 	
 	on DronePathAssignment {
 		synchronized (this) {
+			this.body.setImage(PathEnum.DRONE_LOADED.getPath)
 			this.path = occurrence.path
 			// Deleting the initial warehouse
 			this.path.remove(0)
@@ -98,6 +100,9 @@ agent Drone {
 	
 	def calcNextDestinationVelocity() {
 		if (this.path.size() > 0) {
+			if (this.path.size() == 1) {
+				this.body.setImage(PathEnum.DRONE_EMPTY.getPath)
+			}
 			this.nextDestination = this.path.remove(0).position
 			var distX = this.nextDestination.getX() - this.body.position.x
 			var distY = this.nextDestination.getY() - this.body.position.y
