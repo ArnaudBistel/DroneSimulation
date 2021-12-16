@@ -67,21 +67,12 @@ agent Drone {
 					var x = this.body.posX + this.body.velocityX
 					var y = this.body.posY + this.body.velocityY
 
-					if (this.body.velocityX > 0 && x > this.nextDestination.getX()) {
+					var distX = this.nextDestination.getX() - this.body.position.x
+					var distY = this.nextDestination.getY() - this.body.position.y
+
+					if (Math.abs(distX) <= 3 && Math.abs(distY) <= 3) {
 						x = this.nextDestination.getX()
-						if (this.body.posY == this.nextDestination.getY()) y = this.body.posY
-					} 
-					if (this.body.velocityX < 0 && x < this.nextDestination.getX()) {
-						x = this.nextDestination.getX()
-						if (this.body.posY == this.nextDestination.getY()) y = this.body.posY
-					}
-					if (this.body.velocityY < 0 && y < this.nextDestination.getY()) {
 						y = this.nextDestination.getY()
-						if (this.body.posX == this.nextDestination.getX()) x = this.body.posX
-					} 
-					if (this.body.velocityY > 0 && y > this.nextDestination.getY()) {
-						y = this.nextDestination.getY()
-						if (this.body.posX == this.nextDestination.getX()) x = this.body.posX
 					}
 
 
