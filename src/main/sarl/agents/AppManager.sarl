@@ -36,6 +36,8 @@ import java.util.Random
 import utils.variables.SimulationParameters
 import java.util.HashSet
 import java.util.Set
+import solutionSolver.qLearning.QLearningAnalyser
+import solutionSolver.qLearning.QLearning
 
 /** 
  * @author arnaud
@@ -99,7 +101,7 @@ agent AppManager {
 			// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
 			var poidsColis = parameters.get(5) as List<Float>
 			// Temperature intiale ou Range de température si recuit, alpha si qlearning
-			var param1 = parameters.get(6) as List<Float>
+			//var param1 = parameters.get(6) as List<Float>
 			// alpha si recuit, gamme si qlearning
 			var param2 = parameters.get(7) as Float
 			// nombre d'itérations par palier si recuit, epsilon si qlearning
@@ -113,7 +115,8 @@ agent AppManager {
 				var simulatedAnnealing = new SimulatedAnnealing(map)
 				solution = simulatedAnnealing.Solve()
 			} else {
-				//var qLearning = null
+				var QLearning = new QLearning(map)
+				solution = QLearning.Solve()
 				//solution = new ArrayList<List<MapPoint>>
 			}
 
@@ -146,7 +149,10 @@ agent AppManager {
 
 			// test Simulated annealing
 			// SimulatedAnnealingAnalyser.test(map);
-			// SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_outputs");
+			//SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_outputs");
+			
+			//test QLearning
+			//QLearningAnalyser.startQLearningAnalyzing("QLearning_ouputs");
 		}
 	}
 
