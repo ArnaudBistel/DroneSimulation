@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 
 import solutionSolver.SolutionSolver;
 import utils.graph.Graph;
@@ -88,6 +95,51 @@ public class SimulationMap {
 			}
 			//System.out.println("Vertex #" + i + " : " + str);
 		}
+	}
+	
+	public void exportData(String filename) throws IOException {
+		CSVWriter writer = new CSVWriter(new FileWriter(filename));
+		List<String[]> data = new ArrayList<String[]>();
+		data.add(new String[] {String.valueOf(this.nbClients)});
+		
+		data.add(new String[] {String.valueOf(this.nbWarehouse)});
+		for (MapPoint warehouse : this.warehouseList) {
+			data.add(new String[] {String.valueOf(warehouse.getPixelX()), String.valueOf(warehouse.getPixelY())});
+		}
+		for (MapPoint client : this.clientList) {
+			data.add(new String[] {String.valueOf(client.getPixelX()), String.valueOf(client.getPixelY())});
+		}
+		for (MapPoint client : this.clientList) {
+			data.add(new String[] {String.valueOf(client.getPackageWeight())});
+		}
+		writer.writeAll(data);
+		writer.flush();
+		
+	}
+	
+	public void importData (String filename) throws Exception {
+		CSVReader reader = new CSVReader(new FileReader(filename));
+	    List<String[]> list = reader.readAll();
+	    this.nbClients = Integer.valueOf(list.get(0)[0]);
+	    this.nbWarehouse = Integer.valueOf(list.get(1)[0]);
+	    this.warehouseList.clear();
+	    this.clientList.clear();
+	    
+	    int x, y;
+	    for(int i = 2; i<this.nbWarehouse + 2; i++) {
+			x = Integer.valueOf(list.get(i)[0]);
+			y = Integer.valueOf(list.get(i)[1]);
+			this.warehouseList.add(new MapPoint(x, y, MapPointType.WAREHOUSE, null));
+			//System.out.println("Warehouse #" + i + " : " + x + "-" + y);
+		}
+		for(int i = this.nbWarehouse + 2;i<this.nbWarehouse + this.nbClients + 2;i++) {
+			x = Integer.valueOf(list.get(i)[0]);
+			y = Integer.valueOf(list.get(i)[1]);
+			int packageWeight = Integer.valueOf(list.get(i + this.nbClients)[0]);
+			MapPoint tmp_client = new MapPoint(x, y, MapPointType.CLIENT, Arrays.asList(packageWeight));
+			this.clientList.add(tmp_client);
+		}
+		generateGraph();
 	}
 	
 	public Graph getGraph() {

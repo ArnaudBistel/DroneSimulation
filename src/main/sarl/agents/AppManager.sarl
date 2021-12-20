@@ -108,7 +108,8 @@ agent AppManager {
 			var param3 = parameters.get(8) as Float
 			
 			map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
-
+			// map.exportData("Data5.csv")
+			map.importData("Data1.csv")
 			var solution : List<List<MapPoint>>
 
 			if (recuit) {
