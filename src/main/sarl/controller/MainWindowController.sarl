@@ -38,12 +38,14 @@ import javafx.stage.Stage;
 import javafx.scene.text.Text.*;
 import javafx.scene.text.*;
 import javafx.beans.value.*;
+import agents.Restart
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
 	var droneBodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
 	var warehouseBodies : Map<UUID, WarehouseBody> = new TreeMap<UUID, WarehouseBody>
 	var clients : List<Client> = new ArrayList<Client>()
+	var managerId : UUID = null
 	
 	var mainApp : MainApp;
 	@FXML
@@ -197,8 +199,17 @@ class MainWindowController extends FxViewerController {
 			this.startButton.setText("Stop");
 			this.startButton.getStyleClass().add("button-stop");
 			this.startButton.getStyleClass().remove("button-start");
-		
-			startAgentApplication(typeof(AppManager))[]
+			
+			if (managerId === null){
+				System.out.println("create app manager")
+				var id = UUID::randomUUID
+				startAgentApplication(typeof(AppManager), id)[]
+				managerId = id
+			}
+			else {
+				System.out.println("Restart app manager")
+				emitToAgents(new Restart, true)
+			}
 
 			// lance la simulation
 			if (simulation) {

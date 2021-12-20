@@ -132,9 +132,14 @@ agent Warehouse {
 		killMe
 	}
 
+	on Restart {
+		killMe
+	}
+
+
 	on Destroy {
 		info("Warehouse destroy")
-		killMe
+		// killMe
 	}
 
 	on AgentSpawned {

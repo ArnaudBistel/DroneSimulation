@@ -76,87 +76,91 @@ agent AppManager {
 			this.width = this.controller.width as Integer
 			this.height = this.controller.height as Integer
 			this.random = new Random
-			
-			this.perceptionMap = new ArrayList<ArrayList<Body>>
 			this.nbRowCell = Math.ceil(this.height as Double / SimulationParameters.perceptionMapCellSize) as Integer
 			this.nbColCell = Math.ceil(this.width as Double / SimulationParameters.perceptionMapCellSize) as Integer
 			this.nbCell = this.nbRowCell * this.nbColCell
-			for (var i = 0 ; i < this.nbCell; i++){
-				var tmp = new ArrayList<Body>
-				this.perceptionMap.add(tmp)
-			}
 			
 			
-			var parameters = this.controller.parameters
-			// true pour simulation, false pour multitests 
-			var simulation = parameters.get(0) as Boolean
-			// true pour recuit simulé, false pour q-learning 
-			var recuit = parameters.get(1) as Boolean 
-			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-			var nbDrones = parameters.get(2) as List<Float> 
-			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-			var nbEntrepots = parameters.get(3) as List<Float>
-			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-			var nbClients = parameters.get(4) as List<Float>
-			// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
-			var poidsColis = parameters.get(5) as List<Float>
-			// Temperature intiale ou Range de température si recuit, alpha si qlearning
-			//var param1 = parameters.get(6) as List<Float>
-			// alpha si recuit, gamme si qlearning
-			var param2 = parameters.get(7) as Float
-			// nombre d'itérations par palier si recuit, epsilon si qlearning
-			var param3 = parameters.get(8) as Float
-			
-			map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
-			// map.exportData("Data5.csv")
-			map.importData("Data1.csv")
-			var solution : List<List<MapPoint>>
+			startApp
+		}
+	}
+	
+	def startApp {
+		this.perceptionMap = new ArrayList<ArrayList<Body>>
+		
+		for (var i = 0; i < this.nbCell; i++) {
+			var tmp = new ArrayList<Body>
+			this.perceptionMap.add(tmp)
+		}
+
+		var parameters = this.controller.parameters
+		// true pour simulation, false pour multitests
+		var simulation = parameters.get(0) as Boolean
+		// true pour recuit simulé, false pour q-learning
+		var recuit = parameters.get(1) as Boolean
+		// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+		var nbDrones = parameters.get(2) as List<Float>
+		// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+		var nbEntrepots = parameters.get(3) as List<Float>
+		// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+		var nbClients = parameters.get(4) as List<Float>
+		// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
+		var poidsColis = parameters.get(5) as List<Float>
+		// Temperature intiale ou Range de température si recuit, alpha si qlearning
+		// var param1 = parameters.get(6) as List<Float>
+		// alpha si recuit, gamme si qlearning
+		var param2 = parameters.get(7) as Float
+		// nombre d'itérations par palier si recuit, epsilon si qlearning
+		var param3 = parameters.get(8) as Float
+
+		map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
+		// map.exportData("Data5.csv")
+		// map.importData("Data1.csv")
+		var solution : List<List<MapPoint>>
 
 			if (recuit) {
-				var simulatedAnnealing = new SimulatedAnnealing(map)
-				solution = simulatedAnnealing.Solve()
-			} else {
-				var QLearning = new QLearning(map)
-				solution = QLearning.Solve()
-				//solution = new ArrayList<List<MapPoint>>
+			var simulatedAnnealing = new SimulatedAnnealing(map)
+			solution = simulatedAnnealing.Solve()
+		} else {
+			var QLearning = new QLearning(map)
+			solution = QLearning.Solve()
+			// solution = new ArrayList<List<MapPoint>>
 			}
 
 			
 			
 			if (simulation) {
-				for (wh : this.map.getWarehouses()) {
-					// Get delivery from this warehouse
-					var deliveryList = new ArrayList<List<MapPoint>>
-					for (i : solution) {
-						if (i.get(0).equals(wh)) {
-							deliveryList.add(i)
-						}
+			for (wh : this.map.getWarehouses()) {
+				// Get delivery from this warehouse
+				var deliveryList = new ArrayList<List<MapPoint>>
+				for (i : solution) {
+					if (i.get(0).equals(wh)) {
+						deliveryList.add(i)
 					}
-					var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30)
-					spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, nbDrones.get(0) as int, this.controller)
-					controller.addBody(warehouseBody, "WAREHOUSE")
-					this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
-					var eventDeliveryList = new SendDeliveryList(deliveryList)
-					info("event : " + eventDeliveryList)
-					emit(eventDeliveryList)[it.getID == warehouseBody.id]
 				}
-				for (cl : this.map.getClients()) {
-					var client = new Client(cl)
-					controller.addClient(client)
-				}	
-				
-				every(this.stepTime)[newStep]	
+				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30)
+				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, nbDrones.get(0) as int,
+					this.controller)
+				controller.addBody(warehouseBody, "WAREHOUSE")
+				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
+				var eventDeliveryList = new SendDeliveryList(deliveryList)
+				info("event : " + eventDeliveryList)
+				emit(eventDeliveryList)[it.getID == warehouseBody.id]
+			}
+			for (cl : this.map.getClients()) {
+				var client = new Client(cl)
+				controller.addClient(client)
 			}
 
-			// test Simulated annealing
-			// SimulatedAnnealingAnalyser.test(map);
-			//SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_outputs");
-			
-			//test QLearning
-			//QLearningAnalyser.startQLearningAnalyzing("QLearning_ouputs");
+			every(this.stepTime)[newStep]
 		}
-	}
 
+		// test Simulated annealing
+		// SimulatedAnnealingAnalyser.test(map);
+		// SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_outputs");
+		// test QLearning
+		// QLearningAnalyser.startQLearningAnalyzing("QLearning_ouputs");
+	}
 
 	on NewDrone {
 		synchronized (this) {
@@ -206,13 +210,20 @@ agent AppManager {
 				this.stepCounter++
 				
 			} else {
-				emit(new Destroy)
+				/*for (id : warehouseList.keySet){
+					emit(new Restart) [it.UUID == id]
+				}
+				for (id : droneList.keySet) {
+					emit(new Restart)[it.UUID == id]
+				}*/
 				
 			}
 			
 			
 		}
 	}
+
+	
 
 	def applyActions(actionList : List<Action>, step : int) {
 		for (action : actionList) {
@@ -317,12 +328,17 @@ agent AppManager {
 
 	on Destroy {
 		info("AppManager destroy")
-		killMe
+		// killMe
 	}
 
 	on AppExit {
 		info("App is exiting")
 		killMe
+	}
+
+	on Restart {
+		info("Restart App Manager")
+		startApp
 	}
 
 }

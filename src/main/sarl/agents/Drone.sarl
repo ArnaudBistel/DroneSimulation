@@ -129,9 +129,13 @@ agent Drone {
 		killMe
 	}
 
+	on Restart {
+		killMe
+	}
+
 	on Destroy {
 		info("Drone destroy")
-		killMe
+		// killMe
 	}
 
 	on AgentSpawned {
