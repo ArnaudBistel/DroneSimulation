@@ -46,8 +46,8 @@ public class MapPoint {
 		return this.position.getY() / SimulationParameters.mapRatio;
 	}
 	
-	public int getPackageWeight () {
-		return (this.type == MapPointType.CLIENT ? (int) params.get(0) : 0);
+	public float getPackageWeight () {
+		return (this.type == MapPointType.CLIENT ? (float) params.get(0) : 0);
 	}
 	
 }

@@ -76,7 +76,7 @@ agent Drone {
 
 					this.body.setPosX(x)
 					this.body.setPosY(y)
-	
+
 					var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
 					var actionEvent = new ActionEvent(action)
 					emit(actionEvent)
@@ -106,7 +106,11 @@ agent Drone {
 			this.nextDestination = this.path.remove(0).position
 			var distX = this.nextDestination.getX() - this.body.position.x
 			var distY = this.nextDestination.getY() - this.body.position.y
-			if (Math.abs(distX) >= Math.abs(distY)){
+			var totalDist = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2))
+			var totalVelocity = 3.0;
+			this.body.velocityX = totalVelocity * distX / totalDist;
+			this.body.velocityY = totalVelocity * distY / totalDist;
+			/*if (Math.abs(distX) >= Math.abs(distY)){
 				var vX = 3
 				if (distX < 0) vX = -3
 				this.body.velocityX = vX
@@ -116,7 +120,7 @@ agent Drone {
 				if(distY < 0) vY = -3
 				this.body.velocityY = vY
 				this.body.velocityX = (vY * distX) / distY
-			}
+			}*/
 		} else { // back to warehouse
 			var action = new Action(ActionType.BACK_TO_WAREHOUSE, #[this.body])
 			var actionEvent = new ActionEvent(action)

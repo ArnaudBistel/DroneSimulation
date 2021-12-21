@@ -43,7 +43,7 @@ public class Vertex {
 		return this.position;
 	}
 	
-	public int getPackageWeight () {
+	public float getPackageWeight () {
 		return this.point.getPackageWeight();
 	}
 	
