@@ -23,6 +23,7 @@ import java.util.List
 import map.MapPoint
 import org.arakhne.afc.math.geometry.d2.i.Point2i
 import gui.PathEnum
+import map.MapPointType
 
 /** 
  * @author arnaud
@@ -41,10 +42,10 @@ agent Drone {
 		
 			// Event trigger before the agent begin to live or to be used.
 			// You should put all the initialization statements in this block of code.
-			info("The agent Drone was started : " + this.getID)
+			// info("The agent Drone was started : " + this.getID)
 			this.body = occurrence.parameters.get(0) as DroneBody
 			this.warehouseBody = occurrence.parameters.get(1) as WarehouseBody
-			
+			emit(new AgentInitialized(AgentType.DRONE))
 		}	
 	}
 	
@@ -129,7 +130,7 @@ agent Drone {
 	}
 
 	on AppExit {
-		info("The agent Drone is stopping.")
+		//info("The agent Drone is stopping.")
 		killMe
 	}
 
@@ -138,7 +139,7 @@ agent Drone {
 	}
 
 	on Destroy {
-		info("Drone destroy")
+		//info("Drone destroy")
 		// killMe
 	}
 

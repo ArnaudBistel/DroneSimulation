@@ -14,7 +14,7 @@ class WarehouseBody extends Body {
 	
 	new (x : int, y : int, h : int, w : int) {
 		super(x, y, h, w, PathEnum.WAREHOUSE.getPath)
-		System.out.println("New WarehouseBody created")
+		// System.out.println("New WarehouseBody created")
 	}
 	
 	def addDrone(drone : DroneBody){

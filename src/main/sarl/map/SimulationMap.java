@@ -86,7 +86,7 @@ public class SimulationMap {
 			}
 			
 			this.clientList.add(tmp_client);
-			System.out.println("Client #" + i + " : " + x + "-" + y + " --- Package Weight : " + packageWeight);
+			// System.out.println("Client #" + i + " : " + x + "-" + y + " --- Package Weight : " + packageWeight);
 		}
 		generateGraph();
 	}

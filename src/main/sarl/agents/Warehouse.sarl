@@ -46,7 +46,7 @@ agent Warehouse {
 	on Initialize {
 		synchronized (this) {
 		
-
+			info("Agent Warehouse")
 			// Event trigger before the agent begin to live or to be used.
 			// You should put all the initialization statements in this block of code.
 			//info("The agent Warehouse was started.")
@@ -68,6 +68,7 @@ agent Warehouse {
 				var newDroneEvent = new NewDrone(droneBody)
 				emit(newDroneEvent)
 			}
+			emit(new AgentInitialized(AgentType.WAREHOUSE))
 		}
 	}
 
@@ -128,7 +129,7 @@ agent Warehouse {
 	}
 
 	on AppExit {
-		info("The agent Warehouse is stopping.")
+		// info("The agent Warehouse is stopping.")
 		killMe
 	}
 
@@ -138,7 +139,7 @@ agent Warehouse {
 
 
 	on Destroy {
-		info("Warehouse destroy")
+		// info("Warehouse destroy")
 		// killMe
 	}
 

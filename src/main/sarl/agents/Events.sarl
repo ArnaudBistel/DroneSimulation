@@ -6,6 +6,7 @@ import gui.Body
 import java.util.List
 import map.MapPoint
 import java.util.ArrayList
+import map.MapPointType
 
 event NewDrone {
 	var droneBody : DroneBody
@@ -79,3 +80,11 @@ event ExportDataEvent {
 	}
 }
 
+event AgentInitialized {
+	var type : AgentType
+	
+	new (type : AgentType) {
+		this.type = type
+	}
+	
+}
