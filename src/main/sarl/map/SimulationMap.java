@@ -3,11 +3,15 @@ package map;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -53,7 +57,10 @@ public class SimulationMap {
 	}
 	
 	public void generateMap() {
-		int x, y, packageWeight;
+		int x, y;
+		x=0;
+		y=0;
+		float packageWeight = 0;
 		for(int i = 0;i<this.nbWarehouse;i++) {
 			x = random.nextInt(this.width);
 			y = random.nextInt(this.height);
@@ -62,19 +69,24 @@ public class SimulationMap {
 		}
 		for(int i = 0;i<this.nbClients;i++) {
 			MapPoint tmp_client = null;
+			NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+			formatter.setMaximumFractionDigits(1);
+			formatter.setMinimumFractionDigits(1);
+			formatter.setRoundingMode(RoundingMode.HALF_UP);
 			boolean cond = false;
 			while(!cond) 
 			{
 				x = random.nextInt(this.width);
 				y = random.nextInt(this.height);
-				packageWeight = random.nextInt(4) + 1;
+				packageWeight = random.nextFloat() * 5 ;
+				packageWeight = new Float(formatter.format(packageWeight));
 				tmp_client = new MapPoint(x, y, MapPointType.CLIENT, Arrays.asList(packageWeight));
 				MapPoint closest_warehouse = SolutionSolver.getClosestWharehouse(tmp_client, this);
 				cond = SolutionSolver.isValidPath(Arrays.asList(closest_warehouse, tmp_client, closest_warehouse));
 			}
 			
 			this.clientList.add(tmp_client);
-			//System.out.println("Client #" + i + " : " + x + "-" + y + " --- Package Weight : " + packageWeight);
+			System.out.println("Client #" + i + " : " + x + "-" + y + " --- Package Weight : " + packageWeight);
 		}
 		generateGraph();
 	}
@@ -98,6 +110,7 @@ public class SimulationMap {
 	}
 	
 	public void exportData(String filename) throws IOException {
+		System.out.println("Filename export : " + filename);
 		CSVWriter writer = new CSVWriter(new FileWriter(filename));
 		List<String[]> data = new ArrayList<String[]>();
 		data.add(new String[] {String.valueOf(this.nbClients)});
@@ -135,7 +148,7 @@ public class SimulationMap {
 		for(int i = this.nbWarehouse + 2;i<this.nbWarehouse + this.nbClients + 2;i++) {
 			x = Integer.valueOf(list.get(i)[0]);
 			y = Integer.valueOf(list.get(i)[1]);
-			int packageWeight = Integer.valueOf(list.get(i + this.nbClients)[0]);
+			float packageWeight = Float.valueOf(list.get(i + this.nbClients)[0]);
 			MapPoint tmp_client = new MapPoint(x, y, MapPointType.CLIENT, Arrays.asList(packageWeight));
 			this.clientList.add(tmp_client);
 		}

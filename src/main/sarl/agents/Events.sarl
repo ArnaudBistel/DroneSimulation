@@ -64,3 +64,18 @@ event Restart {
 	}
 }
 
+event ImportDataEvent{
+	var filename : String
+	new(name : String) {
+		this.filename = name
+	}
+}
+
+event ExportDataEvent {
+	var filename : String
+
+	new(name : String) {
+		this.filename = name
+	}
+}
+

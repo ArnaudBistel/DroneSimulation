@@ -151,6 +151,10 @@ public class MainApp extends FxApplication {
 		return primaryStage;
 	}
 	
+	public MainWindowController getMainWindowController() {
+		return this.mainWindowController;
+	}
+	
 	public void stop() {
 		super.stop();
 		System.out.println("App is stopping");

@@ -3,7 +3,12 @@ package controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+
+import java.io.File;
+
 import gui.MainApp;
+import javafx.stage.FileChooser;
+
 
 public class RootLayoutController {
 
@@ -46,6 +51,34 @@ public class RootLayoutController {
     @FXML
     private void handleShowStatistics() {
     	mainApp.showStatistics();
+    }
+    
+    @FXML
+    private void handleImport() {
+    	if (mainApp.getMainWindowController().getAppManager() != null) {
+    		System.out.println("Try to import");
+	    	FileChooser fileChooser = new FileChooser();
+	    	fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
+	        fileChooser.setTitle("Import csv file");
+	        File file = fileChooser.showOpenDialog(mainApp.getPrimaryStage());
+	        if (file != null ) {
+	        	mainApp.getMainWindowController().importData(file.getPath());
+	        }
+    	}
+    }
+    
+    @FXML
+    private void handleExport() {
+    	if (mainApp.getMainWindowController().getAppManager() != null) {
+    		System.out.println("Try to export");
+	    	FileChooser fileChooser = new FileChooser();
+	    	fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
+	        fileChooser.setTitle("Export csv file");
+	        File file = fileChooser.showSaveDialog(mainApp.getPrimaryStage());
+	        if (file != null ) {
+	        	mainApp.getMainWindowController().exportData(file.getPath());
+	        }
+    	}
     }
     
 }

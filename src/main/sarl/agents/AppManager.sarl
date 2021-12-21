@@ -54,6 +54,9 @@ agent AppManager {
 
 	var stepTime = 30
 	var stepCounter = 0
+	var stepEnd = -1
+
+	var importFile : String = null
 
 	var controller : MainWindowController
 	var width : Integer
@@ -62,6 +65,7 @@ agent AppManager {
 
 	val warehouseNb = 1
 
+	var solution : List<List<MapPoint>>
 	var actionList = new ArrayList<Action>
 
 	var droneList : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
@@ -73,6 +77,7 @@ agent AppManager {
 		synchronized (this) {
 			info("AppManager restart")
 			this.controller = occurrence.parameters.get(0) as MainWindowController
+			this.controller.appManager = this
 			this.width = this.controller.width as Integer
 			this.height = this.controller.height as Integer
 			this.random = new Random
@@ -107,33 +112,34 @@ agent AppManager {
 		// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
 		var poidsColis = parameters.get(5) as List<Float>
 		// Temperature intiale ou Range de température si recuit, alpha si qlearning
-		// var param1 = parameters.get(6) as List<Float>
+		var param1 = parameters.get(6) as List<Float>
 		// alpha si recuit, gamme si qlearning
 		var param2 = parameters.get(7) as Float
 		// nombre d'itérations par palier si recuit, epsilon si qlearning
 		var param3 = parameters.get(8) as Float
 
-		map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
+		this.map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
 		// map.exportData("Data5.csv")
 		// map.importData("Data1.csv")
-		var solution : List<List<MapPoint>>
 
-			if (recuit) {
+		if (recuit) {
 			var simulatedAnnealing = new SimulatedAnnealing(map)
-			solution = simulatedAnnealing.Solve()
+			this.solution = simulatedAnnealing.Solve()
+
 		} else {
 			var QLearning = new QLearning(map)
-			solution = QLearning.Solve()
+			this.solution = QLearning.Solve()
 			// solution = new ArrayList<List<MapPoint>>
-			}
+		}
 
+		info("Estimated time of solution : " +
+			SolutionSolver.solutionTimeCost(this.solution, nbDrones.get(0) as int * nbEntrepots.get(0) as int))	
 			
-			
-			if (simulation) {
+		if (simulation) {
 			for (wh : this.map.getWarehouses()) {
 				// Get delivery from this warehouse
 				var deliveryList = new ArrayList<List<MapPoint>>
-				for (i : solution) {
+				for (i : this.solution) {
 					if (i.get(0).equals(wh)) {
 						deliveryList.add(i)
 					}
@@ -205,8 +211,19 @@ agent AppManager {
 				/*if (this.stepCounter % 100 == 0) {
 					var rd = this.random.nextInt(this.controller.clients.size)
 					this.controller.clients.get(rd).delivered = true
-				}*/
-				
+				 * }
+				 */
+				var end = true;
+				for ( c : this.controller.clients){
+					if (!c.delivered){
+						end = false
+						break
+					}
+				}
+				if(end && this.stepEnd == -1){
+					this.stepEnd = this.stepCounter
+					info("End of program, total time : " + SolutionSolver.stepNumberToRealTime(this.stepCounter))
+				}
 				this.stepCounter++
 				
 			} else {
@@ -324,7 +341,19 @@ agent AppManager {
 			return ret
 		}
 	}
-
+	
+	def getMap{
+		return this.map
+	}
+	
+	on ExportDataEvent {
+		this.map.exportData(occurrence.filename)
+	}
+	
+	on ImportDataEvent{
+		this.importFile = occurrence.filename
+		
+	}
 
 	on Destroy {
 		info("AppManager destroy")

@@ -10,7 +10,9 @@
         <menus>
           <Menu mnemonicParsing="false" text="Fichier">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Fermer" />
+              <MenuItem mnemonicParsing="false" onAction="#handleImport" text="Importer" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleExport" text="Exporter" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Fermer" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Résultats de tests">

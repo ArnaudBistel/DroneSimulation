@@ -39,6 +39,8 @@ import javafx.scene.text.Text.*;
 import javafx.scene.text.*;
 import javafx.beans.value.*;
 import agents.Restart
+import agents.ExportDataEvent
+import agents.ImportDataEvent
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -46,6 +48,7 @@ class MainWindowController extends FxViewerController {
 	var warehouseBodies : Map<UUID, WarehouseBody> = new TreeMap<UUID, WarehouseBody>
 	var clients : List<Client> = new ArrayList<Client>()
 	var managerId : UUID = null
+	var appManager : AppManager = null
 	
 	var mainApp : MainApp;
 	@FXML
@@ -416,6 +419,23 @@ class MainWindowController extends FxViewerController {
 
 	def getSimulation() : Boolean {
 		return this.simulation
+	}
+	
+	def setAppManager(manager : AppManager){
+		this.appManager = manager
+	}
+	
+	def getAppManager(){
+		return this.appManager
+	}
+
+	def exportData(filename : String) {
+		System.out.println("Send filename : " + filename)
+		emitToAgents(new ExportDataEvent(filename), true)
+	}
+
+	def importData(filename : String) {
+		emitToAgents(new ImportDataEvent(filename), true)
 	}
 
 }

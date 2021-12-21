@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.logging.impl.AvalonLogger;
+
 public abstract class SolutionSolver {
 	
 	protected SimulationMap map;
@@ -53,7 +55,7 @@ public abstract class SolutionSolver {
 		// Calculate the cost of a path depending on packages and distances
 		// Example of path : w0 -> c1 -> c3 -> w0 (first and last point aren't necessary the same)
 		double energyCost = 0;
-		int totalWeight = 0;
+		float totalWeight = 0;
 		
 		// Get total package weight
 		for (int i = 1; i < deliveryOrder.size() - 1 ; i++) {
@@ -173,6 +175,44 @@ public abstract class SolutionSolver {
 		}
 		
 		return cost;
+	}
+	
+	public static float solutionTimeCost (List<List<MapPoint>> s, int nDrone) {
+		float availableTime[] = new float [nDrone];
+		for (int i = 0 ; i < nDrone; i++) {
+			availableTime[i] = 0;
+		}
+		for (List<MapPoint> route : s) {
+			int minIndex = nDrone;
+			float minVal = -1;
+			for (int i = 0 ; i < nDrone; i++) {
+				if ((availableTime[i] < minVal) || minVal == -1) {
+					minIndex = i;
+					minVal = availableTime[i];
+				}
+			}
+			availableTime[minIndex] += routeTimeCost(route);
+					
+		}
+		float last_arrived = 0;
+		for (int i = 0 ; i < nDrone; i++) {
+			last_arrived = Math.max(last_arrived, availableTime[i]);
+		}
+		return last_arrived;
+		
+	}
+	
+	public static float routeTimeCost (List<MapPoint> r) {
+		float totalDist = 0;
+		for(int i = 0; i < r.size()-1; i++) {
+			totalDist += Math.sqrt(Math.pow(r.get(i).getPixelX() - r.get(i+1).getPixelX(), 2) + 
+					Math.pow(r.get(i).getPixelY() - r.get(i+1).getPixelY(), 2));
+		}
+		return totalDist * 1000 / (15 * 28);
+	}
+	
+	public static float stepNumberToRealTime(int steps) {
+		return 200 * steps / 28;
 	}
 	
 	public List<List<MapPoint>> convertListToListOfList(List<MapPoint> solution){
