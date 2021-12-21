@@ -41,6 +41,7 @@ import javafx.beans.value.*;
 import agents.Restart
 import agents.ExportDataEvent
 import agents.ImportDataEvent
+import javafx.application.Platform
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -61,7 +62,10 @@ class MainWindowController extends FxViewerController {
 	
 	@FXML
 	var drawZone : Canvas
-
+	
+	@FXML
+	var drawPane : StackPane
+	
 	@FXML
 	var simulationRadioButtonGroup : ToggleGroup = new ToggleGroup
 	@FXML
@@ -100,6 +104,7 @@ class MainWindowController extends FxViewerController {
 		this.mainApp = mainApp;
 		this.width = drawZone.width as Integer;
 		this.height = drawZone.height as Integer;
+		System.out.println("Width : " + this.width + " -- height : " + this.height)
 		
 		// radio button simulation ou multiple tests listener
 		this.simulationRadioButtonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() 
@@ -250,9 +255,9 @@ class MainWindowController extends FxViewerController {
 		}
 		this.parameters.add(getParam2Input)
 		this.parameters.add(getParam3Input)
-		for (var j = 0; j < this.parameters.size; j++) {
+		/*for (var j = 0; j < this.parameters.size; j++) {
 			System.out.println("this.parameters["+j+"] : " + this.parameters.get(j))
-		}
+		}*/
 	}
 	
 	
@@ -300,6 +305,7 @@ class MainWindowController extends FxViewerController {
 	}
 
 	def startSimulation() {
+
 	       	var timer = new AnimationTimer() {
             @Override
             def handle(now : long) {
@@ -312,17 +318,29 @@ class MainWindowController extends FxViewerController {
         };
         timer.start();
 	}
-
+	
+	def initalizeImageView() {
+		for (b : this.bodies.values()) {
+			Platform.runLater(new Runnable() {
+	            @Override 
+	            def run() {
+					drawPane.children.addAll(b.imageView)
+	            }
+        	})
+		}
+	}
+	
 	def update() {
-		val gc = drawZone.graphicsContext2D
+		/*val gc = drawZone.graphicsContext2D
 		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		for (b : this.bodies.values()) {
+			gc.canvas.
 			gc.drawImage(b.image, b.position.x, b.position.y);
 		}
 		for (c : this.clients) {
 			c.drawItself(gc);
 
-		}		
+		}		*/
 	}
 
 	def getHeight() {

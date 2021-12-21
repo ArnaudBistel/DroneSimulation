@@ -3,6 +3,9 @@ package gui
 import java.util.UUID
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+
+import javafx.^event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import org.arakhne.afc.math.geometry.d2.i.Point2i
 /** 
  * @author vlt
@@ -28,6 +31,16 @@ class Body {
 		this.width = width
 		this.image = new Image(imagePath, this.height, this.width, true, true)
 		this.imageView = new ImageView(this.image)
+		var eventHandler = new EventHandler<MouseEvent>(){
+			def handle(^event : MouseEvent) {
+				System.out.println("Test")
+				throw new UnsupportedOperationException("TODO: auto-generated method stub")
+			}
+
+		}
+		this.imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
+		// this.imageView.onMouseClicked = new EventHandler<MouseEvent>(){
+			
 		this.perceptionMapCellIndex = -1
 	}
 

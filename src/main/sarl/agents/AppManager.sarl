@@ -63,8 +63,13 @@ agent AppManager {
 	var height : Integer
 	val perceptionDistance : int = 200
 
-	val warehouseNb = 1
-
+	var nbWarehouse : int
+	var nbDrones : int
+	
+	var initWarehouse : int
+	var initDrones : int
+	var initialized : boolean
+	
 	var solution : List<List<MapPoint>>
 	var actionList = new ArrayList<Action>
 
@@ -93,6 +98,9 @@ agent AppManager {
 	
 	def startApp {
 		synchronized(this) {
+			this.initialized = false
+			this.initDrones = 0
+			this.initWarehouse = 0
 			this.stepCounter = 0
 			this.perceptionMap = new ArrayList<ArrayList<Body>>
 			
@@ -107,9 +115,9 @@ agent AppManager {
 			// true pour recuit simulé, false pour q-learning
 			var recuit = parameters.get(1) as Boolean
 			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-			var nbDrones = parameters.get(2) as List<Float>
+			var nbDronesSim = parameters.get(2) as List<Float>
 			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-			var nbEntrepots = parameters.get(3) as List<Float>
+			var nbEntrepotsSim = parameters.get(3) as List<Float>
 			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
 			var nbClients = parameters.get(4) as List<Float>
 			// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
@@ -121,7 +129,8 @@ agent AppManager {
 			// nombre d'itérations par palier si recuit, epsilon si qlearning
 			var param3 = parameters.get(8) as Float
 	
-			this.map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
+			this.nbWarehouse = nbEntrepotsSim.get(0) as int
+			this.map = new SimulationMap(nbClients.get(0) as int, this.nbWarehouse)
 			// map.exportData("Data5.csv")
 			// map.importData("Data1.csv")
 	
@@ -135,11 +144,13 @@ agent AppManager {
 				// solution = new ArrayList<List<MapPoint>>
 			}
 	
-			info("Estimated time of solution : " +
-				SolutionSolver.solutionTimeCost(this.solution, nbDrones.get(0) as int * nbEntrepots.get(0) as int))	
+				
 				
 			this.deliveryLists = new TreeMap<UUID, ArrayList<List<MapPoint>>>
 			if (simulation) {
+				this.nbDrones = nbDronesSim.get(0) as int
+				info("Estimated time of solution : " +
+					SolutionSolver.solutionTimeCost(this.solution, this.nbDrones * this.nbWarehouse))
 				for (wh : this.map.getWarehouses()) {
 					// Get delivery from this warehouse
 					var deliveryList = new ArrayList<List<MapPoint>>
@@ -149,7 +160,7 @@ agent AppManager {
 						}
 					}
 					var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30)
-					spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, nbDrones.get(0) as int,
+					spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, this.nbDrones,
 						this.controller)
 					controller.addBody(warehouseBody, "WAREHOUSE")
 					this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
@@ -193,66 +204,69 @@ agent AppManager {
 
 	def newStep : void {
 		synchronized (this) {
-			if (this.controller.started) {
-				if (this.stepCounter == 0) {
-					var warehouseBodyIds = deliveryLists.keySet();
-					for (warehouseBodyId : warehouseBodyIds) {
-						var deliveryList = deliveryLists.get(warehouseBodyId);
-						var eventDeliveryList = new SendDeliveryList(deliveryList)
-						info(
-							"event : " + eventDeliveryList + " to " + warehouseBodyId
-						)
-						emit(eventDeliveryList)[it.getID == warehouseBodyId]
-						info("senddeliveryList")
-			    	}
-				}
-				// send to warehouse the order to assign roads
-				for (wh : warehouseList.keySet()) {
-					var warehouseBody = warehouseList.get(wh)
-					var pathAssignment = new MakeAssignmentPaths()
-					emit(pathAssignment)[it.getID == warehouseBody.id]
-		        }
-				
-				applyActions(actionList, this.stepCounter)
-				actionList.clear
-	
-				// perception de warehouse ?
-				// On met à jour la perception de chaque agent drone
-				for (e : getDronePerceptions.entrySet) {
-					var eventPerception = new DronePerception(e.key, e.value, this.stepCounter)
-					emit(eventPerception)[it.getID == e.key]
-				}
-				
-				// test livraison
-				/*if (this.stepCounter % 100 == 0) {
-					var rd = this.random.nextInt(this.controller.clients.size)
-					this.controller.clients.get(rd).delivered = true
-				 * }
-				 */
-				var end = true;
-				for ( c : this.controller.clients){
-					if (!c.delivered){
-						end = false
-						break
+			// info("NewStep")
+			if (this.initialized){
+				if (this.controller.started) {
+					if (this.stepCounter == 0) {
+						var warehouseBodyIds = deliveryLists.keySet();
+						for (warehouseBodyId : warehouseBodyIds) {
+							info("Delivery List for agent : " + warehouseBodyId)
+							var deliveryList = deliveryLists.get(warehouseBodyId);
+							var eventDeliveryList = new SendDeliveryList(deliveryList)
+							/*info(
+								"event : " + eventDeliveryList + " to " + warehouseBodyId
+							)*/
+							emit(eventDeliveryList)[it.getID == warehouseBodyId]
+							//info("senddeliveryList")
+				    	}
 					}
+					// send to warehouse the order to assign roads
+					for (wh : warehouseList.keySet()) {
+						var warehouseBody = warehouseList.get(wh)
+						var pathAssignment = new MakeAssignmentPaths()
+						emit(pathAssignment)[it.getID == warehouseBody.id]
+			        }
+					
+					applyActions(actionList, this.stepCounter)
+					actionList.clear
+		
+					// perception de warehouse ?
+					// On met à jour la perception de chaque agent drone
+					for (e : getDronePerceptions.entrySet) {
+						var eventPerception = new DronePerception(e.key, e.value, this.stepCounter)
+						emit(eventPerception)[it.getID == e.key]
+					}
+					
+					// test livraison
+					/*if (this.stepCounter % 100 == 0) {
+						var rd = this.random.nextInt(this.controller.clients.size)
+						this.controller.clients.get(rd).delivered = true
+					 * }
+					 */
+					var end = true;
+					for ( c : this.controller.clients){
+						if (!c.delivered){
+							end = false
+							break
+						}
+					}
+					if(end && this.stepEnd == -1){
+						this.stepEnd = this.stepCounter
+						info("End of program, total time : " + SolutionSolver.stepNumberToRealTime(this.stepCounter))
+					}
+					this.stepCounter++
+					
 				}
-				if(end && this.stepEnd == -1){
-					this.stepEnd = this.stepCounter
-					info("End of program, total time : " + SolutionSolver.stepNumberToRealTime(this.stepCounter))
-				}
-				this.stepCounter++
-				
-			} else {
-				/*for (id : warehouseList.keySet){
-					emit(new Restart) [it.UUID == id]
-				}
-				for (id : droneList.keySet) {
-					emit(new Restart)[it.UUID == id]
+				/* else {
+					for (id : warehouseList.keySet){
+						emit(new Restart) [it.UUID == id]
+					}
+					for (id : droneList.keySet) {
+						emit(new Restart)[it.UUID == id]
+					}
 				}*/
-				
+							
 			}
-			
-			
 		}
 	}
 
@@ -370,19 +384,36 @@ agent AppManager {
 		this.importFile = occurrence.filename
 		
 	}
+	
+	on AgentInitialized {
+		synchronized(this){
+			info("Agent : " + occurrence.type.type + " initialized")
+			if (occurrence.type == AgentType.DRONE){
+				this.initDrones += 1
+			}
+			else {
+				this.initWarehouse += 1
+			}
+			if (this.initWarehouse == this.nbWarehouse && this.initDrones == this.nbDrones){
+				this.initialized = true
+				this.controller.initalizeImageView
+				info("Initialized")
+			}
+		}
+	}
 
 	on Destroy {
-		info("AppManager destroy")
+		//info("AppManager destroy")
 		// killMe
 	}
 
 	on AppExit {
-		info("App is exiting")
+		//info("App is exiting")
 		killMe
 	}
 
 	on Restart {
-		info("Restart App Manager")
+		//info("Restart App Manager")
 		startApp
 	}
 

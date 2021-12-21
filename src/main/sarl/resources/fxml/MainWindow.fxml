@@ -88,6 +88,7 @@
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="791.0" prefWidth="1020.0" styleClass="bodybg">
                            <children>
                               <Canvas fx:id="drawZone" height="791.0" width="1020.0" />
+                              <StackPane fx:id="drawPane" maxHeight="791.0" maxWidth="1020.0" minHeight="791.0" minWidth="1020.0" prefHeight="791.0" prefWidth="1020.0" />
                            </children></AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="790.0" prefWidth="260.0" styleClass="background">
                            <children>
