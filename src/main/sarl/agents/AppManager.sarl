@@ -71,6 +71,7 @@ agent AppManager {
 	var droneList : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
 	var warehouseList : Map<UUID, WarehouseBody> = new TreeMap<UUID, WarehouseBody>
 	var objectsList : Map<UUID, Body> = new TreeMap<UUID, Body>
+	var deliveryLists = new TreeMap<UUID, ArrayList<List<MapPoint>>>
 	var random : Random
 
 	on Initialize {
@@ -91,74 +92,77 @@ agent AppManager {
 	}
 	
 	def startApp {
-		this.perceptionMap = new ArrayList<ArrayList<Body>>
-		
-		for (var i = 0; i < this.nbCell; i++) {
-			var tmp = new ArrayList<Body>
-			this.perceptionMap.add(tmp)
-		}
-
-		var parameters = this.controller.parameters
-		// true pour simulation, false pour multitests
-		var simulation = parameters.get(0) as Boolean
-		// true pour recuit simulé, false pour q-learning
-		var recuit = parameters.get(1) as Boolean
-		// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-		var nbDrones = parameters.get(2) as List<Float>
-		// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-		var nbEntrepots = parameters.get(3) as List<Float>
-		// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-		var nbClients = parameters.get(4) as List<Float>
-		// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
-		var poidsColis = parameters.get(5) as List<Float>
-		// Temperature intiale ou Range de température si recuit, alpha si qlearning
-		var param1 = parameters.get(6) as List<Float>
-		// alpha si recuit, gamme si qlearning
-		var param2 = parameters.get(7) as Float
-		// nombre d'itérations par palier si recuit, epsilon si qlearning
-		var param3 = parameters.get(8) as Float
-
-		this.map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
-		// map.exportData("Data5.csv")
-		// map.importData("Data1.csv")
-
-		if (recuit) {
-			var simulatedAnnealing = new SimulatedAnnealing(map)
-			this.solution = simulatedAnnealing.Solve()
-
-		} else {
-			var QLearning = new QLearning(map)
-			this.solution = QLearning.Solve()
-			// solution = new ArrayList<List<MapPoint>>
-		}
-
-		info("Estimated time of solution : " +
-			SolutionSolver.solutionTimeCost(this.solution, nbDrones.get(0) as int * nbEntrepots.get(0) as int))	
+		synchronized(this) {
+			this.stepCounter = 0
+			this.perceptionMap = new ArrayList<ArrayList<Body>>
 			
-		if (simulation) {
-			for (wh : this.map.getWarehouses()) {
-				// Get delivery from this warehouse
-				var deliveryList = new ArrayList<List<MapPoint>>
-				for (i : this.solution) {
-					if (i.get(0).equals(wh)) {
-						deliveryList.add(i)
+			for (var i = 0; i < this.nbCell; i++) {
+				var tmp = new ArrayList<Body>
+				this.perceptionMap.add(tmp)
+			}
+	
+			var parameters = this.controller.parameters
+			// true pour simulation, false pour multitests
+			var simulation = parameters.get(0) as Boolean
+			// true pour recuit simulé, false pour q-learning
+			var recuit = parameters.get(1) as Boolean
+			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+			var nbDrones = parameters.get(2) as List<Float>
+			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+			var nbEntrepots = parameters.get(3) as List<Float>
+			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+			var nbClients = parameters.get(4) as List<Float>
+			// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
+			var poidsColis = parameters.get(5) as List<Float>
+			// Temperature intiale ou Range de température si recuit, alpha si qlearning
+			var param1 = parameters.get(6) as List<Float>
+			// alpha si recuit, gamme si qlearning
+			var param2 = parameters.get(7) as Float
+			// nombre d'itérations par palier si recuit, epsilon si qlearning
+			var param3 = parameters.get(8) as Float
+	
+			this.map = new SimulationMap(nbClients.get(0) as int, nbEntrepots.get(0) as int)
+			// map.exportData("Data5.csv")
+			// map.importData("Data1.csv")
+	
+			if (recuit) {
+				var simulatedAnnealing = new SimulatedAnnealing(map)
+				this.solution = simulatedAnnealing.Solve()
+	
+			} else {
+				var QLearning = new QLearning(map)
+				this.solution = QLearning.Solve()
+				// solution = new ArrayList<List<MapPoint>>
+			}
+	
+			info("Estimated time of solution : " +
+				SolutionSolver.solutionTimeCost(this.solution, nbDrones.get(0) as int * nbEntrepots.get(0) as int))	
+				
+			this.deliveryLists = new TreeMap<UUID, ArrayList<List<MapPoint>>>
+			if (simulation) {
+				for (wh : this.map.getWarehouses()) {
+					// Get delivery from this warehouse
+					var deliveryList = new ArrayList<List<MapPoint>>
+					for (i : this.solution) {
+						if (i.get(0).equals(wh)) {
+							deliveryList.add(i)
+						}
 					}
+					var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30)
+					spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, nbDrones.get(0) as int,
+						this.controller)
+					controller.addBody(warehouseBody, "WAREHOUSE")
+					this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
+					this.deliveryLists.put(warehouseBody.getId, deliveryList)
 				}
-				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30)
-				spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, nbDrones.get(0) as int,
-					this.controller)
-				controller.addBody(warehouseBody, "WAREHOUSE")
-				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
-				var eventDeliveryList = new SendDeliveryList(deliveryList)
-				info("event : " + eventDeliveryList)
-				emit(eventDeliveryList)[it.getID == warehouseBody.id]
+				for (cl : this.map.getClients()) {
+					var client = new Client(cl)
+					controller.addClient(client)
+				}
+				
+				every(this.stepTime)[newStep]
+				
 			}
-			for (cl : this.map.getClients()) {
-				var client = new Client(cl)
-				controller.addClient(client)
-			}
-
-			every(this.stepTime)[newStep]
 		}
 
 		// test Simulated annealing
@@ -190,6 +194,18 @@ agent AppManager {
 	def newStep : void {
 		synchronized (this) {
 			if (this.controller.started) {
+				if (this.stepCounter == 0) {
+					var warehouseBodyIds = deliveryLists.keySet();
+					for (warehouseBodyId : warehouseBodyIds) {
+						var deliveryList = deliveryLists.get(warehouseBodyId);
+						var eventDeliveryList = new SendDeliveryList(deliveryList)
+						info(
+							"event : " + eventDeliveryList + " to " + warehouseBodyId
+						)
+						emit(eventDeliveryList)[it.getID == warehouseBodyId]
+						info("senddeliveryList")
+			    	}
+				}
 				// send to warehouse the order to assign roads
 				for (wh : warehouseList.keySet()) {
 					var warehouseBody = warehouseList.get(wh)

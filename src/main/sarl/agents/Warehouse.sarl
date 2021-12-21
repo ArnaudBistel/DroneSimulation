@@ -73,8 +73,8 @@ agent Warehouse {
 
 	on SendDeliveryList {
 		synchronized (this) {
-			System.out.println(this.deliveryList)
 			this.deliveryList = occurrence.deliveryList
+			info("list:" + this.deliveryList)
 			// info(this.deliveryList)
 			var emptyDelivery = new ArrayList<List<MapPoint>>
 			for (var i = 0; i < deliveryList.size(); i++) {
