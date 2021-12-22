@@ -38,6 +38,7 @@ import java.util.HashSet
 import java.util.Set
 import solutionSolver.qLearning.QLearningAnalyser
 import solutionSolver.qLearning.QLearning
+import io.sarl.core.AgentTask
 
 /** 
  * @author arnaud
@@ -52,10 +53,13 @@ agent AppManager {
 	var nbColCell = 0
 	var nbCell = 0
 
+
+	var everyTask : AgentTask
 	var stepTime = 30
 	var stepCounter = 0
+	var stepLastDelivery = -1
 	var stepEnd = -1
-
+	
 	var importFile : String = null
 
 	var controller : MainWindowController
@@ -102,6 +106,8 @@ agent AppManager {
 			this.initDrones = 0
 			this.initWarehouse = 0
 			this.stepCounter = 0
+			this.stepLastDelivery = -1
+			this.stepEnd = -1
 			this.perceptionMap = new ArrayList<ArrayList<Body>>
 			
 			for (var i = 0; i < this.nbCell; i++) {
@@ -171,7 +177,7 @@ agent AppManager {
 					controller.addClient(client)
 				}
 				
-				every(this.stepTime)[newStep]
+				this.everyTask = every(this.stepTime)[newStep]
 				
 			}
 		}
@@ -204,7 +210,6 @@ agent AppManager {
 
 	def newStep : void {
 		synchronized (this) {
-			// info("NewStep")
 			if (this.initialized){
 				if (this.controller.started) {
 					if (this.stepCounter == 0) {
@@ -243,16 +248,35 @@ agent AppManager {
 						this.controller.clients.get(rd).delivered = true
 					 * }
 					 */
-					var end = true;
-					for ( c : this.controller.clients){
-						if (!c.delivered){
-							end = false
-							break
+					if(this.stepLastDelivery == -1){
+						var end = true
+						for ( c : this.controller.clients){
+							//info("Delivered : " + c.delivered)
+							if (!c.delivered){
+								end = false
+								break
+							}
 						}
+						if (end) {
+							this.stepLastDelivery = this.stepCounter
+							info("Last client delivered after " + SolutionSolver.stepNumberToRealTime(this.stepCounter) + " seconds")
+						}	
 					}
-					if(end && this.stepEnd == -1){
-						this.stepEnd = this.stepCounter
-						info("End of program, total time : " + SolutionSolver.stepNumberToRealTime(this.stepCounter))
+					else{
+						var end = true
+						for (warehouse : this.warehouseList.values){
+							info(warehouse.droneBodies.size)
+							if (warehouse.droneBodies.size != this.nbDrones){
+								end = false
+								break
+							}
+						}
+						if (end) {
+							this.stepEnd = this.stepCounter
+							info("Last drone returned after " + SolutionSolver.stepNumberToRealTime(this.stepCounter) +
+									" seconds")
+							this.controller.simulateStop
+						}
 					}
 					this.stepCounter++
 					
@@ -292,6 +316,7 @@ agent AppManager {
 					y = this.height - 1 
 				}
 				dronebody.move(x, y)
+				//System.out.println("X : " + x + " -- Y : " + y)
 				var rowCell = Math.floor(dronebody.position.y / SimulationParameters.perceptionMapCellSize) as Integer
 				var colCell = Math.floor(dronebody.position.x / SimulationParameters.perceptionMapCellSize) as Integer
 				var index = rowCell * this.nbColCell + colCell
@@ -301,6 +326,7 @@ agent AppManager {
 					dronebody.perceptionMapCellIndex = index
 				}			
 			} else if (action.type == ActionType.DEPOSIT) {
+				info("Deposit")
 				var params = action.params as DepositActionParams
 				var x = params.x
 				var y = params.y
@@ -376,6 +402,12 @@ agent AppManager {
 		return this.map
 	}
 	
+	on CancelEvery {
+		synchronized(this){
+			cancel(this.everyTask)
+		}
+	}
+	
 	on ExportDataEvent {
 		this.map.exportData(occurrence.filename)
 	}
@@ -394,7 +426,7 @@ agent AppManager {
 			else {
 				this.initWarehouse += 1
 			}
-			if (this.initWarehouse == this.nbWarehouse && this.initDrones == this.nbDrones){
+			if (this.initWarehouse == this.nbWarehouse && this.initDrones == this.nbDrones * this.nbWarehouse){
 				this.initialized = true
 				this.controller.initalizeImageView
 				info("Initialized")
