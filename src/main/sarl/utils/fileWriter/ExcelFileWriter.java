@@ -200,10 +200,10 @@ public class ExcelFileWriter {
 				rowNum * SimulatedAnnealingAnalyser.STEP_NB_ITER_PALIER);
 		c.setCellStyle(tempAndIterPalierStyle);
 		c = row.createCell(10);
-		c.setCellValue(costResultTemp);
+		c.setCellValue(costResultNbIterPalier);
 		c.setCellStyle(valueStyle);
 		c = row.createCell(11);
-		c.setCellValue(timeResultTemp);
+		c.setCellValue(timeResultNbIterPalier);
 		c.setCellStyle(valueStyle);
 	}
 }

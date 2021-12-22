@@ -72,9 +72,14 @@ agent AppManager {
 			every(this.stepTime)[newStep]
 			
 			
-		 	//test Simulated annealing
-		 	//SimulatedAnnealingAnalyser.test(map);
-		 	//SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_outputs");
+		 	// test Simulated annealing
+			//var sim = new SimulatedAnnealing(map);
+			//SimulatedAnnealingAnalyser.singleTest(sim, 200, 0.1, 0.9, 10);
+			//SimulatedAnnealingAnalyser.singleTest(sim, 200, 0.1, 0.9, 1);
+			//SimulatedAnnealingAnalyser.singleTest(sim, 100, 0.1, 0.9, 10);
+			//SimulatedAnnealingAnalyser.singleTest(sim, 200, 0.1, 0.9, 51);
+			//SimulatedAnnealingAnalyser.singleTest(sim, 200, 0.1, 0.9, 51);
+		 	SimulatedAnnealingAnalyser.startAnalyzing("SimulatedAnnealing_outputs_test");
 			
 			
 		}
