@@ -130,7 +130,6 @@ agent AppManager {
 			if(!this.controller.stopped){
 				startApp
 			}
-			every(this.stepTime)[newStep]
 			
 			
 		 	// test Simulated annealing
