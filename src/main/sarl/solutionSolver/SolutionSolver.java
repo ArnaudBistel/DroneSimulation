@@ -177,6 +177,11 @@ public abstract class SolutionSolver {
 		return cost;
 	}
 	
+	public static double solutionPriceCost(List<List<MapPoint>> solution, int NbDrones) {
+		double whCost = solutionCost(solution);
+		return whCost * SimulationParameters.COUT_WH;
+	}
+	
 	public static float solutionTimeCost (List<List<MapPoint>> s, int nDrone) {
 		float availableTime[] = new float [nDrone];
 		for (int i = 0 ; i < nDrone; i++) {
