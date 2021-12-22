@@ -149,6 +149,7 @@ agent AppManager {
 			}
 	
 			var parameters = this.controller.parameters
+			info(parameters)
 			// true pour simulation, false pour multitests
 			var simulation = parameters.get(0) as Boolean
 			// true pour recuit simulé, false pour q-learning
