@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import controller.MainWindowController;
 import controller.RootLayoutController;
-import controller.StatisticsController;
+import controller.ResultsController;
 import io.sarl.javafx.FxApplication;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -111,7 +111,7 @@ public class MainApp extends FxApplication {
     public void openResultsWindow() {
         try {
     		FXMLLoader loader = new FXMLLoader();
-    		loader.setLocation(MainApp.class.getResource("/resources/fxml/Statistics.fxml"));
+    		loader.setLocation(MainApp.class.getResource("/resources/fxml/Results.fxml"));
     		AnchorPane page = (AnchorPane) loader.load();
     		Stage dialogStage = new Stage();
     		dialogStage.setTitle("Résultats de tests");
@@ -120,7 +120,7 @@ public class MainApp extends FxApplication {
     		Scene scene = new Scene(page);
     		dialogStage.setScene(scene);
     		
-    		StatisticsController controller = loader.getController();
+    		ResultsController controller = loader.getController();
     		
     		dialogStage.show();
     		

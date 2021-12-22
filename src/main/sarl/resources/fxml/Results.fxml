@@ -20,7 +20,7 @@
                         <TextField fx:id="nbEntrepotsTextField" promptText="ex: 1, 3..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
                         <Label styleClass="label-bright" text="Nb de clients" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                         <TextField fx:id="nbClientsTextField" layoutX="150.0" layoutY="57.0" promptText="ex: 10, 30..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                        <Button fx:id="generateButton" contentDisplay="CENTER" mnemonicParsing="false" styleClass="button-start" text="Generate Graph" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                        <Button contentDisplay="CENTER" mnemonicParsing="false" styleClass="button-start" text="Generate Graph" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
                         <TextField fx:id="poidsColisTextField" promptText="ex: 1-5, 5..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label styleClass="label-bright" text="Poids des colis" GridPane.rowIndex="2" />
                      </children>
@@ -41,7 +41,7 @@
                   </GridPane>
                   <BorderPane prefHeight="200.0" prefWidth="200.0">
                      <center>
-                        <Canvas fx:id="drawZone" height="396.0" width="510.0" BorderPane.alignment="CENTER">
+                        <Canvas height="396.0" width="510.0" BorderPane.alignment="CENTER">
                            <BorderPane.margin>
                               <Insets bottom="40.0" top="40.0" />
                            </BorderPane.margin>
@@ -62,9 +62,9 @@
                               <Label styleClass="label-header" text="Recuit simulé" />
                               <GridPane>
                                  <children>
-                                    <TextField fx:id="temperatureTextField" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 0.1-500.." GridPane.columnIndex="1" />
-                                    <TextField fx:id="alphaTextField1" layoutX="135.0" layoutY="452.0" promptText="ex: 0, 0.9..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TextField fx:id="nbIterTextField" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="paramTextField11" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 0.1-500.." GridPane.columnIndex="1" />
+                                    <TextField fx:id="paramTextField21" layoutX="135.0" layoutY="452.0" promptText="ex: 0, 0.9..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <TextField fx:id="paramTextField31" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <Label fx:id="paramLabel11" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="T° initiale/range" />
                                     <Label fx:id="paramLabel21" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Alpha" GridPane.rowIndex="1" />
                                     <Label fx:id="paramLabel31" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nb itér. par pallier" GridPane.rowIndex="2" />
@@ -92,9 +92,9 @@
                               <Label styleClass="label-header" text="Q-Learning" />
                               <GridPane>
                                  <children>
-                                    <TextField fx:id="alphaQTextField" layoutX="135.0" layoutY="132.0" promptText="ex: 0.1, 1..." GridPane.columnIndex="1" />
-                                    <TextField fx:id="gammaTextField" layoutX="135.0" layoutY="452.0" promptText="ex: 0.9, 0..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TextField fx:id="epsilonTextField" layoutX="10.0" layoutY="12.0" promptText="ex: 0.1, 1..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="paramTextField111" layoutX="135.0" layoutY="132.0" promptText="ex: 0.1, 1..." GridPane.columnIndex="1" />
+                                    <TextField fx:id="paramTextField211" layoutX="135.0" layoutY="452.0" promptText="ex: 0.9, 0..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <TextField fx:id="paramTextField311" layoutX="10.0" layoutY="12.0" promptText="ex: 0.1, 1..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <Label fx:id="paramLabel111" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="Alpha" />
                                     <Label fx:id="paramLabel211" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Gamma" GridPane.rowIndex="1" />
                                     <Label fx:id="paramLabel311" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Epsilon" GridPane.rowIndex="2" />
@@ -131,7 +131,7 @@
                               <TextField fx:id="nbDronesTextField" promptText="ex: 5, 10..." />
                            </children>
                         </HBox>
-                        <Button fx:id="startButton" contentDisplay="CENTER" mnemonicParsing="false" styleClass="button-start" text="Start" textAlignment="CENTER" />
+                        <Button contentDisplay="CENTER" mnemonicParsing="false" styleClass="button-start" text="Start" textAlignment="CENTER" />
                      </children>
                      <VBox.margin>
                         <Insets />

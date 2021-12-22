@@ -306,6 +306,7 @@ class MainWindowController extends FxViewerController {
 
 		// start
 		if (!started.getAndSet(true)) {
+			if (this.simulation) {
 			this.stopped = false
 			this.startButton.setText("Stop");
 			this.startButton.getStyleClass().add("button-stop");
@@ -323,7 +324,7 @@ class MainWindowController extends FxViewerController {
 			}
 
 			// lance la simulation
-			if (this.simulation) {
+			//if (this.simulation) {
 				this.startSimulation();
 			// multi-test
 			} else {

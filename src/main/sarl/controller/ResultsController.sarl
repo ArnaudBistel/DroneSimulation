@@ -1,0 +1,79 @@
+package controller
+
+import agents.AppManager
+import agents.ExportDataEvent
+import agents.ImportDataEvent
+import agents.Restart
+
+import gui.Body
+import gui.Client
+import gui.DroneBody
+import gui.MainApp
+import gui.WarehouseBody
+
+import io.sarl.javafx.FxViewerController
+
+import java.util.ArrayList
+import java.util.List
+import java.util.Map
+import java.util.TreeMap
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
+
+import javafx.animation.AnimationTimer
+import javafx.application.Platform
+import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
+import javafx.fxml.FXML
+import javafx.css.PseudoClass
+
+import javafx.scene.canvas.Canvas
+import javafx.scene.image.ImageView
+import javafx.scene.control.Button
+import javafx.scene.control.Label
+import javafx.scene.control.RadioButton
+import javafx.scene.control.TextField
+import javafx.scene.control.Toggle
+import javafx.scene.control.ToggleGroup
+import javafx.scene.layout.Pane
+import javafx.^event.ActionEvent
+import agents.CancelEvery
+import agents.GenerateGraph
+
+class ResultsController extends FxViewerController {
+
+	@FXML
+	var startButton : Button
+	@FXML
+	var generateButton : Button
+
+	var width : Integer
+	var height : Integer
+
+	@FXML
+	var drawZone : Canvas
+
+	@FXML
+	var nbDronesTextField : TextField
+	@FXML
+	var nbEntrepotsTextField : TextField
+	@FXML
+	var nbClientsTextField : TextField
+	@FXML
+	var poidsColisTextField : TextField
+
+	@FXML
+	var temperatureTextField : TextField
+	@FXML
+	var alphaTextField1 : TextField
+	@FXML
+	var nbIterTextField : TextField
+
+	@FXML
+	var alphaQTextField : TextField
+	@FXML
+	var gammaTextField : TextField
+	@FXML
+	var epsilonTextField : TextField
+
+}
