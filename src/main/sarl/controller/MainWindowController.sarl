@@ -386,25 +386,34 @@ class MainWindowController extends FxViewerController {
 
 		// start
 		if (!started.getAndSet(true)) {
-			this.stopped = false
-			this.startButton.setText("Arrêter");
-			this.startButton.getStyleClass().add("button-stop");
-			this.startButton.getStyleClass().remove("button-start");
-			
-			if (this.managerId === null){
-				createManager()
-			}
-			else {
-				System.out.println("Restart app manager")
-				emitToAgents(new Restart, true)
-			}
-
 			// lance la simulation
 			if (this.simulation) {
+				
+				this.stopped = false
+				this.startButton.setText("Arrêter");
+				this.startButton.getStyleClass().add("button-stop");
+				this.startButton.getStyleClass().remove("button-start");
+				
+				if (this.managerId === null){
+					createManager()
+				}
+				else {
+					System.out.println("Restart app manager")
+					emitToAgents(new Restart, true)
+				}
+
 				this.startSimulation();
-			// multi-test
-			} else {
+			
+			} // multi-test
+			else {
 				mainApp.showStatistics();
+				this.stopped = true
+				started.set(false)
+				if (this.managerId === null) {
+					createManager()
+				}
+				
+				
 			}	
 
 		// stop
@@ -446,6 +455,7 @@ class MainWindowController extends FxViewerController {
 		 */
 		this.parameters.add(createRange(getSpeedInput))
 	}
+	
 	
 	def createRange(st : String) : List<Float> {
 		var ret : List<Float> = new ArrayList()

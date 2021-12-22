@@ -91,7 +91,8 @@ class ResultsController extends FxViewerController {
 		this.mainWindowController = mainWindowController;
 		this.width = drawZone.width as Integer;
 		this.height = drawZone.height as Integer;
-		
+
+		initializeFieldsValues
 		initializeParamFields
 	}
 
@@ -113,7 +114,29 @@ class ResultsController extends FxViewerController {
 			this.mainWindowController.emitGenerateGraph(this.parameters)
 		}
 	}
-
+	
+	def initializeFieldsValues {
+		
+		nbDronesTextField.text = this.mainWindowController.nbDronesInput
+		nbClientsTextField.text = this.mainWindowController.nbClientsInput
+		nbEntrepotsTextField.text = this.mainWindowController.nbEntrepotsInput
+		
+		poidsColisTextField.text = this.mainWindowController.poidsColisInput
+		
+		var recuit = this.mainWindowController.parameters.get(1) as Boolean
+		
+		if (recuit) {
+			temperatureTextField.text = this.mainWindowController.param1Input
+			alphaTextField1.text = this.mainWindowController.param2Input as String
+			nbIterTextField.text = this.mainWindowController.param3Input as String
+		} 
+		else {
+			alphaQTextField.text = this.mainWindowController.param1Input
+			gammaTextField.text = this.mainWindowController.param2Input as String
+			epsilonTextField.text = this.mainWindowController.param3Input as String
+		}
+	}
+	
 	def initializeParamFields {
 		// Allow only integers
 		var fields = new ArrayList<TextField>
@@ -173,7 +196,6 @@ class ResultsController extends FxViewerController {
 								concurrentFields.get(2), concurrentFields.get(3))
 							for (concurrent : concurrents) {
 								if (concurrent.text.contains("-") && concurrent != field) {
-									System.out.println(concurrent)
 									onlyRange = false
 									break
 								}

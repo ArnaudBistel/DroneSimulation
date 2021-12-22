@@ -109,7 +109,6 @@ agent AppManager {
 			cancel(this.autoRestartTask)
 			var parameters = inputList
 
-			System.out.println(parameters)
 
 			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
 			var nbEntrepotsSim = parameters.get(3) as List<Float>
