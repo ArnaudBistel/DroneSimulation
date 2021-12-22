@@ -91,6 +91,8 @@ class ResultsController extends FxViewerController {
 		this.mainWindowController = mainWindowController;
 		this.width = drawZone.width as Integer;
 		this.height = drawZone.height as Integer;
+		
+		initializeParamFields
 	}
 
 
@@ -109,6 +111,225 @@ class ResultsController extends FxViewerController {
 			val gc = drawZone.graphicsContext2D
 			gc.clearRect(0, 0, drawZone.width, drawZone.height)
 			this.mainWindowController.emitGenerateGraph(this.parameters)
+		}
+	}
+
+	def initializeParamFields {
+		// Allow only integers
+		var fields = new ArrayList<TextField>
+		val concurrentFields = new ArrayList<TextField>
+		concurrentFields.addAll(nbDronesTextField, temperatureTextField, alphaTextField1, nbIterTextField,
+			alphaQTextField, gammaTextField, epsilonTextField)
+		fields.addAll(nbEntrepotsTextField, nbClientsTextField)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							if (newValue.matches("\\d*")) {
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+		// Allow floats or range of floats for SA
+		fields.clear
+		fields.addAll(temperatureTextField, alphaTextField1, nbIterTextField)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							var onlyRange = true
+							var concurrents = new ArrayList<TextField>
+							concurrents.addAll(concurrentFields.get(0), concurrentFields.get(1),
+								concurrentFields.get(2), concurrentFields.get(3))
+							for (concurrent : concurrents) {
+								if (concurrent.text.contains("-") && concurrent != field) {
+									System.out.println(concurrent)
+									onlyRange = false
+									break
+								}
+							}
+							
+
+							if (onlyRange && (newValue.matches("[0-9]+([.][0-9]*)?(-[0-9]*([.][0-9]*)?)?") ||
+								newValue.matches("[0-9]*"))) {
+								
+								field.text = newValue
+							}
+							else if (!onlyRange && (newValue.matches("[0-9]+([.][0-9]*)?") ||
+								newValue.matches("[0-9]*"))) {
+								
+								field.text = newValue
+							}
+							else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+		// Allow floats or range of floats for Q Learning
+		fields.clear
+		fields.addAll(alphaQTextField, gammaTextField, epsilonTextField)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							var onlyRange = true
+							var concurrents = new ArrayList<TextField>
+							concurrents.addAll(concurrentFields.get(0), concurrentFields.get(4),
+								concurrentFields.get(5), concurrentFields.get(6))
+							for (concurrent : concurrents) {
+								if (concurrent.text.contains("-") && concurrent != field) {
+									onlyRange = false
+									break
+								}
+							}
+
+							if (onlyRange && (newValue.matches("[0-9]+([.][0-9]*)?(-[0-9]*([.][0-9]*)?)?") ||
+								newValue.matches("[0-9]*"))) {
+								
+								field.text = newValue
+							} else if (!onlyRange && (newValue.matches("[0-9]+([.][0-9]*)?") ||
+								newValue.matches("[0-9]*"))) {
+								
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+
+		// Allow range of floats
+		fields.clear
+		fields.addAll(poidsColisTextField)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							if (newValue.matches("[0-9]+([.][0-9]*)?(-[0-9]*([.][0-9]*)?)?") ||
+								newValue.matches("[0-9]*")) {
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+		// Allow for range of integers
+		fields.clear
+		fields.addAll(nbDronesTextField)
+		
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+						 
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+							
+							var onlyRange = true
+							for (concurrent : concurrentFields){
+								if (concurrent.text.contains("-") && concurrent != field) {
+									onlyRange = false
+									break
+								}
+							}
+							
+							if (onlyRange && (newValue.matches("[0-9]+-?[0-9]*") || newValue.matches("[0-9]*"))) {
+								field.text = newValue
+							}
+							else if (!onlyRange && newValue.matches("[0-9]*")) {
+								field.text = newValue
+							} 
+							else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
 		}
 	}
 

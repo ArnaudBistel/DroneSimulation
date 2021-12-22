@@ -159,7 +159,7 @@ class MainWindowController extends FxViewerController {
 	def initializeParamFields {
 		// Allow only integers
 		var fields = new ArrayList<TextField>
-		fields.addAll(paramTextField1, paramTextField2, paramTextField3, nbDronesTextField, nbEntrepotsTextField, nbClientsTextField, speedTextField)
+		fields.addAll(nbDronesTextField, nbEntrepotsTextField, nbClientsTextField)
 		for (field : fields) {
 			Platform.runLater(new Runnable() {
 				@Override
@@ -174,7 +174,7 @@ class MainWindowController extends FxViewerController {
 								return
 							}
 							
-							if (newValue.matches("\\d+")) {
+							if (newValue.matches("\\d*")) {
 								field.text = newValue
 							} else {
 								ignore = true
@@ -189,7 +189,74 @@ class MainWindowController extends FxViewerController {
 				}
 			})			
 		}
+		// Allow floats
 		fields.clear
+		fields.addAll(speedTextField, paramTextField1, paramTextField2, paramTextField3)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							if (newValue.matches("[0-9]+([.][0-9]*)?") ||
+								newValue.matches("[0-9]*")) {
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+		//Allow range of floats
+		fields.clear
+		fields.addAll(poidsColisTextField)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							if (newValue.matches("[0-9]+([.][0-9]*)?(-[0-9]*([.][0-9]*)?)?") ||
+								newValue.matches("[0-9]*")) {
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+		//Allow for range of integers
+		/*fields.clear
 		fields.addAll(poidsColisTextField)
 		for (field : fields) {
 			Platform.runLater(new Runnable() {
@@ -219,7 +286,7 @@ class MainWindowController extends FxViewerController {
 					field.textProperty.addListener(listener)
 				}
 			})
-		}
+		}*/
 	}
 
 	def updateTextFields() {

@@ -62,9 +62,9 @@
                               <Label styleClass="label-header" text="Recuit simulé" />
                               <GridPane>
                                  <children>
-                                    <TextField fx:id="paramTextField11" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 0.1-500.." GridPane.columnIndex="1" />
-                                    <TextField fx:id="paramTextField21" layoutX="135.0" layoutY="452.0" promptText="ex: 0, 0.9..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TextField fx:id="paramTextField31" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="temperatureTextField" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 0.1-500.." GridPane.columnIndex="1" />
+                                    <TextField fx:id="alphaTextField1" layoutX="135.0" layoutY="452.0" promptText="ex: 0, 0.9..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <TextField fx:id="nbIterTextField" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <Label fx:id="paramLabel11" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="T° initiale/range" />
                                     <Label fx:id="paramLabel21" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Alpha" GridPane.rowIndex="1" />
                                     <Label fx:id="paramLabel31" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nombre d'itérations par pallier" GridPane.rowIndex="2" />
@@ -92,9 +92,9 @@
                               <Label styleClass="label-header" text="Q-Learning" />
                               <GridPane>
                                  <children>
-                                    <TextField fx:id="paramTextField111" layoutX="135.0" layoutY="132.0" promptText="ex: 0.1, 1..." GridPane.columnIndex="1" />
-                                    <TextField fx:id="paramTextField211" layoutX="135.0" layoutY="452.0" promptText="ex: 0.9, 0..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TextField fx:id="paramTextField311" layoutX="10.0" layoutY="12.0" promptText="ex: 0.1, 1..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="alphaQTextField" layoutX="135.0" layoutY="132.0" promptText="ex: 0.1, 1..." GridPane.columnIndex="1" />
+                                    <TextField fx:id="gammaTextField" layoutX="135.0" layoutY="452.0" promptText="ex: 0.9, 0..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <TextField fx:id="epsilonTextField" layoutX="10.0" layoutY="12.0" promptText="ex: 0.1, 1..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <Label fx:id="paramLabel111" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="Alpha" />
                                     <Label fx:id="paramLabel211" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Gamma" GridPane.rowIndex="1" />
                                     <Label fx:id="paramLabel311" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Epsilon" GridPane.rowIndex="2" />

@@ -98,7 +98,6 @@ public class MainApp extends FxApplication {
      */
     public void showStatistics() {
     	if (!mainWindowController.getStarted()) {
-    		mainWindowController.startAgent();
     		if (mainWindowController.getSimulation()) {
         		this.openResultsWindow();
     		}
@@ -131,7 +130,7 @@ public class MainApp extends FxApplication {
     					
     					@Override
     					public void run() {
-    						mainWindowController.startAgent();
+    						//mainWindowController.startAgent();
     						System.out.println("Results window Closed");
     					}
     				});
