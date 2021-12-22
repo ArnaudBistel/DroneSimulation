@@ -41,6 +41,11 @@ import agents.CancelEvery
 import agents.GenerateGraph
 
 class ResultsController extends FxViewerController {
+	
+	
+	var appManager : AppManager = null
+
+	var mainApp : MainApp;
 
 	@FXML
 	var startButton : Button
@@ -75,5 +80,121 @@ class ResultsController extends FxViewerController {
 	var gammaTextField : TextField
 	@FXML
 	var epsilonTextField : TextField
+
+	var parameters : ArrayList = new ArrayList()
+
+	var mainWindowController : MainWindowController
+
+	@Pure
+	def init(mainApp : MainApp, mainWindowController : MainWindowController) {
+		this.mainApp = mainApp;
+		this.mainWindowController = mainWindowController;
+		this.width = drawZone.width as Integer;
+		this.height = drawZone.height as Integer;
+	}
+
+
+	@FXML
+	def generateGraph() {	
+		createParametersList()
+		if (this.mainWindowController.managerId === null) {
+			this.mainWindowController.createManager
+		} else {
+			//this.bodies.clear
+			//this.droneBodies.clear
+			//this.warehouseBodies.clear
+			//this.clients.clear
+			//this.drawPane.children.clear
+
+			val gc = drawZone.graphicsContext2D
+			gc.clearRect(0, 0, drawZone.width, drawZone.height)
+			this.mainWindowController.emitGenerateGraph(this.parameters)
+		}
+	}
+
+	def createParametersList() {
+		this.parameters.clear
+		//this.parameters.add(simulation)
+		//this.parameters.add(recuit)
+		this.parameters.add(false)
+		this.parameters.add(true)
+		this.parameters.add(1)
+		this.parameters.add(createRange(getNbDronesInput))
+		this.parameters.add(createRange(getNbEntrepotsInput))
+		this.parameters.add(createRange(getNbClientsInput))
+		this.parameters.add(createRange(getPoidsColisInput))
+		
+		/*if (recuit) {
+			this.parameters.add(createRange(getParam1Input))
+		} else {
+			this.parameters.add(getParam1Input)
+		}
+		this.parameters.add(getParam2Input)
+		this.parameters.add(getParam3Input)
+		*/
+		/*for (var j = 0; j < this.parameters.size; j++) {
+		 * System.out.println("this.parameters["+j+"] : " + this.parameters.get(j))
+		 * }
+		 */
+		//this.parameters.add(createRange(getSpeedInput))
+	}
+
+	def createRange(st : String) : List<Float> {
+		var ret : List<Float> = new ArrayList()
+		if (st.contains('-')) {
+			var nb = ""
+	        for (var i = 0; i < st.length; i++) {
+				if (Character.compare(st.charAt(i) as char, '-') != 0) {
+	        		nb += st.charAt(i)
+				} else {
+					if (0 >= nb as float) {
+						ret.add(1f)
+					} else {
+						ret.add(checkNumbers(nb) as float)
+					}
+					nb = ""    		
+	        	}
+        		if (i == st.length - 1) {
+        			if (ret.get(0) > checkNumbers(nb) as float) {
+						ret.add(ret.get(0) + 1)
+					} else {
+						ret.add(checkNumbers(nb) as float)
+					}
+				}
+			}
+		} else {
+			ret.add(checkNumbers(st) as float)
+		}
+		return ret
+	}
+
+	def checkNumbers(text : String) : float {
+		var ret : float
+		try {
+			ret = Float.parseFloat(text);
+			if (ret < 0) {
+				ret = 0.9f
+			}
+		} catch (ex : NumberFormatException) {
+			ret = 1
+		}
+		return ret
+	}
+
+	def getNbDronesInput() : String {
+		return this.nbDronesTextField.text
+	}
+
+	def getNbEntrepotsInput() : String {
+		return this.nbEntrepotsTextField.text
+	}
+
+	def getNbClientsInput() : String {
+		return this.nbClientsTextField.text
+	}
+
+	def getPoidsColisInput() : String {
+		return this.poidsColisTextField.text
+	}
 
 }

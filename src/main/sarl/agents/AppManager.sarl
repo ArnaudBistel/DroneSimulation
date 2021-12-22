@@ -85,7 +85,7 @@ agent AppManager {
 
 	on Initialize {
 		synchronized (this) {
-			info("AppManager start")
+			info("AppManager start : " + this.ID)
 			this.controller = occurrence.parameters.get(0) as MainWindowController
 			this.controller.appManager = this
 			this.width = this.controller.width as Integer
@@ -95,15 +95,21 @@ agent AppManager {
 			this.nbColCell = Math.ceil(this.width as Double / SimulationParameters.perceptionMapCellSize) as Integer
 			this.nbCell = this.nbRowCell * this.nbColCell
 
-			generateMap
+			var parameters = this.controller.parameters
+			var simulation = parameters.get(0) as Boolean
+			if (simulation) {
+				generateMap	
+			}
 			
 		}
 	}
 	
-	def generateMap {
+	def generateMap (inputList : ArrayList = this.controller.parameters) {
 		synchronized (this) {
 			cancel(this.autoRestartTask)
-			var parameters = this.controller.parameters
+			var parameters = inputList
+
+			System.out.println(parameters)
 
 			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
 			var nbEntrepotsSim = parameters.get(3) as List<Float>
@@ -115,20 +121,25 @@ agent AppManager {
 			this.nbWarehouse = nbEntrepotsSim.get(0) as int
 			this.map = new SimulationMap(nbClients.get(0) as int, this.nbWarehouse)
 
-			this.warehouseList.clear
-			for (wh : this.map.getWarehouses()) {
-				// info("Warehouse : " + wh.position.x + "-" + wh.position.y)
-				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30, wh)
-				this.controller.addBody(warehouseBody, "WAREHOUSE")
-				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
-			}
-			for (cl : this.map.getClients()) {
-				var client = new Client(cl)
-				controller.addClient(client)
-			}
-			this.controller.initalizeImageView
-			if(!this.controller.stopped){
-				startApp
+			if (parameters.get(0) as Boolean) {
+				this.warehouseList.clear
+				for (wh : this.map.getWarehouses()) {
+					// info("Warehouse : " + wh.position.x + "-" + wh.position.y)
+					var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30, wh)
+					this.controller.addBody(warehouseBody, "WAREHOUSE")
+					this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
+				}
+				for (cl : this.map.getClients()) {
+					var client = new Client(cl)
+					controller.addClient(client)
+				}
+				this.controller.initalizeImageView
+				if(!this.controller.stopped){
+					startApp
+				}
+				
+			} else {
+				this.controller.initalizeImageView				
 			}
 			
 			
@@ -487,11 +498,12 @@ agent AppManager {
 	}
 
 	on GenerateGraph {
+
 		synchronized(this){
 			if (getActiveTasks.size != 0) {
 				this.controller.simulateStop
 			}
-			generateMap
+			generateMap(occurrence.inputList)
 		}
 	}
 

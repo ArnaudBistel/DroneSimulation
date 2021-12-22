@@ -119,9 +119,8 @@ public class MainApp extends FxApplication {
     		dialogStage.initOwner(primaryStage);
     		Scene scene = new Scene(page);
     		dialogStage.setScene(scene);
-    		
     		ResultsController controller = loader.getController();
-    		
+    		controller.init(this, this.mainWindowController);
     		dialogStage.show();
     		
     		dialogStage.setOnHiding(new EventHandler<WindowEvent>() {

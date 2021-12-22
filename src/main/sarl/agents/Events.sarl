@@ -90,8 +90,10 @@ event AgentInitialized {
 }
 
 event GenerateGraph {
-	new() {
-		
+	var inputList : ArrayList
+	
+	new(list : ArrayList) {
+		this.inputList = list
 	}
 }
 

@@ -285,11 +285,7 @@ class MainWindowController extends FxViewerController {
 	def generateGraph() {
 		createParametersList()
 		if (this.managerId === null) {
-			
-			System.out.println("create app manager")
-			var id = UUID::randomUUID
-			startAgentApplication(typeof(AppManager), id)[]
-			this.managerId = id
+			createManager
 		}
 		else{
 			this.bodies.clear
@@ -300,8 +296,20 @@ class MainWindowController extends FxViewerController {
 
 			val gc = drawZone.graphicsContext2D
 			gc.clearRect(0, 0, drawZone.width, drawZone.height)
-			
-			emitToAgents(new GenerateGraph, true)
+			emitGenerateGraph
+		}
+	}
+	
+	def emitGenerateGraph(param : ArrayList = this.parameters){
+		emitToAgents(new GenerateGraph(param), true)
+	}
+	 
+	 def createManager() {
+		if (this.managerId === null) {
+			System.out.println("create app manager")
+			var id = UUID::randomUUID
+			startAgentApplication(typeof(AppManager), id)[]
+			managerId = id
 		}
 	}
 	 
@@ -312,15 +320,12 @@ class MainWindowController extends FxViewerController {
 		// start
 		if (!started.getAndSet(true)) {
 			this.stopped = false
-			this.startButton.setText("Stop");
+			this.startButton.setText("Arrêter");
 			this.startButton.getStyleClass().add("button-stop");
 			this.startButton.getStyleClass().remove("button-start");
 			
 			if (this.managerId === null){
-				System.out.println("create app manager")
-				var id = UUID::randomUUID
-				startAgentApplication(typeof(AppManager), id)[]
-				managerId = id
+				createManager()
 			}
 			else {
 				System.out.println("Restart app manager")
@@ -348,7 +353,7 @@ class MainWindowController extends FxViewerController {
 			
 			this.startButton.getStyleClass().add("button-start");
 			this.startButton.getStyleClass().remove("button-stop");
-			this.startButton.setText("Start");
+			this.startButton.setText("Démarrer");
 		}
 	}
 
@@ -360,20 +365,20 @@ class MainWindowController extends FxViewerController {
 		this.parameters.add(createRange(getNbEntrepotsInput))
 		this.parameters.add(createRange(getNbClientsInput))
 		this.parameters.add(createRange(getPoidsColisInput))
-		if (recuit){
+		if (recuit) {
 			this.parameters.add(createRange(getParam1Input))
-		} else {		
+		} else {
 			this.parameters.add(getParam1Input)
 		}
 		this.parameters.add(getParam2Input)
 		this.parameters.add(getParam3Input)
-		/*for (var j = 0; j < this.parameters.size; j++) {
-			System.out.println("this.parameters["+j+"] : " + this.parameters.get(j))
+
+		/* for (var j = 0; j < this.parameters.size; j++) {
+		 * System.out.println("this.parameters["+j+"] : " + this.parameters.get(j))
 		 * }
 		 */
 		this.parameters.add(createRange(getSpeedInput))
 	}
-	
 	
 	def createRange(st : String) : List<Float> {
 		var ret : List<Float> = new ArrayList()
@@ -604,5 +609,9 @@ class MainWindowController extends FxViewerController {
 				startAgent
 			}
 		})
+	}
+	
+	def getManagerId() : UUID {
+		return this.managerId
 	}
 }

@@ -16,11 +16,11 @@
                   <Label styleClass="label-header" text="Réglages généraux" />
                   <GridPane>
                      <children>
-                        <Label styleClass="label-bright" text="Nb d'entrepôts" GridPane.hgrow="ALWAYS" />
+                        <Label styleClass="label-bright" text="Nombre d'entrepôts" GridPane.hgrow="ALWAYS" />
                         <TextField fx:id="nbEntrepotsTextField" promptText="ex: 1, 3..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
-                        <Label styleClass="label-bright" text="Nb de clients" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                        <Label styleClass="label-bright" text="Nombre de clients" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                         <TextField fx:id="nbClientsTextField" layoutX="150.0" layoutY="57.0" promptText="ex: 10, 30..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                        <Button contentDisplay="CENTER" mnemonicParsing="false" styleClass="button-start" text="Generate Graph" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                        <Button fx:id="generateButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#generateGraph" styleClass="button-start" text="Générer Graphe" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
                         <TextField fx:id="poidsColisTextField" promptText="ex: 1-5, 5..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label styleClass="label-bright" text="Poids des colis" GridPane.rowIndex="2" />
                      </children>
@@ -41,7 +41,7 @@
                   </GridPane>
                   <BorderPane prefHeight="200.0" prefWidth="200.0">
                      <center>
-                        <Canvas height="396.0" width="510.0" BorderPane.alignment="CENTER">
+                        <Canvas fx:id="drawZone" height="396.0" width="510.0" BorderPane.alignment="CENTER">
                            <BorderPane.margin>
                               <Insets bottom="40.0" top="40.0" />
                            </BorderPane.margin>
@@ -67,7 +67,7 @@
                                     <TextField fx:id="paramTextField31" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <Label fx:id="paramLabel11" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="T° initiale/range" />
                                     <Label fx:id="paramLabel21" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Alpha" GridPane.rowIndex="1" />
-                                    <Label fx:id="paramLabel31" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nb itér. par pallier" GridPane.rowIndex="2" />
+                                    <Label fx:id="paramLabel31" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nombre d'itérations par pallier" GridPane.rowIndex="2" />
                                  </children>
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -131,7 +131,7 @@
                               <TextField fx:id="nbDronesTextField" promptText="ex: 5, 10..." />
                            </children>
                         </HBox>
-                        <Button contentDisplay="CENTER" mnemonicParsing="false" styleClass="button-start" text="Start" textAlignment="CENTER" />
+                        <Button contentDisplay="CENTER" mnemonicParsing="false" styleClass="button-start" text="Démarrer" textAlignment="CENTER" />
                      </children>
                      <VBox.margin>
                         <Insets />
