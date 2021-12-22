@@ -1,47 +1,43 @@
 package controller
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Button
-import javafx.scene.control.ToggleGroup
-import javafx.scene.control.Label
-import java.util.concurrent.atomic.AtomicBoolean
-import io.sarl.javafx.FxViewerController
-import javafx.scene.canvas.Canvas
-import javafx.animation.AnimationTimer
 import agents.AppManager
-import gui.Body
-import gui.DroneBody
-import gui.WarehouseBody
-import gui.Body
-
-import java.util.UUID
-import java.util.Map
-import java.util.TreeMap
-import gui.MainApp
-import gui.Client
-import java.util.List
-import java.util.ArrayList
-import javafx.scene.control.TextField
-
-import javafx.scene.control.Toggle
-import javafx.^event.ActionEvent
-import javafx.^event.*
-import javafx.collections.*
-
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-
-import javafx.collections.*;
-import javafx.stage.Stage;
-import javafx.scene.text.Text.*;
-import javafx.scene.text.*;
-import javafx.beans.value.*;
-import agents.Restart
 import agents.ExportDataEvent
 import agents.ImportDataEvent
+import agents.Restart
+
+import gui.Body
+import gui.Client
+import gui.DroneBody
+import gui.MainApp
+import gui.WarehouseBody
+
+import io.sarl.javafx.FxViewerController
+
+import java.util.ArrayList
+import java.util.List
+import java.util.Map
+import java.util.TreeMap
+import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
+
+import javafx.animation.AnimationTimer
 import javafx.application.Platform
+import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
+import javafx.fxml.FXML
+import javafx.css.PseudoClass
+
+import javafx.scene.canvas.Canvas
+import javafx.scene.image.ImageView
+import javafx.scene.control.Button
+import javafx.scene.control.Label
+import javafx.scene.control.RadioButton
+import javafx.scene.control.TextField
+import javafx.scene.control.Toggle
+import javafx.scene.control.ToggleGroup
+import javafx.scene.layout.Pane
+import javafx.^event.ActionEvent
+import agents.CancelEvery
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -64,7 +60,7 @@ class MainWindowController extends FxViewerController {
 	var drawZone : Canvas
 	
 	@FXML
-	var drawPane : StackPane
+	var drawPane : Pane
 	
 	@FXML
 	var simulationRadioButtonGroup : ToggleGroup = new ToggleGroup
@@ -106,6 +102,8 @@ class MainWindowController extends FxViewerController {
 		this.height = drawZone.height as Integer;
 		System.out.println("Width : " + this.width + " -- height : " + this.height)
 		
+		initializeParamFields
+		
 		// radio button simulation ou multiple tests listener
 		this.simulationRadioButtonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() 
         {
@@ -144,6 +142,72 @@ class MainWindowController extends FxViewerController {
 	}
 	
 	
+	def initializeParamFields {
+		// Allow only integers
+		var fields = new ArrayList<TextField>
+		fields.addAll(paramTextField1, paramTextField2, paramTextField3, nbDronesTextField, nbEntrepotsTextField, nbClientsTextField)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+						
+						var ignore : boolean
+						
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if(ignore || newValue === null){
+								return
+							}
+							
+							if (newValue.matches("\\d+")) {
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})			
+		}
+		fields.clear
+		fields.addAll(poidsColisTextField)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null){
+								return
+							}
+
+							if (newValue.matches("[0-9]+-?[0-9]*") || newValue.matches("[0-9]*")) {
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+	}
+
 	def updateTextFields() {
 	 	if (simulation) {		
 			nbDronesTextField.setPromptText("ex: 5, 10...")
@@ -198,6 +262,12 @@ class MainWindowController extends FxViewerController {
 	 * }
 	 */
 	 
+	 
+	@FXML
+	def generateGraph() { 
+	
+	}
+	 
 	@FXML
 	def startAgent {
 		createParametersList()
@@ -233,7 +303,10 @@ class MainWindowController extends FxViewerController {
 			this.droneBodies.clear
 			this.warehouseBodies.clear
 			this.clients.clear
+			this.drawPane.children.clear
 
+			emitToAgents(new CancelEvery, true)
+			
 			this.startButton.getStyleClass().add("button-start");
 			this.startButton.getStyleClass().remove("button-stop");
 			this.startButton.setText("Start");
@@ -324,23 +397,35 @@ class MainWindowController extends FxViewerController {
 			Platform.runLater(new Runnable() {
 	            @Override 
 	            def run() {
-					drawPane.children.addAll(b.imageView)
+					drawPane.children.add(b.imageView)
 	            }
         	})
+		}
+
+		val gc = drawZone.graphicsContext2D
+	 
+		for (c : this.clients) {
+			c.drawItself(gc);
+
 		}
 	}
 	
 	def update() {
-		/*val gc = drawZone.graphicsContext2D
+		for (c : drawPane.children) {
+			var body = this.bodies.get(UUID.fromString(c.id))
+			var imageView = c as ImageView
+			imageView.setImage(body.image)
+			imageView.setX(body.position.x)
+			imageView.setY(body.position.y)
+			//System.out.println("X : " + test.position.x + " -- Y : " + test.position.y)
+			//System.out.println(test)
+		} 
+		val gc = drawZone.graphicsContext2D
 		gc.clearRect(0, 0, drawZone.width, drawZone.height)
-		for (b : this.bodies.values()) {
-			gc.canvas.
-			gc.drawImage(b.image, b.position.x, b.position.y);
-		}
 		for (c : this.clients) {
 			c.drawItself(gc);
 
-		}		*/
+		}
 	}
 
 	def getHeight() {
@@ -455,5 +540,13 @@ class MainWindowController extends FxViewerController {
 	def importData(filename : String) {
 		emitToAgents(new ImportDataEvent(filename), true)
 	}
-
+	
+	def simulateStop() {
+		Platform.runLater(new Runnable() {
+			@Override
+			def run() {
+				startAgent
+			}
+		})
+	}
 }

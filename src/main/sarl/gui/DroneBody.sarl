@@ -35,7 +35,7 @@ class DroneBody extends Body{
 	def switchStateView(state : DroneState){
 		switch(state) {
 			case DroneState.DRONE_LOADED :
-				setImage(PathEnum.DRONE_EMPTY.getPath)
+				setImage(PathEnum.DRONE_LOADED.getPath)
 				
 			case DroneState.DRONE_EMPTY :
 				setImage(PathEnum.DRONE_EMPTY.getPath)

@@ -31,6 +31,7 @@ class Body {
 		this.width = width
 		this.image = new Image(imagePath, this.height, this.width, true, true)
 		this.imageView = new ImageView(this.image)
+		this.imageView.id = id.toString
 		var eventHandler = new EventHandler<MouseEvent>(){
 			def handle(^event : MouseEvent) {
 				System.out.println("Test")
@@ -39,7 +40,6 @@ class Body {
 
 		}
 		this.imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
-		// this.imageView.onMouseClicked = new EventHandler<MouseEvent>(){
 			
 		this.perceptionMapCellIndex = -1
 	}
