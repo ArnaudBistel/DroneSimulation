@@ -77,6 +77,8 @@ class MainWindowController extends FxViewerController {
 	var nbClientsTextField : TextField
 	@FXML
 	var poidsColisTextField : TextField
+	@FXML
+	var speedTextField : TextField
 
 	@FXML
 	var aiRadioButtonGroup : ToggleGroup = new ToggleGroup
@@ -87,6 +89,8 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	var paramTextField3 : TextField
 
+	@FXML
+	var speedLabel : Label
 	@FXML
 	var paramLabel1 : Label
 	@FXML
@@ -150,7 +154,7 @@ class MainWindowController extends FxViewerController {
 	def initializeParamFields {
 		// Allow only integers
 		var fields = new ArrayList<TextField>
-		fields.addAll(paramTextField1, paramTextField2, paramTextField3, nbDronesTextField, nbEntrepotsTextField, nbClientsTextField)
+		fields.addAll(paramTextField1, paramTextField2, paramTextField3, nbDronesTextField, nbEntrepotsTextField, nbClientsTextField, speedTextField)
 		for (field : fields) {
 			Platform.runLater(new Runnable() {
 				@Override
@@ -219,11 +223,15 @@ class MainWindowController extends FxViewerController {
 			nbEntrepotsTextField.setPromptText("ex: 1, 3...")
 			nbClientsTextField.setPromptText("ex: 10, 30...")
 			poidsColisTextField.setPromptText("ex: 1-5, 5...")
+			speedTextField.setVisible(true)
+			speedLabel.setVisible(true)
 		} else {
 			nbDronesTextField.setPromptText("ex: 5, 2-10...")
 			nbEntrepotsTextField.setPromptText("ex: 1, 1-3...")
 			nbClientsTextField.setPromptText("ex: 10, 10-30...")
 			poidsColisTextField.setPromptText("ex: 5, 0.5-5...")
+			speedTextField.setVisible(false)
+			speedLabel.setVisible(false)
 		}
 		
 		if (recuit) {
@@ -356,7 +364,9 @@ class MainWindowController extends FxViewerController {
 		this.parameters.add(getParam3Input)
 		/*for (var j = 0; j < this.parameters.size; j++) {
 			System.out.println("this.parameters["+j+"] : " + this.parameters.get(j))
-		}*/
+		 * }
+		 */
+		this.parameters.add(createRange(getSpeedInput))
 	}
 	
 	
@@ -483,6 +493,10 @@ class MainWindowController extends FxViewerController {
 
 	def getPoidsColisInput() : String {
 		return this.poidsColisTextField.text
+	}
+
+	def getSpeedInput() : String {
+		return this.speedTextField.text
 	}
 
 	def getParam1Input() : String {
