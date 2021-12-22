@@ -135,6 +135,7 @@ agent AppManager {
 	
 	def startApp {
 		synchronized(this) {
+			this.stepTime = 30
 			this.initialized = false
 			this.initDrones = 0
 			this.initWarehouse = 0
@@ -162,6 +163,8 @@ agent AppManager {
 			var param2 = parameters.get(7) as Float
 			// nombre d'itérations par palier si recuit, epsilon si qlearning
 			var param3 = parameters.get(8) as Float
+			// coefficient de vitesse
+			var speedCoeff = parameters.get(9) as List<Float>
 		
 			if (recuit) {
 				var simulatedAnnealing = new SimulatedAnnealing(map)
@@ -193,7 +196,8 @@ agent AppManager {
 						this.controller)
 					this.deliveryLists.put(wh.key, deliveryList)
 				}
-				
+				this.stepTime = (this.stepTime / speedCoeff.get(0)) as int
+				info("steptime : " + this.stepTime)
 				this.everyTask = every(this.stepTime)[newStep]
 				
 			}
