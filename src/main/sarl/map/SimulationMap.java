@@ -65,7 +65,7 @@ public class SimulationMap {
 			x = random.nextInt(this.width);
 			y = random.nextInt(this.height);
 			this.warehouseList.add(new MapPoint(x, y, MapPointType.WAREHOUSE, null));
-			//System.out.println("Warehouse #" + i + " : " + x + "-" + y);
+			 // System.out.println("Warehouse #" + i + " : " + x + "-" + y);
 		}
 		for(int i = 0;i<this.nbClients;i++) {
 			MapPoint tmp_client = null;

@@ -53,7 +53,7 @@ agent AppManager {
 	var nbColCell = 0
 	var nbCell = 0
 
-
+	var autoRestartTask : AgentTask
 	var everyTask : AgentTask
 	var stepTime = 30
 	var stepCounter = 0
@@ -85,7 +85,7 @@ agent AppManager {
 
 	on Initialize {
 		synchronized (this) {
-			info("AppManager restart")
+			info("AppManager start")
 			this.controller = occurrence.parameters.get(0) as MainWindowController
 			this.controller.appManager = this
 			this.width = this.controller.width as Integer
@@ -94,9 +94,42 @@ agent AppManager {
 			this.nbRowCell = Math.ceil(this.height as Double / SimulationParameters.perceptionMapCellSize) as Integer
 			this.nbColCell = Math.ceil(this.width as Double / SimulationParameters.perceptionMapCellSize) as Integer
 			this.nbCell = this.nbRowCell * this.nbColCell
+
+			generateMap
 			
-			
-			startApp
+		}
+	}
+	
+	def generateMap {
+		synchronized (this) {
+			cancel(this.autoRestartTask)
+			var parameters = this.controller.parameters
+
+			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+			var nbEntrepotsSim = parameters.get(3) as List<Float>
+			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
+			var nbClients = parameters.get(4) as List<Float>
+			// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
+			var poidsColis = parameters.get(5) as List<Float>
+
+			this.nbWarehouse = nbEntrepotsSim.get(0) as int
+			this.map = new SimulationMap(nbClients.get(0) as int, this.nbWarehouse)
+
+			this.warehouseList.clear
+			for (wh : this.map.getWarehouses()) {
+				// info("Warehouse : " + wh.position.x + "-" + wh.position.y)
+				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30, wh)
+				this.controller.addBody(warehouseBody, "WAREHOUSE")
+				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
+			}
+			for (cl : this.map.getClients()) {
+				var client = new Client(cl)
+				controller.addClient(client)
+			}
+			this.controller.initalizeImageView
+			if(!this.controller.stopped){
+				startApp
+			}
 		}
 	}
 	
@@ -122,24 +155,13 @@ agent AppManager {
 			var recuit = parameters.get(1) as Boolean
 			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
 			var nbDronesSim = parameters.get(2) as List<Float>
-			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-			var nbEntrepotsSim = parameters.get(3) as List<Float>
-			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
-			var nbClients = parameters.get(4) as List<Float>
-			// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
-			var poidsColis = parameters.get(5) as List<Float>
 			// Temperature intiale ou Range de température si recuit, alpha si qlearning
 			var param1 = parameters.get(6) as List<Float>
 			// alpha si recuit, gamme si qlearning
 			var param2 = parameters.get(7) as Float
 			// nombre d'itérations par palier si recuit, epsilon si qlearning
 			var param3 = parameters.get(8) as Float
-	
-			this.nbWarehouse = nbEntrepotsSim.get(0) as int
-			this.map = new SimulationMap(nbClients.get(0) as int, this.nbWarehouse)
-			// map.exportData("Data5.csv")
-			// map.importData("Data1.csv")
-	
+		
 			if (recuit) {
 				var simulatedAnnealing = new SimulatedAnnealing(map)
 				this.solution = simulatedAnnealing.Solve()
@@ -157,24 +179,18 @@ agent AppManager {
 				this.nbDrones = nbDronesSim.get(0) as int
 				info("Estimated time of solution : " +
 					SolutionSolver.solutionTimeCost(this.solution, this.nbDrones * this.nbWarehouse))
-				for (wh : this.map.getWarehouses()) {
+				for (wh : this.warehouseList.entrySet) {
 					// Get delivery from this warehouse
 					var deliveryList = new ArrayList<List<MapPoint>>
 					for (i : this.solution) {
-						if (i.get(0).equals(wh)) {
+						if (i.get(0).equals(wh.value.mapPoint)) {
+							info("Delivery list add")
 							deliveryList.add(i)
 						}
 					}
-					var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30)
-					spawnInContextWithID(Warehouse, warehouseBody.id, defaultContext, warehouseBody, this.nbDrones,
+					spawnInContextWithID(Warehouse, wh.key, defaultContext, wh.value, this.nbDrones,
 						this.controller)
-					controller.addBody(warehouseBody, "WAREHOUSE")
-					this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
-					this.deliveryLists.put(warehouseBody.getId, deliveryList)
-				}
-				for (cl : this.map.getClients()) {
-					var client = new Client(cl)
-					controller.addClient(client)
+					this.deliveryLists.put(wh.key, deliveryList)
 				}
 				
 				this.everyTask = every(this.stepTime)[newStep]
@@ -265,7 +281,6 @@ agent AppManager {
 					else{
 						var end = true
 						for (warehouse : this.warehouseList.values){
-							info(warehouse.droneBodies.size)
 							if (warehouse.droneBodies.size != this.nbDrones){
 								end = false
 								break
@@ -276,6 +291,7 @@ agent AppManager {
 							info("Last drone returned after " + SolutionSolver.stepNumberToRealTime(this.stepCounter) +
 									" seconds")
 							this.controller.simulateStop
+							this.autoRestartTask =  in(2000) [autoRestart]
 						}
 					}
 					this.stepCounter++
@@ -398,6 +414,12 @@ agent AppManager {
 		}
 	}
 	
+	def autoRestart {
+		if(this.controller.stopped){
+			this.controller.simulateStop
+		}
+	}
+	
 	def getMap{
 		return this.map
 	}
@@ -405,6 +427,17 @@ agent AppManager {
 	on CancelEvery {
 		synchronized(this){
 			cancel(this.everyTask)
+			this.warehouseList.clear
+			for (wh : this.map.getWarehouses()) {
+				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30, wh)
+				this.controller.addBody(warehouseBody, "WAREHOUSE")
+				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
+			}
+			for (cl : this.map.getClients()) {
+				var client = new Client(cl)
+				controller.addClient(client)
+			}
+			this.controller.initalizeImageView
 		}
 	}
 	
@@ -431,6 +464,15 @@ agent AppManager {
 				this.controller.initalizeImageView
 				info("Initialized")
 			}
+		}
+	}
+
+	on GenerateGraph {
+		synchronized(this){
+			if (getActiveTasks.size != 0) {
+				this.controller.simulateStop
+			}
+			generateMap
 		}
 	}
 

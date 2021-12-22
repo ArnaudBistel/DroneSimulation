@@ -38,6 +38,7 @@ import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.Pane
 import javafx.^event.ActionEvent
 import agents.CancelEvery
+import agents.GenerateGraph
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -50,6 +51,8 @@ class MainWindowController extends FxViewerController {
 	var mainApp : MainApp;
 	@FXML
 	var startButton : Button
+	@FXML
+	var generateButton : Button
 	val started = new AtomicBoolean
 	var startedBool = false
 	
@@ -94,6 +97,8 @@ class MainWindowController extends FxViewerController {
 	var simulation : Boolean = true
 	var recuit : Boolean = true
 	var parameters : ArrayList = new ArrayList()
+	
+	var stopped = true
 	
 	@Pure
 	def setMainApp(mainApp : MainApp ) {
@@ -264,8 +269,27 @@ class MainWindowController extends FxViewerController {
 	 
 	 
 	@FXML
-	def generateGraph() { 
-	
+	def generateGraph() {
+		createParametersList()
+		if (this.managerId === null) {
+			
+			System.out.println("create app manager")
+			var id = UUID::randomUUID
+			startAgentApplication(typeof(AppManager), id)[]
+			this.managerId = id
+		}
+		else{
+			this.bodies.clear
+			this.droneBodies.clear
+			this.warehouseBodies.clear
+			this.clients.clear
+			this.drawPane.children.clear
+
+			val gc = drawZone.graphicsContext2D
+			gc.clearRect(0, 0, drawZone.width, drawZone.height)
+			
+			emitToAgents(new GenerateGraph, true)
+		}
 	}
 	 
 	@FXML
@@ -274,11 +298,12 @@ class MainWindowController extends FxViewerController {
 
 		// start
 		if (!started.getAndSet(true)) {
+			this.stopped = false
 			this.startButton.setText("Stop");
 			this.startButton.getStyleClass().add("button-stop");
 			this.startButton.getStyleClass().remove("button-start");
 			
-			if (managerId === null){
+			if (this.managerId === null){
 				System.out.println("create app manager")
 				var id = UUID::randomUUID
 				startAgentApplication(typeof(AppManager), id)[]
@@ -290,7 +315,7 @@ class MainWindowController extends FxViewerController {
 			}
 
 			// lance la simulation
-			if (simulation) {
+			if (this.simulation) {
 				this.startSimulation();
 			// multi-test
 			} else {
@@ -299,6 +324,7 @@ class MainWindowController extends FxViewerController {
 
 		// stop
 		} else if (started.getAndSet(false)) {
+			this.stopped = true
 			this.bodies.clear
 			this.droneBodies.clear
 			this.warehouseBodies.clear
@@ -397,6 +423,9 @@ class MainWindowController extends FxViewerController {
 			Platform.runLater(new Runnable() {
 	            @Override 
 	            def run() {
+					b.imageView.setImage(b.image)
+					b.imageView.setX(b.position.x)
+					b.imageView.setY(b.position.y)
 					drawPane.children.add(b.imageView)
 	            }
         	})
@@ -530,6 +559,14 @@ class MainWindowController extends FxViewerController {
 	
 	def getAppManager(){
 		return this.appManager
+	}
+	
+	def getStopped{
+		return this.stopped
+	}
+
+	def getWarehouseBodies {
+		return this.warehouseBodies
 	}
 
 	def exportData(filename : String) {

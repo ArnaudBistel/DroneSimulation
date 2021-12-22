@@ -89,6 +89,12 @@ event AgentInitialized {
 	
 }
 
+event GenerateGraph {
+	new() {
+		
+	}
+}
+
 event CancelEvery {
 	new() {
 		

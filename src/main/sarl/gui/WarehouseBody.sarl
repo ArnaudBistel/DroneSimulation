@@ -3,6 +3,7 @@ package gui
 import java.util.UUID
 import java.util.Map
 import java.util.TreeMap
+import map.MapPoint
 
 /** 
  * @author vlt
@@ -11,10 +12,12 @@ import java.util.TreeMap
 class WarehouseBody extends Body {
 	var droneBodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
 	
+	var mapPoint : MapPoint
 	
-	new (x : int, y : int, h : int, w : int) {
+	new (x : int, y : int, h : int, w : int, mapPoint : MapPoint) {
 		super(x, y, h, w, PathEnum.WAREHOUSE.getPath)
-		// System.out.println("New WarehouseBody created")
+		this.mapPoint = mapPoint
+		// System.out.println("New WarehouseBody created : " + x + " - " + y)
 	}
 	
 	def addDrone(drone : DroneBody){
@@ -23,5 +26,9 @@ class WarehouseBody extends Body {
 	
 	def getDroneBodies() {
 		return droneBodies
+	}
+	
+	def getMapPoint {
+		return this.mapPoint
 	}
 }

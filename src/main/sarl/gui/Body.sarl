@@ -27,6 +27,7 @@ class Body {
 	new(x : int, y : int, id : UUID, height : int, width : int, imagePath : String) {
 		this.id = id
 		this.position = new Point2i(x, y)
+		//System.out.println(this.position)
 		this.height = height
 		this.width = width
 		this.image = new Image(imagePath, this.height, this.width, true, true)
