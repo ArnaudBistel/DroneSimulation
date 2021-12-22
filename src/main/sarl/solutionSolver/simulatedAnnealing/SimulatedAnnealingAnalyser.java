@@ -19,7 +19,7 @@ public class SimulatedAnnealingAnalyser {
 	private static int[] test_seeds;
 	
 	//loop settings
-	public static final int NB_TRY_PER_VALUE = 25;//25
+	public static final int NB_TRY_PER_VALUE = 100;//25
 	public static final int NB_STEP_TEST = 15;//50
 	
 	//default values
@@ -33,10 +33,10 @@ public class SimulatedAnnealingAnalyser {
 	public static final double STEP_TEMP = 100;
 	//alpha
 	public static final double INIT_ALPHA = 0.9;
-	public static final double STEP_ALPHA = 2;
+	public static final double STEP_ALPHA = 0.25;
 	//nb iter palier
 	public static final int INIT_NB_ITER_PALIER = 1;
-	public static final int STEP_NB_ITER_PALIER = 10;
+	public static final int STEP_NB_ITER_PALIER = 20;
 	
 	//print settings
 	public static final int LOADING_BAR_SIZE = 40;
@@ -125,7 +125,7 @@ public class SimulatedAnnealingAnalyser {
 		info("analyze finished");
 	}
 	
-	private static double[] singleTest(SimulatedAnnealing sim, double initTemp,
+	public static double[] singleTest(SimulatedAnnealing sim, double initTemp,
 		double tempTreshold, double alpha, int nbItPalier) {
 		//process a simulated annealing resolution and return [solution cost, execution time]
 		
@@ -138,8 +138,8 @@ public class SimulatedAnnealingAnalyser {
 		return res;
 	}
 	
-	public static void test(SimulationMap map) {
-		SimulatedAnnealing sim = new SimulatedAnnealing(map);
+	public static void test(SimulatedAnnealing sim, SimulationMap map) {
+		//SimulatedAnnealing sim = new SimulatedAnnealing(map);
 		double initCost = SolutionSolver.solutionCost(sim.convertListToListOfList(sim.getInitialSolution()));
 		info("initial cost : " + df.format(initCost));
 		
