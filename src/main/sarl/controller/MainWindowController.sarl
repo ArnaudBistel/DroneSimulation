@@ -36,6 +36,8 @@ import javafx.scene.control.TextField
 import javafx.scene.control.Toggle
 import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.Pane
+import javafx.scene.layout.AnchorPane
+
 import javafx.^event.ActionEvent
 import agents.CancelEvery
 import agents.GenerateGraph
@@ -61,6 +63,9 @@ class MainWindowController extends FxViewerController {
 	
 	@FXML
 	var drawZone : Canvas
+
+	@FXML
+	var rootPane : AnchorPane
 	
 	@FXML
 	var drawPane : Pane
@@ -109,7 +114,7 @@ class MainWindowController extends FxViewerController {
 		this.mainApp = mainApp;
 		this.width = drawZone.width as Integer;
 		this.height = drawZone.height as Integer;
-		System.out.println("Width : " + this.width + " -- height : " + this.height)
+		//System.out.println("Width : " + this.width + " -- height : " + this.height)
 		
 		initializeParamFields
 		

@@ -3,6 +3,7 @@ package controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.BorderPane;
 
 import java.io.File;
 
@@ -13,9 +14,15 @@ import javafx.stage.FileChooser;
 public class RootLayoutController {
 
     private MainApp mainApp;
+    
+    @FXML
+    private BorderPane rootPane;
+    
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+        //rootPane.scaleXProperty().set(0.7);
+        //rootPane.scaleXProperty().set(0.7);
     }
 
 

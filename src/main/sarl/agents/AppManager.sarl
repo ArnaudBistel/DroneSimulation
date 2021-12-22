@@ -308,6 +308,7 @@ agent AppManager {
 							this.stepEnd = this.stepCounter
 							info("Last drone returned after " + SolutionSolver.stepNumberToRealTime(this.stepCounter) +
 									" seconds")
+									
 							this.controller.simulateStop
 							this.autoRestartTask =  in(2000) [autoRestart]
 						}
