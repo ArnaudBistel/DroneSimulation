@@ -19,14 +19,15 @@ import java.util.Map
 import java.util.TreeMap
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
-
+import javafx.application.Platform
+import javafx.scene.paint.Color
 import javafx.animation.AnimationTimer
 import javafx.application.Platform
 import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
 import javafx.fxml.FXML
 import javafx.css.PseudoClass
-
+import javafx.scene.image.Image
 import javafx.scene.canvas.Canvas
 import javafx.scene.image.ImageView
 import javafx.scene.control.Button
@@ -39,6 +40,8 @@ import javafx.scene.layout.Pane
 import javafx.^event.ActionEvent
 import agents.CancelEvery
 import agents.GenerateGraph
+import map.MapPoint
+import gui.PathEnum
 
 class ResultsController extends FxViewerController {
 	
@@ -57,6 +60,9 @@ class ResultsController extends FxViewerController {
 
 	@FXML
 	var drawZone : Canvas
+
+	@FXML
+	var drawPane : Pane
 
 	@FXML
 	var nbDronesTextField : TextField
@@ -85,13 +91,20 @@ class ResultsController extends FxViewerController {
 
 	var mainWindowController : MainWindowController
 
+	var warehouses : List<MapPoint> = new ArrayList<MapPoint>()
+	var clients : List<Client> = new ArrayList<Client>()
+
 	@Pure
 	def init(mainApp : MainApp, mainWindowController : MainWindowController) {
 		this.mainApp = mainApp;
 		this.mainWindowController = mainWindowController;
+		this.appManager = this.mainWindowController.appManager
 		this.width = drawZone.width as Integer;
 		this.height = drawZone.height as Integer;
-
+		val gc = drawZone.graphicsContext2D
+		gc.clearRect(0, 0, drawZone.width, drawZone.height)
+		gc.setFill(Color.WHITE);
+		gc.fillRect(0, 0, drawZone.getWidth(), drawZone.getHeight());	
 		initializeFieldsValues
 		initializeParamFields
 	}
@@ -103,15 +116,11 @@ class ResultsController extends FxViewerController {
 		if (this.mainWindowController.managerId === null) {
 			this.mainWindowController.createManager
 		} else {
-			//this.bodies.clear
-			//this.droneBodies.clear
-			//this.warehouseBodies.clear
-			//this.clients.clear
-			//this.drawPane.children.clear
 
 			val gc = drawZone.graphicsContext2D
-			gc.clearRect(0, 0, drawZone.width, drawZone.height)
+			gc.clearRect(0, 0, drawZone.width, drawZone.height)		
 			this.mainWindowController.emitGenerateGraph(this.parameters)
+			//this.startTimer
 		}
 	}
 	
@@ -359,10 +368,12 @@ class ResultsController extends FxViewerController {
 		this.parameters.clear
 		//this.parameters.add(simulation)
 		//this.parameters.add(recuit)
+		// multitest
 		this.parameters.add(false)
+		// methode AI
 		this.parameters.add(true)
+		// nb drones
 		this.parameters.add(1)
-		this.parameters.add(createRange(getNbDronesInput))
 		this.parameters.add(createRange(getNbEntrepotsInput))
 		this.parameters.add(createRange(getNbClientsInput))
 		this.parameters.add(createRange(getPoidsColisInput))
@@ -423,6 +434,57 @@ class ResultsController extends FxViewerController {
 		}
 		return ret
 	}
+
+	def startTimer() {
+		/*
+		var timer = new AnimationTimer() {
+			@Override
+			def handle(now : long) {
+				var lastUpdate = 0l;
+				if (now - lastUpdate >= 28_000_000) {
+					update();
+					lastUpdate = now;
+				}
+			}
+		};
+		timer.start();*/
+	}
+
+
+
+	def update() {
+		val gc = drawZone.graphicsContext2D
+		gc.clearRect(0, 0, drawZone.width, drawZone.height)
+		gc.setFill(Color.WHITE);
+		gc.fillRect(0, 0, drawZone.getWidth(), drawZone.getHeight());
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					drawPane.children.clear
+					for (b : warehouses) {
+						var img = new ImageView(new Image(PathEnum.WAREHOUSE.getPath, 20, 20, true, true))
+						img.setX(b.position.x / 2 as int)
+						img.setY(b.position.y / 2 as int)
+						drawPane.children.add(img)
+					}
+					for (c : clients) {
+						drawPane.children.add(c.drawItselfResults)
+					}
+				}
+			})
+	}
+	
+	def updateLists(wareHouses : List<MapPoint>, clients : List<MapPoint>) {
+		this.warehouses.clear
+		this.clients.clear
+		this.warehouses = wareHouses
+		for (cl : clients) {
+			var client = new Client(cl, false)
+			this.clients.add(client)
+		}		
+		update()
+	}
+	
 
 	def getNbDronesInput() : String {
 		return this.nbDronesTextField.text

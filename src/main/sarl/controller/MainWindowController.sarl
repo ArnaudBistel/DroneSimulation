@@ -49,7 +49,7 @@ class MainWindowController extends FxViewerController {
 	var clients : List<Client> = new ArrayList<Client>()
 	var managerId : UUID = null
 	var appManager : AppManager = null
-	
+	var resultsController : ResultsController
 	var mainApp : MainApp;
 	@FXML
 	var startButton : Button
@@ -669,6 +669,16 @@ class MainWindowController extends FxViewerController {
 	def getWarehouseBodies {
 		return this.warehouseBodies
 	}
+
+	def setResultsController(resultsController : ResultsController) {
+		synchronized (this) {
+			this.resultsController = resultsController
+		}
+	}
+
+	def getResultsController() : ResultsController {
+		return this.resultsController
+	}	
 
 	def exportData(filename : String) {
 		System.out.println("Send filename : " + filename)

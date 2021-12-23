@@ -120,6 +120,7 @@ public class MainApp extends FxApplication {
     		dialogStage.setScene(scene);
     		ResultsController controller = loader.getController();
     		controller.init(this, this.mainWindowController);
+    		this.mainWindowController.setResultsController(controller);
     		dialogStage.show();
     		
     		dialogStage.setOnHiding(new EventHandler<WindowEvent>() {
@@ -131,7 +132,6 @@ public class MainApp extends FxApplication {
     					@Override
     					public void run() {
     						//mainWindowController.startAgent();
-    						System.out.println("Results window Closed");
     					}
     				});
     			}

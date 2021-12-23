@@ -11,6 +11,7 @@ import io.sarl.javafx.AppExit
 import gui.DroneBody
 import gui.WarehouseBody
 import controller.MainWindowController
+import controller.ResultsController
 import map.SimulationMap
 import gui.DroneBody
 import gui.WarehouseBody
@@ -63,6 +64,7 @@ agent AppManager {
 	var importFile : String = null
 
 	var controller : MainWindowController
+	var resultsController : ResultsController = null
 	var width : Integer
 	var height : Integer
 	val perceptionDistance : int = 200
@@ -129,7 +131,7 @@ agent AppManager {
 					this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
 				}
 				for (cl : this.map.getClients()) {
-					var client = new Client(cl)
+					var client = new Client(cl, true)
 					controller.addClient(client)
 				}
 				this.controller.initalizeImageView
@@ -138,7 +140,7 @@ agent AppManager {
 				}
 				
 			} else {
-				this.controller.initalizeImageView				
+				this.controller.resultsController.updateLists(this.map.getWarehouses(), this.map.getClients())
 			}
 			
 			
@@ -452,6 +454,7 @@ agent AppManager {
 	def getMap{
 		return this.map
 	}
+
 	
 	on CancelEvery {
 		synchronized(this){
@@ -463,7 +466,7 @@ agent AppManager {
 				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
 			}
 			for (cl : this.map.getClients()) {
-				var client = new Client(cl)
+				var client = new Client(cl, true)
 				controller.addClient(client)
 			}
 			this.controller.initalizeImageView
