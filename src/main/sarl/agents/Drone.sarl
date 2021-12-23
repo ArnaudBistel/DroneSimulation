@@ -36,7 +36,7 @@ agent Drone {
 	var warehouseBody : WarehouseBody
 	var path : List<MapPoint>
 	var nextDestination : Point2i = null
-
+	
 	on Initialize {
 		synchronized (this) {
 		

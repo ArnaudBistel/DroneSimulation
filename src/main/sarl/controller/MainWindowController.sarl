@@ -104,6 +104,16 @@ class MainWindowController extends FxViewerController {
 	var paramLabel2 : Label
 	@FXML
 	var paramLabel3 : Label
+
+	// Right-pane variables
+	@FXML
+	var droneRP : Label
+	@FXML
+	var entrepotsRP : Label
+	@FXML
+	var deliveredPackages : Label
+	@FXML
+	var remainingPackages : Label
 	
 	var simulation : Boolean = true
 	var recuit : Boolean = true
@@ -136,7 +146,7 @@ class MainWindowController extends FxViewerController {
                     }else{
                     	simulation = false
                     }
-					updateTextFields()                 
+					updateTextFields()            
 				}
             }
         });
@@ -291,6 +301,22 @@ class MainWindowController extends FxViewerController {
 				}
 			})
 		}*/
+	}
+	
+	def initializeRightPane() {
+		Platform.runLater(new Runnable() {
+			@Override
+			def run(){
+				try{
+					System.out.println("YES")
+					while(!getStarted) { }
+					setDroneRP(nbDronesInput.toString())
+					setEntrepotsRP(nbEntrepotsInput.toString())					
+				} catch(e : InterruptedException){
+					e.printStackTrace();
+				}
+			}
+		})
 	}
 
 	def updateTextFields() {
@@ -565,6 +591,7 @@ class MainWindowController extends FxViewerController {
 			}
         };
         timer.start();
+        initializeRightPane()
 	}
 	
 	def initalizeImageView() {
@@ -760,5 +787,21 @@ class MainWindowController extends FxViewerController {
 	
 	def setInMultiTest (inMultiTest : boolean){
 		this.inMultiTest = inMultiTest
+	}
+	
+	def getDroneRP() : String {
+		return this.droneRP.toString()
+	}
+	
+	def getEntrepotsRP() : String {
+		return this.entrepotsRP.toString()
+	}
+	
+	def setDroneRP(nb : String) {
+		this.droneRP.setText(nb)
+	}
+	
+	def setEntrepotsRP(nb : String){
+		this.entrepotsRP.setText(nb)
 	}
 }

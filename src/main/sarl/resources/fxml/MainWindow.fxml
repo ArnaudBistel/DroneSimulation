@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.scene.canvas.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="865.0" prefWidth="1540.0" styleClass="background" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="865.0" prefWidth="1540.0" styleClass="background" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
    <children>
       <VBox prefHeight="865.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -60,7 +70,7 @@
                                           <Label fx:id="paramLabel3" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nb itér. par pallier" GridPane.rowIndex="15" />
                                           <Button fx:id="generateButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#generateGraph" styleClass="button-start" text="Generate Graph" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
                                           <Button fx:id="startButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#startAgent" styleClass="button-start" text="Start" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="17" />
-                                          <Button fx:id="restartButton" visible="false" contentDisplay="CENTER" mnemonicParsing="false" onAction="#restartSimulation" styleClass="button-start" text="Restart" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="16" />
+                                          <Button fx:id="restartButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#restartSimulation" styleClass="button-start" text="Restart" textAlignment="CENTER" visible="false" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="16" />
                                        </children>
                                        <columnConstraints>
                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -118,9 +128,9 @@
                                       </rowConstraints>
                                        <children>
                                           <Label styleClass="label-bright" text="Drones" />
-                                          <Label text="Label" GridPane.columnIndex="1" />
+                                          <Label fx:id="droneRP" text="Label" GridPane.columnIndex="1" />
                                           <Label styleClass="label-bright" text="Dépôts" GridPane.rowIndex="1" />
-                                          <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Label fx:id="entrepotsRP" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label styleClass="label-bright" text="Colis livrés" GridPane.rowIndex="2" />
                                           <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                           <Label styleClass="label-bright" text="Colis restants" GridPane.rowIndex="3" />
