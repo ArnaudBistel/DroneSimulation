@@ -97,13 +97,15 @@ public class MainApp extends FxApplication {
      * Opens a dialog to show statistics.
      */
     public void showStatistics() {
-    	if (!mainWindowController.getStarted()) {
+    	
+    	this.openResultsWindow();
+    	/*if (!mainWindowController.getStarted()) {
     		if (mainWindowController.getSimulation()) {
         		this.openResultsWindow();
     		}
     	} else {
     		this.openResultsWindow();       		
-    	}
+    	}*/
     }
     
     

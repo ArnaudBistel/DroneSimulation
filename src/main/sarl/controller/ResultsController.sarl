@@ -101,6 +101,7 @@ class ResultsController extends FxViewerController {
 		this.appManager = this.mainWindowController.appManager
 		this.width = drawZone.width as Integer;
 		this.height = drawZone.height as Integer;
+		this.mainWindowController.inMultiTest = true
 		val gc = drawZone.graphicsContext2D
 		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		gc.setFill(Color.WHITE);
@@ -113,6 +114,7 @@ class ResultsController extends FxViewerController {
 	@FXML
 	def generateGraph() {	
 		createParametersList()
+		this.mainWindowController.createParametersList
 		if (this.mainWindowController.managerId === null) {
 			this.mainWindowController.createManager
 		} else {
@@ -485,7 +487,6 @@ class ResultsController extends FxViewerController {
 		update()
 	}
 	
-
 	def getNbDronesInput() : String {
 		return this.nbDronesTextField.text
 	}

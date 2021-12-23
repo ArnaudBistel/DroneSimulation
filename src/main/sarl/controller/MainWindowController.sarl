@@ -107,6 +107,7 @@ class MainWindowController extends FxViewerController {
 	var recuit : Boolean = true
 	var parameters : ArrayList = new ArrayList()
 	
+	var inMultiTest = false
 	var stopped = true
 	
 	@Pure
@@ -117,6 +118,7 @@ class MainWindowController extends FxViewerController {
 		//System.out.println("Width : " + this.width + " -- height : " + this.height)
 		
 		initializeParamFields
+		createParametersList
 		
 		// radio button simulation ou multiple tests listener
 		this.simulationRadioButtonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() 
@@ -349,21 +351,44 @@ class MainWindowController extends FxViewerController {
 	 
 	 
 	@FXML
-	def generateGraph() {
-		createParametersList()
-		if (this.managerId === null) {
-			createManager
+	def generateGraph {
+		createParametersList
+		this.inMultiTest = false
+		
+		
+		if (!this.simulation) {
+			if (this.managerId === null) {
+				mainApp.showStatistics()
+				createManager
+			}
+			else{
+				if(this.started.get()){
+					startAgent
+					mainApp.showStatistics()
+					this.resultsController.generateGraph
+					
+				}
+				else {
+					mainApp.showStatistics()
+					this.resultsController.generateGraph
+				}	
+			}
 		}
-		else{
-			this.bodies.clear
-			this.droneBodies.clear
-			this.warehouseBodies.clear
-			this.clients.clear
-			this.drawPane.children.clear
-
-			val gc = drawZone.graphicsContext2D
-			gc.clearRect(0, 0, drawZone.width, drawZone.height)
-			emitGenerateGraph
+		else {
+			if (this.managerId === null) {
+				createManager
+			}
+			else{
+				this.bodies.clear
+				this.droneBodies.clear
+				this.warehouseBodies.clear
+				this.clients.clear
+				this.drawPane.children.clear
+	
+				val gc = drawZone.graphicsContext2D
+				gc.clearRect(0, 0, drawZone.width, drawZone.height)
+				emitGenerateGraph
+			}
 		}
 	}
 	
@@ -383,7 +408,7 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	def startAgent {
 		createParametersList()
-
+		this.inMultiTest = false
 		// start
 		if (!started.getAndSet(true)) {
 			// lance la simulation
@@ -433,9 +458,9 @@ class MainWindowController extends FxViewerController {
 		}
 	}
 
-	def createParametersList() {
+	def createParametersList {
 		this.parameters.clear
-		this.parameters.add(simulation)
+		this.parameters.add(this.inMultiTest == true ? false : simulation)
 		this.parameters.add(recuit)
 		this.parameters.add(createRange(getNbDronesInput))
 		this.parameters.add(createRange(getNbEntrepotsInput))
@@ -700,5 +725,13 @@ class MainWindowController extends FxViewerController {
 	
 	def getManagerId() : UUID {
 		return this.managerId
+	}
+	
+	def getInMultiTest{
+		return this.inMultiTest
+	}
+	
+	def setInMultiTest (inMultiTest : boolean){
+		this.inMultiTest = inMultiTest
 	}
 }
