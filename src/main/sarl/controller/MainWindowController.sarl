@@ -308,10 +308,9 @@ class MainWindowController extends FxViewerController {
 			@Override
 			def run(){
 				try{
-					System.out.println("YES")
-					while(!getStarted) { }
 					setDroneRP(nbDronesInput.toString())
-					setEntrepotsRP(nbEntrepotsInput.toString())					
+					setEntrepotsRP(nbEntrepotsInput.toString())
+					//delivers stats
 				} catch(e : InterruptedException){
 					e.printStackTrace();
 				}
