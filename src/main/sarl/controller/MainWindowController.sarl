@@ -55,6 +55,8 @@ class MainWindowController extends FxViewerController {
 	var startButton : Button
 	@FXML
 	var generateButton : Button
+	@FXML
+	var restartButton : Button
 	val started = new AtomicBoolean
 	var startedBool = false
 	
@@ -413,7 +415,7 @@ class MainWindowController extends FxViewerController {
 		if (!started.getAndSet(true)) {
 			// lance la simulation
 			if (this.simulation) {
-				
+				this.restartButton.setVisible(true)
 				this.stopped = false
 				this.startButton.setText("Arrêter");
 				this.startButton.getStyleClass().add("button-stop");
@@ -443,6 +445,7 @@ class MainWindowController extends FxViewerController {
 
 		// stop
 		} else if (started.getAndSet(false)) {
+			this.restartButton.setVisible(false)
 			this.stopped = true
 			this.bodies.clear
 			this.droneBodies.clear
@@ -456,6 +459,30 @@ class MainWindowController extends FxViewerController {
 			this.startButton.getStyleClass().remove("button-stop");
 			this.startButton.setText("Démarrer");
 		}
+	}
+	
+	@FXML
+	def restartSimulation {
+		// Stop
+		this.bodies.clear
+		this.droneBodies.clear
+		this.warehouseBodies.clear
+		this.clients.clear
+		this.drawPane.children.clear
+		emitToAgents(new CancelEvery, true)
+		// Restart
+		createParametersList()
+		// start
+				
+		if (this.managerId === null){
+			createManager()
+		}
+		else {
+			System.out.println("Restart app manager")
+			emitToAgents(new Restart, true)
+		}
+
+		this.startSimulation();
 	}
 
 	def createParametersList {
