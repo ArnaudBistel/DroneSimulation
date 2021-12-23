@@ -59,7 +59,7 @@ class ResultsController extends FxViewerController {
 	var height : Integer
 
 	@FXML
-	var drawZone : Canvas
+	var backgroundCanvas : Canvas
 
 	@FXML
 	var drawPane : Pane
@@ -99,13 +99,13 @@ class ResultsController extends FxViewerController {
 		this.mainApp = mainApp;
 		this.mainWindowController = mainWindowController;
 		this.appManager = this.mainWindowController.appManager
-		this.width = drawZone.width as Integer;
-		this.height = drawZone.height as Integer;
+		this.width = drawPane.width as Integer;
+		this.height = drawPane.height as Integer;
 		this.mainWindowController.inMultiTest = true
-		val gc = drawZone.graphicsContext2D
-		gc.clearRect(0, 0, drawZone.width, drawZone.height)
+		val gc = backgroundCanvas.graphicsContext2D
+		gc.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height)
 		gc.setFill(Color.WHITE);
-		gc.fillRect(0, 0, drawZone.getWidth(), drawZone.getHeight());	
+		gc.fillRect(0, 0, backgroundCanvas.getWidth(), backgroundCanvas.getHeight());	
 		initializeFieldsValues
 		initializeParamFields
 	}
@@ -118,9 +118,6 @@ class ResultsController extends FxViewerController {
 		if (this.mainWindowController.managerId === null) {
 			this.mainWindowController.createManager
 		} else {
-
-			val gc = drawZone.graphicsContext2D
-			gc.clearRect(0, 0, drawZone.width, drawZone.height)		
 			this.mainWindowController.emitGenerateGraph(this.parameters)
 			//this.startTimer
 		}
@@ -455,25 +452,21 @@ class ResultsController extends FxViewerController {
 
 
 	def update() {
-		val gc = drawZone.graphicsContext2D
-		gc.clearRect(0, 0, drawZone.width, drawZone.height)
-		gc.setFill(Color.WHITE);
-		gc.fillRect(0, 0, drawZone.getWidth(), drawZone.getHeight());
-			Platform.runLater(new Runnable() {
-				@Override
-				def run() {
-					drawPane.children.clear
-					for (b : warehouses) {
-						var img = new ImageView(new Image(PathEnum.WAREHOUSE.getPath, 20, 20, true, true))
-						img.setX(b.position.x / 2 as int)
-						img.setY(b.position.y / 2 as int)
-						drawPane.children.add(img)
-					}
-					for (c : clients) {
-						drawPane.children.add(c.drawItselfResults)
-					}
+		Platform.runLater(new Runnable() {
+			@Override
+			def run() {
+				drawPane.children.clear
+				for (b : warehouses) {
+					var img = new ImageView(new Image(PathEnum.WAREHOUSE.getPath, 20, 20, true, true))
+					img.setX(b.position.x / 2 as int)
+					img.setY(b.position.y / 2 as int)
+					drawPane.children.add(img)
 				}
-			})
+				for (c : clients) {
+					drawPane.children.add(c.drawItselfResults)
+				}
+			}
+		})
 	}
 	
 	def updateLists(wareHouses : List<MapPoint>, clients : List<MapPoint>) {

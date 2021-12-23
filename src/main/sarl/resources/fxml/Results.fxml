@@ -36,21 +36,13 @@
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <padding>
-                        <Insets bottom="80.0" left="20.0" right="20.0" top="80.0" />
+                        <Insets bottom="40.0" left="20.0" right="20.0" top="80.0" />
                      </padding>
                   </GridPane>
-                  <AnchorPane>
+                  <AnchorPane maxHeight="436.0" maxWidth="540.0" minHeight="436.0" minWidth="540.0" prefHeight="436.0" prefWidth="540.0">
                      <children>
-                        <Canvas fx:id="drawZone" height="396.0" width="510.0" AnchorPane.leftAnchor="20.0" BorderPane.alignment="CENTER">
-                           <BorderPane.margin>
-                              <Insets bottom="40.0" top="40.0" />
-                           </BorderPane.margin>
-                        </Canvas>
-                        <Pane fx:id="drawPane" prefHeight="396.0" prefWidth="510.0" AnchorPane.leftAnchor="20.0">
-                           <padding>
-                              <Insets left="20.0" />
-                           </padding>
-                        </Pane>
+                        <Canvas fx:id="backgroundCanvas" height="436.0" layoutX="10.0" layoutY="10.0" width="540.0" />
+                        <Pane fx:id="drawPane" prefHeight="396.0" prefWidth="510.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0" />
                      </children>
                   </AnchorPane>
                </children>
