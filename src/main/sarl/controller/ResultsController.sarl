@@ -12,7 +12,7 @@ import gui.MainApp
 import gui.WarehouseBody
 
 import io.sarl.javafx.FxViewerController
-
+import java.util.Random;
 import java.util.ArrayList
 import java.util.List
 import java.util.Map
@@ -26,6 +26,7 @@ import javafx.application.Platform
 import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
 import javafx.fxml.FXML
+import javafx.scene.chart.XYChart
 import javafx.css.PseudoClass
 import javafx.scene.image.Image
 import javafx.scene.canvas.Canvas
@@ -35,9 +36,13 @@ import javafx.scene.control.Label
 import javafx.scene.control.RadioButton
 import javafx.scene.control.TextField
 import javafx.scene.control.Toggle
+import javafx.scene.shape.Line
 import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.Pane
 import javafx.^event.ActionEvent
+import javafx.scene.chart.LineChart;
+import javafx.^event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import agents.CancelEvery
 import agents.GenerateGraph
 import map.MapPoint
@@ -65,6 +70,9 @@ class ResultsController extends FxViewerController {
 	var drawPane : Pane
 
 	@FXML
+	var drawPaneRoutes : Pane
+
+	@FXML
 	var nbDronesTextField : TextField
 	@FXML
 	var nbEntrepotsTextField : TextField
@@ -87,6 +95,20 @@ class ResultsController extends FxViewerController {
 	@FXML
 	var epsilonTextField : TextField
 
+	@FXML
+	var lineChartRS1 : LineChart<String, Number>
+
+	@FXML
+	var lineChartRS2 : LineChart<String, Number>
+
+	@FXML
+	var lineChartQL1 : LineChart<String, Number>
+
+	@FXML
+	var lineChartQL2 : LineChart<String, Number>
+
+	
+
 	var parameters : ArrayList = new ArrayList()
 
 	var mainWindowController : MainWindowController
@@ -108,17 +130,22 @@ class ResultsController extends FxViewerController {
 		gc.fillRect(0, 0, backgroundCanvas.getWidth(), backgroundCanvas.getHeight());	
 		initializeFieldsValues
 		initializeParamFields
+		this.lineChartRS1.setLegendVisible(false);
+		this.lineChartRS2.setLegendVisible(false);
+		this.lineChartQL1.setLegendVisible(false);
+		this.lineChartQL2.setLegendVisible(false);
 	}
 
 
 	@FXML
-	def generateGraph() {	
+	def generateGraph() {
 		createParametersList()
 		this.mainWindowController.createParametersList
 		if (this.mainWindowController.managerId === null) {
 			this.mainWindowController.createManager
 		} else {
 			this.mainWindowController.emitGenerateGraph(this.parameters)
+			displayCharts
 			//this.startTimer
 		}
 	}
@@ -372,7 +399,7 @@ class ResultsController extends FxViewerController {
 		// methode AI
 		this.parameters.add(true)
 		// nb drones
-		this.parameters.add(1)
+		this.parameters.add(createRange(getNbDronesInput))
 		this.parameters.add(createRange(getNbEntrepotsInput))
 		this.parameters.add(createRange(getNbClientsInput))
 		this.parameters.add(createRange(getPoidsColisInput))
@@ -449,7 +476,129 @@ class ResultsController extends FxViewerController {
 		timer.start();*/
 	}
 
+	def displayCharts() {
+		this.lineChartRS1.data.clear
+		this.lineChartRS2.data.clear
+		this.lineChartQL1.data.clear
+		this.lineChartQL2.data.clear
+		
+		// Recuit simulé
+		var seriesRS1 = new XYChart.Series<String, Number>()
+		var i = 0
+		while (i < 100) {
+			seriesRS1.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
+			
+			i++
+		}
+		this.lineChartRS1.data.addAll(seriesRS1)
+		for (data : seriesRS1.getData()) {
+			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+				@Override
+				def handle(e : MouseEvent) {
+					displayDronesRoutes
+					System.out.println("X" + data.XValue + " y : " + data.YValue)
+				}
+			})
+		}
+		
+		var seriesRS2 = new XYChart.Series<String, Number>()
+		i = 0
+		while (i < 100) {
+			seriesRS2.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
+			
+			i++
+		}
+		this.lineChartRS2.data.addAll(seriesRS2)
+		for (data : seriesRS2.getData()) {
+			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+				@Override
+				def handle(e : MouseEvent) {
+					displayDronesRoutes
+					System.out.println("X" + data.XValue + " y : " + data.YValue)
+				}
+			})
+		}
+		
+		
+		// Q-Learning
+		var seriesQL1 = new XYChart.Series<String, Number>()
+		i = 0
+		while (i < 100) {
+			seriesQL1.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
+			
+			i++
+		}
+		//this.lineChartQL1.setStyle(".default-color0.chart-series-line { -fx-stroke: #137baf; }")
+		this.lineChartQL1.data.addAll(seriesQL1)
+		for (data : seriesQL1.getData()) {
+			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+				@Override
+				def handle(e : MouseEvent) {
+					displayDronesRoutes
+					System.out.println("X" + data.XValue + " y : " + data.YValue)
+				}
+			})
+		}
+		
+		var seriesQL2 = new XYChart.Series<String, Number>()
+		i = 0
+		while (i < 100) {
+			seriesQL2.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
+			
+			i++
+		}
+		//this.lineChartQL2.setStyle(".default-color0.chart-series-line { -fx-stroke: #d8a9a9; }")
+		this.lineChartQL2.data.addAll(seriesQL2)
+		
+		for (data : seriesQL2.getData()) {
+			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+				@Override
+				def handle(e : MouseEvent) {
+					displayDronesRoutes
+					System.out.println("X" + data.XValue + " y : " + data.YValue)
+				}
+			})
+		}
+		
+		
+	}
 
+	def displayDronesRoutes {
+		System.out.println("------------------ displayDronesRoutes ------------------")
+		
+		// RECUPERER NOMBRE TOTAL DE DRONE
+		var nbDrone = 10
+		System.out.println("nbDrone : " + nbDrone)
+		
+		var j = 0
+		drawPaneRoutes.children.clear
+		var rand = new Random
+		
+		var nbPoint = this.clients.size
+		
+		while (j < nbDrone) {
+			var routes = new ArrayList()
+			var i = 0
+			while (i < nbPoint / 2) {
+				routes.add(this.clients.get(rand.nextInt(this.clients.size)))
+				i = i + 1
+			}
+			var k = 0
+			var col = Color.color(Math.random(), Math.random(), Math.random())
+			while (k < routes.size - 1) {
+				var c0 = routes.get(k)
+				var c1 = routes.get(k + 1)
+				//System.out.println("c0 : x : " + c0.getCenterX() + " y : " + c0.getCenterY())
+				//System.out.println("c1 : x : " + c1.getCenterX() + " y : " + c1.getCenterY())
+				var line = new Line(c0.getCenterX(), c0.getCenterY(), c1.getCenterX(), c1.getCenterY());
+				line.setStroke(col);
+				drawPaneRoutes.children.add(line)
+				k++
+			}
+			j++
+		}
+	}
+	
 
 	def update() {
 		Platform.runLater(new Runnable() {
