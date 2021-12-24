@@ -22,7 +22,7 @@
 }
 
 .label-header {
-    -fx-font-size: 32pt;
+    -fx-font-size: 28pt;
     -fx-font-family: "Segoe UI Light";
     -fx-text-fill: white;
     -fx-opacity: 1;
@@ -155,4 +155,15 @@
 
 .button:default:hover {
     -fx-background-color: derive(-fx-focus-color,30%);
+}
+
+.chart-legend {
+   -fx-background-color:  #1d1d1d;
+    -fx-text-fill: white;
+}
+
+
+.chart-legend-item{
+    -fx-text-fill: white;
+    -fx-opacity: 1;
 }

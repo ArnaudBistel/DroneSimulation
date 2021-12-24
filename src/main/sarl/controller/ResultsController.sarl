@@ -130,10 +130,12 @@ class ResultsController extends FxViewerController {
 		gc.fillRect(0, 0, backgroundCanvas.getWidth(), backgroundCanvas.getHeight());	
 		initializeFieldsValues
 		initializeParamFields
+		/*
 		this.lineChartRS1.setLegendVisible(false);
 		this.lineChartRS2.setLegendVisible(false);
 		this.lineChartQL1.setLegendVisible(false);
 		this.lineChartQL2.setLegendVisible(false);
+		*/
 	}
 
 
@@ -484,6 +486,7 @@ class ResultsController extends FxViewerController {
 		
 		// Recuit simulé
 		var seriesRS1 = new XYChart.Series<String, Number>()
+		seriesRS1.setName("Coût")		
 		var i = 0
 		while (i < 100) {
 			seriesRS1.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
@@ -502,6 +505,7 @@ class ResultsController extends FxViewerController {
 		}
 		
 		var seriesRS2 = new XYChart.Series<String, Number>()
+		seriesRS2.setName("Temps")
 		i = 0
 		while (i < 100) {
 			seriesRS2.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
@@ -522,6 +526,8 @@ class ResultsController extends FxViewerController {
 		
 		// Q-Learning
 		var seriesQL1 = new XYChart.Series<String, Number>()
+		seriesQL1.setName("Coût")		
+		
 		i = 0
 		while (i < 100) {
 			seriesQL1.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
@@ -541,6 +547,8 @@ class ResultsController extends FxViewerController {
 		}
 		
 		var seriesQL2 = new XYChart.Series<String, Number>()
+		seriesQL2.setName("Temps")
+		
 		i = 0
 		while (i < 100) {
 			seriesQL2.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))

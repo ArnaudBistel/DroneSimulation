@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="865.0" prefWidth="1540.0" styleClass="background" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ResultsController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1540.0" styleClass="background" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ResultsController">
    <children>
       <HBox prefHeight="865.0" prefWidth="1540.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -53,9 +53,9 @@
             </VBox>
             <VBox prefWidth="1000.0">
                <children>
-                  <HBox prefHeight="260.0">
+                  <HBox prefHeight="220.0">
                      <children>
-                        <VBox alignment="TOP_CENTER" layoutX="1050.0" layoutY="10.0" prefHeight="200.0" prefWidth="500.0">
+                        <VBox alignment="TOP_CENTER" layoutX="1050.0" layoutY="10.0" minHeight="200.0" prefHeight="200.0" prefWidth="500.0">
                            <children>
                               <Label styleClass="label-header" text="Recuit simulé" />
                               <GridPane>
@@ -72,7 +72,7 @@
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                  </columnConstraints>
                                  <padding>
-                                    <Insets left="20.0" right="20.0" top="20.0" />
+                                    <Insets left="20.0" right="20.0" top="10.0" />
                                  </padding>
                                  <rowConstraints>
                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -82,7 +82,7 @@
                               </GridPane>
                            </children>
                            <padding>
-                              <Insets bottom="10.0" top="10.0" />
+                              <Insets top="10.0" />
                            </padding>
                         </VBox>
                         <VBox alignment="TOP_CENTER" layoutX="550.0" layoutY="10.0" prefHeight="200.0" prefWidth="500.0">
@@ -102,7 +102,7 @@
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                  </columnConstraints>
                                  <padding>
-                                    <Insets left="20.0" right="20.0" top="20.0" />
+                                    <Insets left="20.0" right="20.0" top="10.0" />
                                  </padding>
                                  <rowConstraints>
                                     <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -117,7 +117,7 @@
                         </VBox>
                      </children>
                   </HBox>
-                  <VBox alignment="CENTER" spacing="15.0">
+                  <VBox alignment="CENTER" spacing="10.0">
                      <children>
                         <HBox alignment="CENTER">
                            <children>
@@ -134,12 +134,15 @@
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
+                     <padding>
+                        <Insets bottom="10.0" />
+                     </padding>
                   </VBox>
                   <HBox>
                      <children>
-                        <VBox>
+                        <VBox prefHeight="580.0">
                            <children>
-                              <LineChart fx:id="lineChartRS1" prefHeight="280.0">
+                              <LineChart fx:id="lineChartRS1" prefHeight="290.0">
                                  <xAxis>
                                     <CategoryAxis side="BOTTOM" />
                                  </xAxis>
@@ -147,7 +150,7 @@
                                     <NumberAxis side="LEFT" />
                                  </yAxis>
                               </LineChart>
-                              <LineChart fx:id="lineChartRS2" prefHeight="280.0">
+                              <LineChart fx:id="lineChartRS2" prefHeight="290.0">
                                  <xAxis>
                                     <CategoryAxis side="BOTTOM" />
                                  </xAxis>
@@ -159,7 +162,7 @@
                         </VBox>
                         <VBox>
                            <children>
-                              <LineChart fx:id="lineChartQL1" prefHeight="280.0">
+                              <LineChart fx:id="lineChartQL1" prefHeight="290.0">
                                  <xAxis>
                                     <CategoryAxis side="BOTTOM" />
                                  </xAxis>
@@ -167,7 +170,7 @@
                                     <NumberAxis side="LEFT" />
                                  </yAxis>
                               </LineChart>
-                              <LineChart fx:id="lineChartQL2" prefHeight="280.0">
+                              <LineChart fx:id="lineChartQL2" prefHeight="290.0">
                                  <xAxis>
                                     <CategoryAxis side="BOTTOM" />
                                  </xAxis>
