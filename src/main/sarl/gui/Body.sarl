@@ -4,8 +4,6 @@ import java.util.UUID
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 
-import javafx.^event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import org.arakhne.afc.math.geometry.d2.i.Point2i
 /** 
  * @author vlt
@@ -20,6 +18,7 @@ class Body {
 	var imageView : ImageView
 	var perceptionMapCellIndex : int
 	
+	
 	new(x : int, y : int, height : int, width : int, imagePath : String) {
 		this(x, y, UUID.randomUUID(), height, width, imagePath)
 	}
@@ -33,15 +32,7 @@ class Body {
 		this.image = new Image(imagePath, this.height, this.width, true, true)
 		this.imageView = new ImageView(this.image)
 		this.imageView.id = id.toString
-		var eventHandler = new EventHandler<MouseEvent>(){
-			def handle(^event : MouseEvent) {
-				System.out.println("Test")
-				throw new UnsupportedOperationException("TODO: auto-generated method stub")
-			}
-
-		}
-		this.imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
-			
+		
 		this.perceptionMapCellIndex = -1
 	}
 

@@ -6,7 +6,7 @@ import java.util.UUID
  * @author arnaud
  * 
  */
-class DroneBody extends Body{
+class DroneBody extends Body {
 	var velocityX : double = -3
 	var velocityY : double = -3
 	var posX : double = 0

@@ -97,6 +97,14 @@ event GenerateGraph {
 	}
 }
 
+event droneInfos {
+	var droneId : UUID	
+	
+	new(id: UUID){
+		this.droneId = id
+	}
+}
+
 event CancelEvery {
 	new() {
 		

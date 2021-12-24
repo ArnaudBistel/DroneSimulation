@@ -20,6 +20,7 @@ import java.util.TreeMap
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
+
 import javafx.animation.AnimationTimer
 import javafx.application.Platform
 import javafx.beans.value.ChangeListener
@@ -37,15 +38,16 @@ import javafx.scene.control.Toggle
 import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.Pane
 import javafx.scene.layout.AnchorPane
+import javafx.^event.EventHandler;
+import javafx.scene.input.MouseEvent;
 
-import javafx.^event.ActionEvent
 import agents.CancelEvery
 import agents.GenerateGraph
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
-	var droneBodies : Map<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
-	var warehouseBodies : Map<UUID, WarehouseBody> = new TreeMap<UUID, WarehouseBody>
+	var droneBodies : TreeMap<UUID, DroneBody> = new TreeMap<UUID, DroneBody>
+	var warehouseBodies : TreeMap<UUID, WarehouseBody> = new TreeMap<UUID, WarehouseBody>
 	var clients : List<Client> = new ArrayList<Client>()
 	var managerId : UUID = null
 	var appManager : AppManager = null
@@ -114,6 +116,18 @@ class MainWindowController extends FxViewerController {
 	var deliveredPackages : Label
 	@FXML
 	var remainingPackages : Label
+	
+	@FXML
+	var droneIndex : Label
+	@FXML
+	var nextClient: Label
+	@FXML
+	var remainingClients : Label
+	@FXML
+	var battery : Label
+	
+	@FXML
+	var warehouseIndex : Label
 	
 	var simulation : Boolean = true
 	var recuit : Boolean = true
@@ -310,7 +324,7 @@ class MainWindowController extends FxViewerController {
 				try{
 					setDroneRP(nbDronesInput.toString())
 					setEntrepotsRP(nbEntrepotsInput.toString())
-					//delivers stats
+					//TODO remaining app stats
 				} catch(e : InterruptedException){
 					e.printStackTrace();
 				}
@@ -569,12 +583,47 @@ class MainWindowController extends FxViewerController {
 
 	def addBody(body : Body, type : String) {
 		this.bodies.put(body.getId, body)
-		
 		if (type.equals("DRONE")){
 			this.droneBodies.put(body.getId, body as DroneBody)
+			//add mouse listener to each drone
+			for (entry : this.droneBodies.entrySet()) {
+				var eventHandler = new EventHandler<MouseEvent>() {
+					def handle(^event : MouseEvent) {
+						displayDroneInfos(body.id)
+						throw new UnsupportedOperationException("TODO: auto-generated method stub")
+					}
+				}
+				droneBodies.get(entry.getKey()).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
+		}
 		} else if (type.equals("WAREHOUSE")) {
 			this.warehouseBodies.put(body.getId, body as WarehouseBody)
+			//add warehouse listener to each warehouse
+			for (entry : this.warehouseBodies.entrySet()) {
+				var eventHandler = new EventHandler<MouseEvent>() {
+					def handle(^event : MouseEvent) {
+						displayWarehouseInfos(body.id)
+						throw new UnsupportedOperationException("TODO: auto-generated method stub")
+					}
+				}
+				warehouseBodies.get(entry.getKey()).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 		}
+		}
+	}
+	
+	def displayDroneInfos(id : UUID) : void {
+		var pos = -1
+		if(droneBodies.containsKey(id)){
+			pos = droneBodies.headMap(id).size()
+		}
+		droneIndex = pos+1
+	}
+	
+	def displayWarehouseInfos(id : UUID) : void {
+		var pos = -1
+		if (warehouseBodies.containsKey(id)) {
+			pos = warehouseBodies.headMap(id).size()
+		}
+		warehouseIndex = pos + 1
 	}
 
 	def startSimulation() {
@@ -631,7 +680,7 @@ class MainWindowController extends FxViewerController {
 
 		}
 	}
-
+	
 	def getHeight() {
 		return this.height;
 	}
@@ -792,15 +841,33 @@ class MainWindowController extends FxViewerController {
 		return this.droneRP.toString()
 	}
 	
-	def getEntrepotsRP() : String {
-		return this.entrepotsRP.toString()
-	}
 	
 	def setDroneRP(nb : String) {
 		this.droneRP.setText(nb)
 	}
 	
+	def getEntrepotsRP() : String {
+		return this.entrepotsRP.toString()
+	}
+	
 	def setEntrepotsRP(nb : String){
 		this.entrepotsRP.setText(nb)
 	}
+	
+	def getDroneIndex() : String {
+		return this.droneIndex.toString() 
+	} 
+
+	def setDroneIndex(index : int){
+		this.droneIndex.setText(index.toString())
+	}
+
+	def getWarehouseIndex() : String {
+		return this.warehouseIndex.toString()
+	}
+
+	def setWarehouseIndex(index : int) {
+		this.warehouseIndex.setText(index.toString())
+	}
+
 }
