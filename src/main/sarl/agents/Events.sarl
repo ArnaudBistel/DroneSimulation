@@ -110,3 +110,8 @@ event CancelEvery {
 		
 	}
 }
+
+event Pause {
+	new () {
+	}
+}

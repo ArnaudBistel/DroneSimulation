@@ -85,10 +85,12 @@ agent AppManager {
 	var objectsList : Map<UUID, Body> = new TreeMap<UUID, Body>
 	var deliveryLists = new TreeMap<UUID, ArrayList<List<MapPoint>>>
 	var random : Random
+	var onPause : Boolean
 
 	on Initialize {
 		synchronized (this) {
 			info("AppManager start : " + this.ID)
+			this.onPause = false
 			this.controller = occurrence.parameters.get(0) as MainWindowController
 			this.controller.appManager = this
 			this.width = this.controller.width as Integer
@@ -139,7 +141,6 @@ agent AppManager {
 				if(!this.controller.stopped){
 					startApp
 				}
-				
 			} else {
 				this.controller.resultsController.updateLists(this.map.getWarehouses(), this.map.getClients())
 			}
@@ -240,7 +241,7 @@ agent AppManager {
 
 	def newStep : void {
 		synchronized (this) {
-			if (this.initialized){
+			if (this.initialized && !this.onPause){
 				if (this.controller.started) {
 					if (this.stepCounter == 0) {
 						var warehouseBodyIds = deliveryLists.keySet();
@@ -506,6 +507,11 @@ agent AppManager {
 	on Restart {
 		//info("Restart App Manager")
 		startApp
+	}
+	
+	on Pause {
+		//info("Pause")
+		this.onPause = !this.onPause
 	}
 
 }
