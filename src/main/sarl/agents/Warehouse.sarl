@@ -46,7 +46,7 @@ agent Warehouse {
 	on Initialize {
 		synchronized (this) {
 		
-			info("Agent Warehouse")
+			//info("Agent Warehouse")
 			// Event trigger before the agent begin to live or to be used.
 			// You should put all the initialization statements in this block of code.
 			//info("The agent Warehouse was started.")
@@ -75,7 +75,7 @@ agent Warehouse {
 	on SendDeliveryList {
 		synchronized (this) {
 			this.deliveryList = occurrence.deliveryList
-			info("list:" + this.deliveryList)
+			//info("list:" + this.deliveryList)
 			// info(this.deliveryList)
 			var emptyDelivery = new ArrayList<List<MapPoint>>
 			for (var i = 0; i < deliveryList.size(); i++) {

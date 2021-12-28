@@ -59,9 +59,11 @@ agent Drone {
 				) {
 					this.nextDestination = null
 					this.arrivedToNextDestination = true
-					var action = new Action(ActionType.DEPOSIT, #[this.body.position.x as Integer, this.body.position.y as Integer])
-					var actionEvent = new ActionEvent(action)
-					emit(actionEvent)
+					if(this.path.size > 0){
+						var action = new Action(ActionType.DEPOSIT, #[this.body.position.x as Integer, this.body.position.y as Integer])
+						var actionEvent = new ActionEvent(action)
+						emit(actionEvent)	
+					}
 					calcNextDestinationVelocity()
 				} else {
 					var bodies = occurrence.perceived

@@ -89,7 +89,7 @@ agent AppManager {
 
 	on Initialize {
 		synchronized (this) {
-			info("AppManager start : " + this.ID)
+			//info("AppManager start : " + this.ID)
 			this.onPause = false
 			this.controller = occurrence.parameters.get(0) as MainWindowController
 			this.controller.appManager = this
@@ -164,7 +164,6 @@ agent AppManager {
 			}
 	
 			var parameters = this.controller.parameters
-			info(parameters)
 			// true pour simulation, false pour multitests
 			var simulation = parameters.get(0) as Boolean
 			// true pour recuit simulé, false pour q-learning
@@ -205,7 +204,6 @@ agent AppManager {
 					var deliveryList = new ArrayList<List<MapPoint>>
 					for (i : this.solution) {
 						if (i.get(0).equals(wh.value.mapPoint)) {
-							info("Delivery list add")
 							deliveryList.add(i)
 						}
 					}
@@ -246,7 +244,6 @@ agent AppManager {
 					if (this.stepCounter == 0) {
 						var warehouseBodyIds = deliveryLists.keySet();
 						for (warehouseBodyId : warehouseBodyIds) {
-							info("Delivery List for agent : " + warehouseBodyId)
 							var deliveryList = deliveryLists.get(warehouseBodyId);
 							var eventDeliveryList = new SendDeliveryList(deliveryList)
 							/*info(
@@ -358,7 +355,6 @@ agent AppManager {
 					dronebody.perceptionMapCellIndex = index
 				}			
 			} else if (action.type == ActionType.DEPOSIT) {
-				info("Deposit")
 				var params = action.params as DepositActionParams
 				var x = params.x
 				var y = params.y
@@ -371,6 +367,7 @@ agent AppManager {
 					i = i+1		
 				}
 				this.controller.clients.get(client).delivered = true
+				this.controller.newDeposit
 			}
 		}
 	}
@@ -436,10 +433,12 @@ agent AppManager {
 		}
 	}
 	
-	def getMap{
-		return this.map
+	on GetMapInfos{
+		info("test : " + this.map.nbClients + " ---  " + this.map.nbWarehouse)
+		
+		this.controller.updateMapInfos(this.map.nbClients, this.map.nbWarehouse)
 	}
-
+	
 	
 	on CancelEvery {
 		synchronized(this){
@@ -469,7 +468,7 @@ agent AppManager {
 	
 	on AgentInitialized {
 		synchronized(this){
-			info("Agent : " + occurrence.type.type + " initialized")
+			//info("Agent : " + occurrence.type.type + " initialized")
 			if (occurrence.type == AgentType.DRONE){
 				this.initDrones += 1
 			}

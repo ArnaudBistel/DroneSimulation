@@ -45,13 +45,13 @@ agent Sprite {
 		velocityY = 10;
 		// Event trigger before the agent begin to live or to be used.
 		// You should put all the initialization statements in this block of code.
-		info("The agent was started.")
+		//info("The agent was started.")
 	}
 
 	on Destroy {
 		// Event trigger when the agent is destroyed from the system.
 		// You should put all the resource releasing statements in this block of code.
-		info("The agent was stopped.")
+		//info("The agent was stopped.")
 	}
 
 	def setImage(i : Image) : void {

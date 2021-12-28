@@ -44,6 +44,7 @@ import javafx.scene.input.MouseEvent;
 import agents.CancelEvery
 import agents.GenerateGraph
 import agents.Pause
+import agents.GetMapInfos
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -124,8 +125,6 @@ class MainWindowController extends FxViewerController {
 	var droneIndex : Label
 	@FXML
 	var nextClient: Label
-	@FXML
-	var remainingClients : Label
 	@FXML
 	var battery : Label
 	
@@ -325,9 +324,8 @@ class MainWindowController extends FxViewerController {
 			@Override
 			def run(){
 				try{
-					setDroneRP(nbDronesInput.toString())
-					setEntrepotsRP(nbEntrepotsInput.toString())
-					//TODO remaining app stats
+					emitToAgents(new GetMapInfos(), true)
+					deliveredPackages.text = "0"
 				} catch(e : InterruptedException){
 					e.printStackTrace();
 				}
@@ -466,6 +464,13 @@ class MainWindowController extends FxViewerController {
 				
 				if (this.managerId === null){
 					createManager()
+					var nbDrone = this.nbDronesTextField.text == "" ? 1 : Integer.parseInt(this.nbDronesTextField.text)
+					nbDrone *= this.nbEntrepotsTextField.text == "" ? 1 : Integer.parseInt(this.nbEntrepotsTextField.text)
+					this.droneRP.text = nbDrone.toString
+					this.entrepotsRP.text = this.nbEntrepotsTextField.text == "" ? "1" : this.nbEntrepotsTextField.text
+					this.deliveredPackages.text = "0"
+					this.remainingPackages.text = this.nbClientsTextField.text ==
+						"" ? "1" : this.nbClientsTextField.text
 				}
 				else {
 					System.out.println("Restart app manager")
@@ -498,6 +503,9 @@ class MainWindowController extends FxViewerController {
 			this.drawPane.children.clear
 
 			emitToAgents(new CancelEvery, true)
+
+			emitToAgents(new GetMapInfos, true)
+			
 			
 			this.startButton.getStyleClass().add("button-start");
 			this.startButton.getStyleClass().remove("button-stop");
@@ -536,13 +544,14 @@ class MainWindowController extends FxViewerController {
 			this.pauseButton.getStyleClass().add("button-start");
 			this.pauseButton.getStyleClass().remove("button-stop");
 			this.pauseButton.setText("Play");
+			
 		} else {
 			// Play
 			this.pauseButton.getStyleClass().add("button-stop");
 			this.pauseButton.getStyleClass().remove("button-start");
 			this.pauseButton.setText("Pause");
 		}
-		
+
 		emitToAgents(new Pause, true)
 	}
 
@@ -615,7 +624,7 @@ class MainWindowController extends FxViewerController {
 						throw new UnsupportedOperationException("TODO: auto-generated method stub")
 					}
 				}
-				droneBodies.get(entry.getKey()).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
+				droneBodies.get(entry.key).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 		}
 		} else if (type.equals("WAREHOUSE")) {
 			this.warehouseBodies.put(body.getId, body as WarehouseBody)
@@ -847,6 +856,39 @@ class MainWindowController extends FxViewerController {
 		})
 	}
 	
+	def updateMapInfos(nbClients : int, nbWarehouse : int) {
+		Platform.runLater(new Runnable() {
+			@Override
+			def run() {
+				remainingPackages.text = nbClients.toString
+				if (!stopped) {
+					var nbDrone = nbDronesTextField.text == "" ? 1 : Integer.parseInt(nbDronesTextField.text)
+					nbDrone *= nbWarehouse
+					droneRP.text = nbDrone.toString
+				} else {
+					droneRP.text = ""
+				}
+				deliveredPackages.text = "0"
+				entrepotsRP.text = nbWarehouse.toString
+			}
+		})
+		
+	}
+	
+	def newDeposit {
+		Platform.runLater(new Runnable() {
+			@Override
+			def run() {
+				var nbRemaining = Integer.parseInt(remainingPackages.text) - 1
+				var nbDelivered = Integer.parseInt(deliveredPackages.text) + 1
+
+				remainingPackages.text = nbRemaining.toString
+				deliveredPackages.text = nbDelivered.toString
+			}
+		})
+		
+	}
+	
 	def getManagerId() : UUID {
 		return this.managerId
 	}
@@ -891,5 +933,7 @@ class MainWindowController extends FxViewerController {
 	def setWarehouseIndex(index : int) {
 		this.warehouseIndex.setText(index.toString())
 	}
+
+	
 
 }
