@@ -221,7 +221,7 @@ class MainWindowController extends FxViewerController {
 		}
 		// Allow floats
 		fields.clear
-		fields.addAll(speedTextField, paramTextField1, paramTextField2, paramTextField3)
+		fields.addAll(paramTextField1, paramTextField2, paramTextField3)
 		for (field : fields) {
 			Platform.runLater(new Runnable() {
 				@Override
@@ -252,7 +252,41 @@ class MainWindowController extends FxViewerController {
 				}
 			})
 		}
-		//Allow range of floats
+
+		// Allow specific floats for speed
+		fields.clear
+		fields.addAll(speedTextField)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							if (newValue.matches("[1-4]+([.][0-9]*)?") ||
+								newValue.matches("[0]+([.]([1-9][0-9]*)*)?") || newValue.matches("[1-5]*")) {
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+		// Allow range of floats
 		fields.clear
 		fields.addAll(poidsColisTextField)
 		for (field : fields) {
@@ -269,7 +303,7 @@ class MainWindowController extends FxViewerController {
 								return
 							}
 
-							if (newValue.matches("[0-9]+([.][0-9]*)?(-[0-9]*([.][0-9]*)?)?") ||
+							if (newValue.matches("[1-4]+([.][0-9]*)?(-[0-9]*([.][0-9]*)?)?") ||
 								newValue.matches("[0-9]*")) {
 								field.text = newValue
 							} else {
