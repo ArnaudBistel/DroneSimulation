@@ -652,6 +652,11 @@ class ResultsController extends FxViewerController {
 			@Override
 			def run() {
 				drawPane.children.clear
+				drawPaneRoutes.children.clear
+				lineChartRS1.data.clear
+				lineChartRS2.data.clear
+				lineChartQL1.data.clear
+				lineChartQL2.data.clear
 				for (b : warehouses) {
 					var img = new ImageView(new Image(PathEnum.WAREHOUSE.getPath, 20, 20, true, true))
 					img.setX(b.position.x / 2 as int)
