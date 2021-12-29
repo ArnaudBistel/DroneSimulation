@@ -27,6 +27,8 @@ import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
 import javafx.fxml.FXML
 import javafx.scene.chart.XYChart
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.CategoryAxis;
 import javafx.css.PseudoClass
 import javafx.scene.image.Image
 import javafx.scene.canvas.Canvas
@@ -47,6 +49,9 @@ import agents.CancelEvery
 import agents.GenerateGraph
 import map.MapPoint
 import gui.PathEnum
+import solutionSolver.solutionTester.MultiTesterSimulatedAnnealing
+import map.SimulationMap
+import utils.variables.SimulationParameters
 
 class ResultsController extends FxViewerController {
 	
@@ -113,8 +118,11 @@ class ResultsController extends FxViewerController {
 
 	var mainWindowController : MainWindowController
 
+	var simMap : SimulationMap 
 	var warehouses : List<MapPoint> = new ArrayList<MapPoint>()
 	var clients : List<Client> = new ArrayList<Client>()
+
+	var mtSimAnnealing : MultiTesterSimulatedAnnealing
 
 	@Pure
 	def init(mainApp : MainApp, mainWindowController : MainWindowController) {
@@ -130,6 +138,7 @@ class ResultsController extends FxViewerController {
 		gc.fillRect(0, 0, backgroundCanvas.getWidth(), backgroundCanvas.getHeight());	
 		initializeFieldsValues
 		initializeParamFields
+
 		/*
 		this.lineChartRS1.setLegendVisible(false);
 		this.lineChartRS2.setLegendVisible(false);
@@ -147,13 +156,37 @@ class ResultsController extends FxViewerController {
 			this.mainWindowController.createManager
 		} else {
 			this.mainWindowController.emitGenerateGraph(this.parameters)
-			displayCharts
+			//displayCharts
 			//this.startTimer
 		}
 	}
 	
 	@FXML
 	def startTest () {
+		if(this.clients.size <= 0) {
+			generateGraph()
+		}
+		//récupération paramètres
+		var nbDrones = createRange(getNbDronesInput).get(0).toInteger
+		var temp = SATempRange
+		var alpha = SAAlphaRange
+		var iter = SAnbIterPalierRange
+		//lancement
+		mtSimAnnealing = new MultiTesterSimulatedAnnealing(
+			simMap, SimulationParameters.MT_NB_STEP, SimulationParameters.MT_NB_TEST_BY_STEP, nbDrones,
+			temp.get(0), temp.get(1),
+			SimulationParameters.MT_TEMP_TRESHOLD, SimulationParameters.MT_TEMP_TRESHOLD,
+			alpha.get(0), alpha.get(1),
+			iter.get(0), iter.get(1)
+		)
+		mtSimAnnealing.runMultiTest
+		
+		
+		displayCharts(mtSimAnnealing.energyCostResults, mtSimAnnealing.timeCostResults,
+			new ArrayList<Double>(), new ArrayList<Double>()
+		)
+		
+		
 		//TODO if no manager -> generate graph
 		// Fetch all values and create a MultiTester for each method
 		// Display charts with the values computed
@@ -485,38 +518,50 @@ class ResultsController extends FxViewerController {
 		timer.start();*/
 	}
 
-	def displayCharts() {
+	
+	def displayCharts(
+		SACost : List<Double>, SATime : List<Double>,
+		QCost : List<Double>, QTime : List<Double>
+	) {
 		this.lineChartRS1.data.clear
 		this.lineChartRS2.data.clear
 		this.lineChartQL1.data.clear
 		this.lineChartQL2.data.clear
 		
-		// Recuit simulé
+		var xAxis = new CategoryAxis();
+		
+		// recuit
 		var seriesRS1 = new XYChart.Series<String, Number>()
-		seriesRS1.setName("Coût")		
+		seriesRS1.setName("Coût Recuit")
 		var i = 0
-		while (i < 100) {
-			seriesRS1.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
-			
+		var min = Double.MAX_VALUE
+		var max = Double.MIN_VALUE
+		for (e : SACost) {
+			if(e < min)
+				min = e;
+			if(e > max)
+				max = e;
+			seriesRS1.data.add(new XYChart.Data<String, Number>("" + i, e))
 			i++
 		}
+		var yAxis = new NumberAxis(min, max, 0.01*(max - min))
+		//this.lineChartRS1 = new LineChart<String,Number>(xAxis, yAxis) //ne met pas a jour
 		this.lineChartRS1.data.addAll(seriesRS1)
 		for (data : seriesRS1.getData()) {
 			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 				@Override
 				def handle(e : MouseEvent) {
-					displayDronesRoutes
+					displayDronesRoutes(Integer.parseInt(data.XValue))
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})
 		}
-		
+
 		var seriesRS2 = new XYChart.Series<String, Number>()
-		seriesRS2.setName("Temps")
+		seriesRS2.setName("Temps Recuit")
 		i = 0
-		while (i < 100) {
-			seriesRS2.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
-			
+		for (e : SATime) {
+			seriesRS2.data.add(new XYChart.Data<String, Number>(""+i, e))
 			i++
 		}
 		this.lineChartRS2.data.addAll(seriesRS2)
@@ -524,93 +569,80 @@ class ResultsController extends FxViewerController {
 			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 				@Override
 				def handle(e : MouseEvent) {
-					displayDronesRoutes
+					displayDronesRoutes(Integer.parseInt(data.XValue))
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})
 		}
-		
-		
+
 		// Q-Learning
 		var seriesQL1 = new XYChart.Series<String, Number>()
-		seriesQL1.setName("Coût")		
+		seriesQL1.setName("Coût QLearning")		
 		
 		i = 0
-		while (i < 100) {
-			seriesQL1.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
-			
+		for (e : QCost) {
+			seriesQL1.data.add(new XYChart.Data<String, Number>(""+i, e))
+
 			i++
 		}
-		//this.lineChartQL1.setStyle(".default-color0.chart-series-line { -fx-stroke: #137baf; }")
+		// this.lineChartQL1.setStyle(".default-color0.chart-series-line { -fx-stroke: #137baf; }")
 		this.lineChartQL1.data.addAll(seriesQL1)
 		for (data : seriesQL1.getData()) {
 			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 				@Override
 				def handle(e : MouseEvent) {
-					displayDronesRoutes
+					displayDronesRoutes(Integer.parseInt(data.XValue))
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})
 		}
-		
+
 		var seriesQL2 = new XYChart.Series<String, Number>()
 		seriesQL2.setName("Temps")
 		
 		i = 0
-		while (i < 100) {
-			seriesQL2.data.add(new XYChart.Data<String, Number>("" + i, Math.random()))
-			
+		for (e : QTime) {
+			seriesQL2.data.add(new XYChart.Data<String, Number>(""+i, e))
 			i++
 		}
-		//this.lineChartQL2.setStyle(".default-color0.chart-series-line { -fx-stroke: #d8a9a9; }")
+		// this.lineChartQL2.setStyle(".default-color0.chart-series-line { -fx-stroke: #d8a9a9; }")
 		this.lineChartQL2.data.addAll(seriesQL2)
 		
 		for (data : seriesQL2.getData()) {
 			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 				@Override
 				def handle(e : MouseEvent) {
-					displayDronesRoutes
+					displayDronesRoutes(Integer.parseInt(data.XValue))
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})
 		}
-		
-		
-	}
 
-	def displayDronesRoutes {
-		System.out.println("------------------ displayDronesRoutes ------------------")
+	}
+	
+	
+
+	def displayDronesRoutes (idx : int) {
 		
-		// RECUPERER NOMBRE TOTAL DE DRONE
-		var nbDrone = 10
-		System.out.println("nbDrone : " + nbDrone)
-		
-		var j = 0
 		drawPaneRoutes.children.clear
-		var rand = new Random
+		var rand = new Random(0)
 		
-		var nbPoint = this.clients.size
-		
-		while (j < nbDrone) {
+		var s = mtSimAnnealing.solutionsHistory.get(idx)
+		for (path : s) {
 			var routes = new ArrayList()
-			var i = 0
-			while (i < nbPoint / 2) {
-				routes.add(this.clients.get(rand.nextInt(this.clients.size)))
-				i = i + 1
+			for (e : path) {
+				routes.add(new Client(e, false))
 			}
+			var col = Color.color(rand.nextDouble, rand.nextDouble, rand.nextDouble)
 			var k = 0
-			var col = Color.color(Math.random(), Math.random(), Math.random())
 			while (k < routes.size - 1) {
 				var c0 = routes.get(k)
 				var c1 = routes.get(k + 1)
-				//System.out.println("c0 : x : " + c0.getCenterX() + " y : " + c0.getCenterY())
-				//System.out.println("c1 : x : " + c1.getCenterX() + " y : " + c1.getCenterY())
 				var line = new Line(c0.getCenterX(), c0.getCenterY(), c1.getCenterX(), c1.getCenterY());
 				line.setStroke(col);
 				drawPaneRoutes.children.add(line)
 				k++
 			}
-			j++
 		}
 	}
 	
@@ -633,11 +665,12 @@ class ResultsController extends FxViewerController {
 		})
 	}
 	
-	def updateLists(wareHouses : List<MapPoint>, clients : List<MapPoint>) {
+	def updateLists(map : SimulationMap) {
+		this.simMap = map
 		this.warehouses.clear
 		this.clients.clear
-		this.warehouses = wareHouses
-		for (cl : clients) {
+		this.warehouses = map.warehouses
+		for (cl : map.clients) {
 			var client = new Client(cl, false)
 			this.clients.add(client)
 		}		
@@ -658,6 +691,30 @@ class ResultsController extends FxViewerController {
 
 	def getPoidsColisInput() : String {
 		return this.poidsColisTextField.text
+	}
+
+	def getSATempRange() : List<Float> {
+		var temp = createRange(temperatureTextField.text)
+		if (temp.size == 1) // if only one number, duplicate it
+			temp.add(temp.get(0))
+		return temp
+	}
+
+	def getSAAlphaRange() : List<Float> {
+		var temp = createRange(alphaTextField1.text)
+		if (temp.size == 1) // if only one number, duplicate it
+			temp.add(temp.get(0))
+		return temp
+	}
+
+	def getSAnbIterPalierRange() : List<Integer> {
+		var temp = createRange(nbIterTextField.text)
+		if (temp.size == 1) // if only one number, duplicate it
+			temp.add(temp.get(0))
+		var res : List<Integer> = new ArrayList<Integer>()
+		for(e : temp)
+			res.add(e.toInteger)
+		return res
 	}
 
 }
