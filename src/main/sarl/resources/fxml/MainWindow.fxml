@@ -76,10 +76,41 @@
                                           <Label fx:id="paramLabel1" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="T° initiale/range" GridPane.rowIndex="13" />
                                           <Label fx:id="paramLabel2" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Alpha" GridPane.rowIndex="14" />
                                           <Label fx:id="paramLabel3" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nb itér. par pallier" GridPane.rowIndex="15" />
-                                          <Button fx:id="generateButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#generateGraph" styleClass="button-start" text="Generate Graph" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
-                                          <Button fx:id="startButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#startAgent" styleClass="button-start" text="Start" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="17" />
-                                          <Button fx:id="pauseButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#pauseSimulation" styleClass="button-stop" text="Pause" textAlignment="CENTER" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="16" />
-                                          <Button fx:id="restartButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#restartSimulation" styleClass="button-start" text="Restart" textAlignment="CENTER" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="16" />
+                                          <Button fx:id="generateButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#generateGraph" styleClass="button-start" text="Générer Graphe" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
+                                          <HBox prefHeight="100.0" prefWidth="200.0" spacing="30.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="17">
+                                             <children>
+                                                <Button fx:id="startButton" contentDisplay="CENTER" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#startAgent" prefHeight="33.0" prefWidth="33.0" styleClass="button-play" textAlignment="CENTER">
+                                                   <graphic>
+                                                      <ImageView fx:id="playButtonImageView" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@../img/play.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                </Button>
+                                                <Button fx:id="stopButton" contentDisplay="CENTER" disable="true" layoutX="50.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#stopAgent" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER">
+                                                   <graphic>
+                                                      <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@../img/stop.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                </Button>
+                                                <Button fx:id="restartButton" contentDisplay="CENTER" disable="true" layoutX="176.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#restartSimulation" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER">
+                                                   <graphic>
+                                                      <ImageView fx:id="restartSimulation1" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@../img/restarrt.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                </Button>
+                                             </children>
+                                             <padding>
+                                                <Insets left="40.0" right="40.0" />
+                                             </padding>
+                                          </HBox>
                                        </children>
                                        <columnConstraints>
                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -106,6 +137,7 @@
                                           <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                     </GridPane>
                                  </children>
@@ -121,7 +153,7 @@
                            <children>
                               <VBox prefHeight="788.0" prefWidth="259.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <Label style="-fx-font-size: 30;" styleClass="label-header" text="App infos">
+                                    <Label style="-fx-font-size: 30;" styleClass="label-header" text="Monitoring">
                                        <VBox.margin>
                                           <Insets bottom="30.0" />
                                        </VBox.margin>
@@ -149,7 +181,7 @@
                                        </children>
                                     </GridPane>
                                     <Separator prefHeight="15.0" prefWidth="240.0" />
-                                    <Label prefHeight="44.0" prefWidth="240.0" style="-fx-font-size: 30;" styleClass="label-header" text="Drone infos" />
+                                    <Label prefHeight="44.0" prefWidth="240.0" style="-fx-font-size: 30;" styleClass="label-header" text="Drone" />
                                     <GridPane>
                                        <columnConstraints>
                                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -173,7 +205,7 @@
                                        </children>
                                     </GridPane>
                                     <Separator prefHeight="24.0" prefWidth="240.0" />
-                                    <Label prefHeight="35.0" prefWidth="240.0" style="-fx-font-size: 30;" styleClass="label-header" text="Warehouse infos" />
+                                    <Label prefHeight="35.0" prefWidth="240.0" style="-fx-font-size: 30;" styleClass="label-header" text="Entrepôt" />
                                     <GridPane>
                                       <columnConstraints>
                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
