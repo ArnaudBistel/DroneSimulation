@@ -96,6 +96,7 @@ agent Drone {
 			// Deleting the initial warehouse
 			this.path.remove(0)
 			calcNextDestinationVelocity()
+			
 		}
 	}
 	

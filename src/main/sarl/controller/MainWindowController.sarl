@@ -43,6 +43,7 @@ import javafx.scene.input.MouseEvent;
 
 import agents.CancelEvery
 import agents.GenerateGraph
+import solutionSolver.SolutionSolver
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -53,6 +54,8 @@ class MainWindowController extends FxViewerController {
 	var appManager : AppManager = null
 	var resultsController : ResultsController
 	var mainApp : MainApp;
+	var solutionSolver : SolutionSolver
+	
 	@FXML
 	var startButton : Button
 	@FXML
@@ -113,9 +116,11 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	var entrepotsRP : Label
 	@FXML
-	var deliveredPackages : Label
+	var averagePackage : Label
 	@FXML
 	var remainingPackages : Label
+	@FXML
+	var timeElapsed : Label
 	
 	@FXML
 	var droneIndex : Label
@@ -128,6 +133,8 @@ class MainWindowController extends FxViewerController {
 	
 	@FXML
 	var warehouseIndex : Label
+	@FXML
+	var packageWeight : Label
 	
 	var simulation : Boolean = true
 	var recuit : Boolean = true
@@ -324,7 +331,16 @@ class MainWindowController extends FxViewerController {
 				try{
 					setDroneRP(nbDronesInput.toString())
 					setEntrepotsRP(nbEntrepotsInput.toString())
-					//TODO remaining app stats
+					setRemainingPackages(Integer.parseInt(nbClientsInput))
+					//setTimeElapsed(getTimeElapsed())
+					//sortir stepTime, speedCoeff de getMapInfos et dans une variable du controller = stepTime/speedCoeff (tous les cb de ms y'a une step)
+					//1000*solutionSolver.stepNumbertoRealTime(1)/var du controller 
+					//dans updateTimer => ça * tempsDeRafraichissement
+					//
+					
+					
+					//pour batterie : ligne 54 solutionSolver => 
+					//
 				} catch(e : InterruptedException){
 					e.printStackTrace();
 				}
@@ -672,12 +688,12 @@ class MainWindowController extends FxViewerController {
 			imageView.setY(body.position.y)
 			//System.out.println("X : " + test.position.x + " -- Y : " + test.position.y)
 			//System.out.println(test)
+			
 		} 
 		val gc = drawZone.graphicsContext2D
 		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		for (c : this.clients) {
 			c.drawItself(gc);
-
 		}
 	}
 	
@@ -780,13 +796,13 @@ class MainWindowController extends FxViewerController {
 	def getSimulation() : Boolean {
 		return this.simulation
 	}
+
+	def getAppManager() {
+		return this.appManager
+	}
 	
 	def setAppManager(manager : AppManager){
 		this.appManager = manager
-	}
-	
-	def getAppManager(){
-		return this.appManager
 	}
 	
 	def getStopped{
@@ -853,7 +869,7 @@ class MainWindowController extends FxViewerController {
 	def setEntrepotsRP(nb : String){
 		this.entrepotsRP.setText(nb)
 	}
-	
+		
 	def getDroneIndex() : String {
 		return this.droneIndex.toString() 
 	} 
@@ -868,6 +884,33 @@ class MainWindowController extends FxViewerController {
 
 	def setWarehouseIndex(index : int) {
 		this.warehouseIndex.setText(index.toString())
+	}
+	
+	def getTimeElapsed() : void {
+		var a = getAppManager()
+		var s = getSolutionSolver()
+		//récupérer speedTextField
+		//stepTime + speedCoeff = une step tous les cb de temps
+		//
+		//setTimeElapsed(s.stepNumberToRealTime(a.stepTime))
+		//System.out.println("step time" + this.appManager)
+	}
+	
+	def setTimeElapsed(time : float) {
+		this.timeElapsed.setText(time.toString())
+	}
+	
+	def getSolutionSolver() : SolutionSolver {
+		return this.solutionSolver
+	}
+
+	def setRemainingPackages(nb : int) {
+		this.remainingPackages.setText(nb.toString())
+		System.out.println(this.getRemainingPackages)
+	}
+	
+	def getRemainingPackages() : int {
+		return Integer.parseInt(this.remainingPackages.getText())
 	}
 
 }

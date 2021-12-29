@@ -133,10 +133,12 @@
                                           <Label fx:id="droneRP" text="Label" GridPane.columnIndex="1" />
                                           <Label styleClass="label-bright" text="Dépôts" GridPane.rowIndex="1" />
                                           <Label fx:id="entrepotsRP" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                          <Label styleClass="label-bright" text="Colis livrés" GridPane.rowIndex="2" />
-                                          <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <Label styleClass="label-bright" text="Poids moyen" GridPane.rowIndex="2" />
+                                          <Label fx:id="averagePackage" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                           <Label styleClass="label-bright" text="Colis restants" GridPane.rowIndex="3" />
-                                          <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <Label fx:id="remainingPackages" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                       	  <Label styleClass="label-bright" text="Temps écoulé" GridPane.rowIndex="4" />
+										  <Label fx:id="timeElapsed" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                        </children>
                                     </GridPane>
                                     <Separator prefHeight="15.0" prefWidth="240.0" />

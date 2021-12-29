@@ -12,6 +12,8 @@ class DroneBody extends Body {
 	var posX : double = 0
 	var posY : double = 0
 	var warehouseId : UUID
+	var nbPackages : int
+	
 
 	new (x : int, y : int, h : int, w : int, warehouseId : UUID) {
 		super(x, y, h, w, PathEnum.DRONE_EMPTY.getPath)
@@ -78,5 +80,12 @@ class DroneBody extends Body {
 	def setPosY(y : double) {
 		this.posY = y
 	}
-
+	
+	def getNbPackages() {
+		return this.nbPackages
+	}
+	
+	def setNbPackages(nb : int) {
+		this.nbPackages = nb
+	}
 }

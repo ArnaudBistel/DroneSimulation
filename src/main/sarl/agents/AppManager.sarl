@@ -106,12 +106,11 @@ agent AppManager {
 			
 		}
 	}
-	
-	def generateMap (inputList : ArrayList = this.controller.parameters) {
+
+	def generateMap(inputList : ArrayList = this.controller.parameters) {
 		synchronized (this) {
 			cancel(this.autoRestartTask)
 			var parameters = inputList
-
 
 			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
 			var nbEntrepotsSim = parameters.get(3) as List<Float>
@@ -136,16 +135,16 @@ agent AppManager {
 					controller.addClient(client)
 				}
 				this.controller.initalizeImageView
-				if(!this.controller.stopped){
+				if (!this.controller.stopped) {
 					startApp
 				}
-				
+
 			} else {
 				this.controller.resultsController.updateLists(this.map.getWarehouses(), this.map.getClients())
 			}
 		}
 	}
-	
+
 	def startApp {
 		synchronized(this) {
 			this.stepTime = 30
@@ -370,6 +369,11 @@ agent AppManager {
 					i = i+1		
 				}
 				this.controller.clients.get(client).delivered = true
+				
+				// MaJ valeur remainingPackages
+				val rp = this.controller.remainingPackages
+				this.controller.remainingPackages = rp-1
+				info("remaining packages :" + this.controller.remainingPackages)	
 			}
 		}
 	}
@@ -506,6 +510,12 @@ agent AppManager {
 	on Restart {
 		//info("Restart App Manager")
 		startApp
+	}
+	
+	def getStepTime() : int {
+		synchronized(this){
+			return this.stepTime			
+		}
 	}
 
 }
