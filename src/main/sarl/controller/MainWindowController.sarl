@@ -43,7 +43,9 @@ import javafx.scene.input.MouseEvent;
 
 import agents.CancelEvery
 import agents.GenerateGraph
-import solutionSolver.SolutionSolver
+
+import agents.Pause
+import agents.GetMapInfos
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -54,7 +56,6 @@ class MainWindowController extends FxViewerController {
 	var appManager : AppManager = null
 	var resultsController : ResultsController
 	var mainApp : MainApp;
-	var solutionSolver : SolutionSolver
 	
 	@FXML
 	var startButton : Button
@@ -62,6 +63,8 @@ class MainWindowController extends FxViewerController {
 	var generateButton : Button
 	@FXML
 	var restartButton : Button
+	@FXML
+	var pauseButton : Button
 	val started = new AtomicBoolean
 	var startedBool = false
 	
@@ -120,14 +123,14 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	var remainingPackages : Label
 	@FXML
+	var deliveredPackages : Label
+	@FXML
 	var timeElapsed : Label
 	
 	@FXML
 	var droneIndex : Label
 	@FXML
 	var nextClient: Label
-	@FXML
-	var remainingClients : Label
 	@FXML
 	var battery : Label
 	
@@ -329,18 +332,8 @@ class MainWindowController extends FxViewerController {
 			@Override
 			def run(){
 				try{
-					setDroneRP(nbDronesInput.toString())
-					setEntrepotsRP(nbEntrepotsInput.toString())
-					setRemainingPackages(Integer.parseInt(nbClientsInput))
-					//setTimeElapsed(getTimeElapsed())
-					//sortir stepTime, speedCoeff de getMapInfos et dans une variable du controller = stepTime/speedCoeff (tous les cb de ms y'a une step)
-					//1000*solutionSolver.stepNumbertoRealTime(1)/var du controller 
-					//dans updateTimer => ça * tempsDeRafraichissement
-					//
-					
-					
-					//pour batterie : ligne 54 solutionSolver => 
-					//
+					emitToAgents(new GetMapInfos(), true)
+					deliveredPackages.text = "0"
 				} catch(e : InterruptedException){
 					e.printStackTrace();
 				}
@@ -471,6 +464,7 @@ class MainWindowController extends FxViewerController {
 			// lance la simulation
 			if (this.simulation) {
 				this.restartButton.setVisible(true)
+				this.pauseButton.setVisible(true)
 				this.stopped = false
 				this.startButton.setText("Arrêter");
 				this.startButton.getStyleClass().add("button-stop");
@@ -478,6 +472,13 @@ class MainWindowController extends FxViewerController {
 				
 				if (this.managerId === null){
 					createManager()
+					var nbDrone = this.nbDronesTextField.text == "" ? 1 : Integer.parseInt(this.nbDronesTextField.text)
+					nbDrone *= this.nbEntrepotsTextField.text == "" ? 1 : Integer.parseInt(this.nbEntrepotsTextField.text)
+					this.droneRP.text = nbDrone.toString
+					this.entrepotsRP.text = this.nbEntrepotsTextField.text == "" ? "1" : this.nbEntrepotsTextField.text
+					this.deliveredPackages.text = "0"
+					this.remainingPackages.text = this.nbClientsTextField.text ==
+						"" ? "1" : this.nbClientsTextField.text
 				}
 				else {
 					System.out.println("Restart app manager")
@@ -501,6 +502,7 @@ class MainWindowController extends FxViewerController {
 		// stop
 		} else if (started.getAndSet(false)) {
 			this.restartButton.setVisible(false)
+			this.pauseButton.setVisible(false)
 			this.stopped = true
 			this.bodies.clear
 			this.droneBodies.clear
@@ -509,6 +511,9 @@ class MainWindowController extends FxViewerController {
 			this.drawPane.children.clear
 
 			emitToAgents(new CancelEvery, true)
+
+			emitToAgents(new GetMapInfos, true)
+			
 			
 			this.startButton.getStyleClass().add("button-start");
 			this.startButton.getStyleClass().remove("button-stop");
@@ -538,6 +543,24 @@ class MainWindowController extends FxViewerController {
 		}
 
 		this.startSimulation();
+	}
+
+	@FXML
+	def pauseSimulation {
+		if (this.pauseButton.getStyleClass().contains("button-stop")) {
+			// Pause
+			this.pauseButton.getStyleClass().add("button-start");
+			this.pauseButton.getStyleClass().remove("button-stop");
+			this.pauseButton.setText("Play");
+			
+		} else {
+			// Play
+			this.pauseButton.getStyleClass().add("button-stop");
+			this.pauseButton.getStyleClass().remove("button-start");
+			this.pauseButton.setText("Pause");
+		}
+
+		emitToAgents(new Pause, true)
 	}
 
 	def createParametersList {
@@ -609,7 +632,7 @@ class MainWindowController extends FxViewerController {
 						throw new UnsupportedOperationException("TODO: auto-generated method stub")
 					}
 				}
-				droneBodies.get(entry.getKey()).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
+				droneBodies.get(entry.key).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 		}
 		} else if (type.equals("WAREHOUSE")) {
 			this.warehouseBodies.put(body.getId, body as WarehouseBody)
@@ -841,6 +864,39 @@ class MainWindowController extends FxViewerController {
 		})
 	}
 	
+	def updateMapInfos(nbClients : int, nbWarehouse : int) {
+		Platform.runLater(new Runnable() {
+			@Override
+			def run() {
+				remainingPackages.text = nbClients.toString
+				if (!stopped) {
+					var nbDrone = nbDronesTextField.text == "" ? 1 : Integer.parseInt(nbDronesTextField.text)
+					nbDrone *= nbWarehouse
+					droneRP.text = nbDrone.toString
+				} else {
+					droneRP.text = ""
+				}
+				deliveredPackages.text = "0"
+				entrepotsRP.text = nbWarehouse.toString
+			}
+		})
+		
+	}
+	
+	def newDeposit {
+		Platform.runLater(new Runnable() {
+			@Override
+			def run() {
+				var nbRemaining = Integer.parseInt(remainingPackages.text) - 1
+				var nbDelivered = Integer.parseInt(deliveredPackages.text) + 1
+
+				remainingPackages.text = nbRemaining.toString
+				deliveredPackages.text = nbDelivered.toString
+			}
+		})
+		
+	}
+	
 	def getManagerId() : UUID {
 		return this.managerId
 	}
@@ -887,8 +943,6 @@ class MainWindowController extends FxViewerController {
 	}
 	
 	def getTimeElapsed() : void {
-		var a = getAppManager()
-		var s = getSolutionSolver()
 		//récupérer speedTextField
 		//stepTime + speedCoeff = une step tous les cb de temps
 		//
@@ -899,10 +953,6 @@ class MainWindowController extends FxViewerController {
 	def setTimeElapsed(time : float) {
 		this.timeElapsed.setText(time.toString())
 	}
-	
-	def getSolutionSolver() : SolutionSolver {
-		return this.solutionSolver
-	}
 
 	def setRemainingPackages(nb : int) {
 		this.remainingPackages.setText(nb.toString())
@@ -912,5 +962,12 @@ class MainWindowController extends FxViewerController {
 	def getRemainingPackages() : int {
 		return Integer.parseInt(this.remainingPackages.getText())
 	}
-
+	
+	def setDeliveredPackages(nb : int) {
+		this.deliveredPackages.setText(nb.toString())
+	}
+	
+	def getDeliveredPackages() : int {
+		return Integer.parseInt(this.deliveredPackages.getText())
+	}
 }

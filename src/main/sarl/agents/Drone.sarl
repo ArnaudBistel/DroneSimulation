@@ -36,6 +36,7 @@ agent Drone {
 	var warehouseBody : WarehouseBody
 	var path : List<MapPoint>
 	var nextDestination : Point2i = null
+	var arrivedToNextDestination : Boolean = true
 	
 	on Initialize {
 		synchronized (this) {
@@ -50,19 +51,23 @@ agent Drone {
 	}
 	
 	on DronePerception {
-		// TODO changed that
 		synchronized (this) {
-			// Checking if we arrive to next destination
 			if (this.nextDestination !== null) {
+				// Checking if we arrive to next destination
 				if (this.body.position.x == this.nextDestination.getX() &&
 					this.body.position.y == this.nextDestination.getY()
 				) {
 					this.nextDestination = null
-					var action = new Action(ActionType.DEPOSIT, #[this.body.position.x as Integer, this.body.position.y as Integer])
-					var actionEvent = new ActionEvent(action)
-					emit(actionEvent)
+					this.arrivedToNextDestination = true
+					if(this.path.size > 0){
+						var action = new Action(ActionType.DEPOSIT, #[this.body.position.x as Integer, this.body.position.y as Integer])
+						var actionEvent = new ActionEvent(action)
+						emit(actionEvent)	
+					}
 					calcNextDestinationVelocity()
 				} else {
+					var bodies = occurrence.perceived
+					
 					var x = this.body.posX + this.body.velocityX
 					var y = this.body.posY + this.body.velocityY
 
@@ -83,8 +88,6 @@ agent Drone {
 					emit(actionEvent)
 				}
 			}
-
-				
 			
 		}
 	}
@@ -95,6 +98,7 @@ agent Drone {
 			this.path = occurrence.path
 			// Deleting the initial warehouse
 			this.path.remove(0)
+			this.arrivedToNextDestination = true
 			calcNextDestinationVelocity()
 			
 		}
@@ -105,7 +109,10 @@ agent Drone {
 			if (this.path.size() == 1) {
 				this.body.setImage(PathEnum.DRONE_EMPTY.getPath)
 			}
-			this.nextDestination = this.path.remove(0).position
+			if (this.arrivedToNextDestination) {
+				this.nextDestination = this.path.remove(0).position
+				this.arrivedToNextDestination = false
+			}
 			var distX = this.nextDestination.getX() - this.body.position.x
 			var distY = this.nextDestination.getY() - this.body.position.y
 			var totalDist = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2))

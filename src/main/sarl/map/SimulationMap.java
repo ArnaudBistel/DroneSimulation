@@ -166,4 +166,12 @@ public class SimulationMap {
 	public List<MapPoint> getWarehouses(){
 		return this.warehouseList;
 	}
+	
+	public int getNbClients() {
+		return this.nbClients;
+	}
+	
+	public int getNbWarehouse () {
+		return this.nbWarehouse;
+	}
 }

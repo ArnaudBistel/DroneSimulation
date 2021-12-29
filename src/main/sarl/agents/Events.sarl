@@ -110,3 +110,14 @@ event CancelEvery {
 		
 	}
 }
+
+event Pause {
+	new () {
+	}
+}
+
+event GetMapInfos {
+	new {
+		
+	}
+}
