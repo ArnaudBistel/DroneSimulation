@@ -24,6 +24,7 @@ import map.MapPoint
 import org.arakhne.afc.math.geometry.d2.i.Point2i
 import gui.PathEnum
 import map.MapPointType
+import gui.Body
 
 /** 
  * @author arnaud
@@ -37,6 +38,7 @@ agent Drone {
 	var path : List<MapPoint>
 	var nextDestination : Point2i = null
 	var arrivedToNextDestination : Boolean = true
+	var backToWarehouse : Boolean = true
 	
 	on Initialize {
 		synchronized (this) {
@@ -63,10 +65,41 @@ agent Drone {
 						var action = new Action(ActionType.DEPOSIT, #[this.body.position.x as Integer, this.body.position.y as Integer])
 						var actionEvent = new ActionEvent(action)
 						emit(actionEvent)	
+					} else {
+						this.backToWarehouse = true
 					}
 					calcNextDestinationVelocity()
 				} else {
-					var bodies = occurrence.perceived
+					var bodies = occurrence.perceived as List<DroneBody>
+					
+					if (bodies.size() > 0) {
+						// Si on est près de l'entrepot, on considère que les drones partent d'un étage différent
+						if (Math.abs(this.warehouseBody.position.getX() - this.body.position.x) > 100
+							&& Math.abs(this.warehouseBody.position.getY() - this.body.position.y) > 100) {
+							// On va influer sur le drone le plus proche
+							var closestDrone = bodies.get(0)
+							var tempX = closestDrone.position.getX()
+							var tempY = closestDrone.position.getY()
+							for (var i=1 ; i<bodies.size() ; i++) {
+								var tmpDrone = bodies.get(i)
+								var tmpX = tmpDrone.position.getX()
+								var tmpY = tmpDrone.position.getY()
+								if (Math.abs(tmpX - this.body.position.x) + Math.abs(tmpY - this.body.position.y) <
+									Math.abs(tempX - this.body.position.x) + Math.abs(tempY - this.body.position.y)) {
+									closestDrone = bodies.get(0)
+									tempX = tmpX 
+									tempY = tmpY 
+								}
+							}
+							if (Math.abs(this.body.velocityX) > Math.abs(this.body.velocityY)) {
+								this.body.velocityX = this.body.velocityX / 2
+								closestDrone.velocityY = closestDrone.velocityY / 2
+							} else {
+								this.body.velocityY = this.body.velocityY / 2
+								closestDrone.velocityX = closestDrone.velocityX / 2
+							}
+						}
+					}
 					
 					var x = this.body.posX + this.body.velocityX
 					var y = this.body.posY + this.body.velocityY
@@ -83,6 +116,8 @@ agent Drone {
 					this.body.setPosX(x)
 					this.body.setPosY(y)
 
+					calcNextDestinationVelocity()
+
 					var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
 					var actionEvent = new ActionEvent(action)
 					emit(actionEvent)
@@ -98,13 +133,14 @@ agent Drone {
 			this.path = occurrence.path
 			// Deleting the initial warehouse
 			this.path.remove(0)
+			this.backToWarehouse = false
 			this.arrivedToNextDestination = true
 			calcNextDestinationVelocity()
 		}
 	}
 	
 	def calcNextDestinationVelocity() {
-		if (this.path.size() > 0) {
+		if (!this.backToWarehouse) {
 			if (this.path.size() == 1) {
 				this.body.setImage(PathEnum.DRONE_EMPTY.getPath)
 			}
