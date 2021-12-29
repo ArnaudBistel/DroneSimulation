@@ -62,7 +62,7 @@
              <groupId>io.sarl.maven</groupId>
              <artifactId>sarl-maven-plugin</artifactId>
              <version>${sarl.version}</version>
-             <extensions>true</extensions>
+             
              <configuration>
                 <source>${jdk.version}</source>
                 <target>${jdk.version}</target>
