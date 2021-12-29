@@ -66,7 +66,7 @@ public abstract class MultiTester {
 		return v / list.size();
 	}
 	
-	protected int bestSolution(List<Double> energyCost){
+	public int bestSolution(List<Double> energyCost){
 		//récupère l'id de la mailleur solution d'une liste
 		int id = 0;
 		double minCost = energyCost.get(0);

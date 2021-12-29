@@ -145,11 +145,38 @@ class ResultsController extends FxViewerController {
 		this.lineChartQL1.setLegendVisible(false);
 		this.lineChartQL2.setLegendVisible(false);
 		*/
+		
+		Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							if (newValue != oldValue) {
+								startButton.setDisable(true)
+							}
+							}
+						}
+			
+				nbDronesTextField.textProperty.addListener(listener)
+				nbEntrepotsTextField.textProperty.addListener(listener)
+				nbClientsTextField.textProperty.addListener(listener)
+				poidsColisTextField.textProperty.addListener(listener)
+			}
+		})
 	}
 
 
 	@FXML
 	def generateGraph() {
+		drawPaneRoutes.children.clear
 		createParametersList()
 		this.mainWindowController.createParametersList
 		if (this.mainWindowController.managerId === null) {
@@ -159,10 +186,20 @@ class ResultsController extends FxViewerController {
 			//displayCharts
 			//this.startTimer
 		}
+		startButton.setDisable(false)
+	}
+	
+	def clearView() {
+		drawPane.children.clear
+		drawPaneRoutes.children.clear
+		lineChartRS1.data.clear
+		lineChartRS2.data.clear
+		lineChartQL1.data.clear
+		lineChartQL2.data.clear
 	}
 	
 	@FXML
-	def startTest () {
+	def startTest() {
 		if(this.clients.size <= 0) {
 			generateGraph()
 		}
@@ -185,6 +222,7 @@ class ResultsController extends FxViewerController {
 		displayCharts(mtSimAnnealing.energyCostResults, mtSimAnnealing.timeCostResults,
 			new ArrayList<Double>(), new ArrayList<Double>()
 		)
+		displayDronesRoutes(mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults))
 		
 		
 		//TODO if no manager -> generate graph
@@ -626,8 +664,8 @@ class ResultsController extends FxViewerController {
 		
 		drawPaneRoutes.children.clear
 		var rand = new Random(0)
-		
 		var s = mtSimAnnealing.solutionsHistory.get(idx)
+
 		for (path : s) {
 			var routes = new ArrayList()
 			for (e : path) {
@@ -652,11 +690,6 @@ class ResultsController extends FxViewerController {
 			@Override
 			def run() {
 				drawPane.children.clear
-				drawPaneRoutes.children.clear
-				lineChartRS1.data.clear
-				lineChartRS2.data.clear
-				lineChartQL1.data.clear
-				lineChartQL2.data.clear
 				for (b : warehouses) {
 					var img = new ImageView(new Image(PathEnum.WAREHOUSE.getPath, 20, 20, true, true))
 					img.setX(b.position.x / 2 as int)
