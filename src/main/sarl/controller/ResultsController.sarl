@@ -152,6 +152,13 @@ class ResultsController extends FxViewerController {
 		}
 	}
 	
+	@FXML
+	def startTest () {
+		//TODO if no manager -> generate graph
+		// Fetch all values and create a MultiTester for each method
+		// Display charts with the values computed
+	}
+	
 	def initializeFieldsValues {
 		
 		nbDronesTextField.text = this.mainWindowController.nbDronesInput
