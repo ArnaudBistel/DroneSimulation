@@ -47,6 +47,20 @@ public abstract class SolutionSolver {
 		return consumptionPerKm * km;
 	}
 	
+	public static double droneDistanceAutonomy(double kg, double battery) {
+		// linear function for 1 to 5 kg and for 0 to 1 kg
+		double c1 = 95; // Drone's consumption for 1 kg for 1 km
+		double autonomy;
+		if (kg < 1) {
+			double c0 = 110; // Drone's consumption for 0 kg for 1 km
+			autonomy = lerp(c0, c1, kg) * battery / SimulationParameters.DRONE_MAX_ENERGY ;
+		} else { // we assume that the weight is between 0 and 5
+			double c5 = 75; // Drone's consumption for 5 kg for 1 km
+			autonomy = lerp(c1, c5, (kg-1.0)/4.0) * battery / SimulationParameters.DRONE_MAX_ENERGY ;
+		}
+		return autonomy;
+	}
+	
 	public static double lerp(double a, double b, double alpha) {
 		return a + alpha * (b - a);
 	}

@@ -25,6 +25,8 @@ import org.arakhne.afc.math.geometry.d2.i.Point2i
 import gui.PathEnum
 import map.MapPointType
 import gui.Body
+import utils.variables.SimulationParameters
+import solutionSolver.SolutionSolver
 
 /** 
  * @author arnaud
@@ -39,6 +41,7 @@ agent Drone {
 	var nextDestination : Point2i = null
 	var arrivedToNextDestination : Boolean = true
 	var backToWarehouse : Boolean = true
+
 	
 	on Initialize {
 		synchronized (this) {
@@ -48,6 +51,7 @@ agent Drone {
 			// info("The agent Drone was started : " + this.getID)
 			this.body = occurrence.parameters.get(0) as DroneBody
 			this.warehouseBody = occurrence.parameters.get(1) as WarehouseBody
+			this.body.actualBattery = SimulationParameters.DRONE_MAX_ENERGY
 			emit(new AgentInitialized(AgentType.DRONE))
 		}	
 	}
@@ -112,7 +116,7 @@ agent Drone {
 						y = this.nextDestination.getY()
 					}
 
-
+					computeBatteryLoss(x as int, y as int)
 					this.body.setPosX(x)
 					this.body.setPosY(y)
 
@@ -133,11 +137,25 @@ agent Drone {
 			this.path = occurrence.path
 			// Deleting the initial warehouse
 			this.path.remove(0)
+			this.body.actualCharge = 0
+			for(point : this.path){
+				this.body.actualCharge = this.body.actualCharge + point.packageWeight
+			}
+			
 			this.backToWarehouse = false
-			this.arrivedToNextDestination = true
+			this.arrivedToNextDestination = false
+			this.nextDestination = this.path.get(0).position
 			calcNextDestinationVelocity()
 			
 		}
+	}
+	
+	def computeBatteryLoss(x : int, y : int)  {
+		var oldX = this.body.posX
+		var oldY = this.body.posY
+		var dist = Math.sqrt(Math.pow(x-oldX,2) + Math.pow(y-oldY, 2)) / 15
+		this.body.actualBattery = this.body.actualBattery - SolutionSolver.droneEnergyCost(this.body.actualCharge, dist)
+		
 	}
 	
 	def calcNextDestinationVelocity() {
@@ -146,6 +164,8 @@ agent Drone {
 				this.body.setImage(PathEnum.DRONE_EMPTY.getPath)
 			}
 			if (this.arrivedToNextDestination) {
+				info("arrived")
+				this.body.actualCharge = this.body.actualCharge - this.path.get(0).packageWeight
 				this.nextDestination = this.path.remove(0).position
 				this.arrivedToNextDestination = false
 			}
@@ -170,6 +190,7 @@ agent Drone {
 			var action = new Action(ActionType.BACK_TO_WAREHOUSE, #[this.body])
 			var actionEvent = new ActionEvent(action)
 			emit(actionEvent)
+			this.body.actualBattery = SimulationParameters.DRONE_MAX_ENERGY
 		}
 	}
 

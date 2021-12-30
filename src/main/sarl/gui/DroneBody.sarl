@@ -13,7 +13,8 @@ class DroneBody extends Body {
 	var posY : double = 0
 	var warehouseId : UUID
 	var nbPackages : int
-	
+	var actualBattery : double
+	var actualCharge : float
 
 	new (x : int, y : int, h : int, w : int, warehouseId : UUID) {
 		super(x, y, h, w, PathEnum.DRONE_EMPTY.getPath)
@@ -88,4 +89,21 @@ class DroneBody extends Body {
 	def setNbPackages(nb : int) {
 		this.nbPackages = nb
 	}
+	
+	def getActualBattery {
+		return this.actualBattery
+	}
+	
+	def setActualBattery ( actualBattery : double) {
+		this.actualBattery = actualBattery
+	}
+	
+	def getActualCharge {
+		return this.actualCharge
+	}
+	
+	def setActualCharge (actualCharge : float) {
+		this.actualCharge = actualCharge
+	}
+
 }

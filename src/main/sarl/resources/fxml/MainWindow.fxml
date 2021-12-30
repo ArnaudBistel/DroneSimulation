@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.canvas.*?>
@@ -148,6 +150,16 @@
                <children>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="791.0" prefWidth="1020.0" styleClass="bodybg">
                      <children>
+                        <Circle fx:id="droneBatteryCircle" disable="true" opacity="0.4" radius="200.0" stroke="BLACK" strokeType="INSIDE" visible="false">
+                           <fill>
+                              <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                                 <stops>
+                                    <Stop color="#e10000" />
+                                    <Stop color="WHITE" offset="1.0" />
+                                 </stops>
+                              </RadialGradient>
+                           </fill>
+                        </Circle>
                         <Canvas fx:id="drawZone" height="791.0" width="1020.0" />
                         <Pane fx:id="drawPane" maxHeight="791.0" maxWidth="1020.0" minHeight="791.0" minWidth="1020.0" prefHeight="791.0" prefWidth="1020.0" />
                      </children>
