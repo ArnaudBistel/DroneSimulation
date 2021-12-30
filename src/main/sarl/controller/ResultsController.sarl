@@ -113,7 +113,16 @@ class ResultsController extends FxViewerController {
 	@FXML
 	var lineChartQL2 : LineChart<String, Number>
 
-	
+	@FXML
+	var bestCostLabel : Label
+	@FXML
+	var bestDurationLabel : Label
+	@FXML
+	var selectedCostLabel : Label
+	@FXML
+	var selectedDurationLabel : Label
+	@FXML
+	var iamethodLabel : Label
 
 	var parameters : ArrayList = new ArrayList()
 
@@ -598,32 +607,49 @@ class ResultsController extends FxViewerController {
 			seriesRS1.data.add(new XYChart.Data<String, Number>("" + i, e))
 			i++
 		}
-		var yAxis = new NumberAxis(min, max, 0.01*(max - min))
-		//this.lineChartRS1 = new LineChart<String,Number>(xAxis, yAxis) //ne met pas a jour
-		this.lineChartRS1.data.addAll(seriesRS1)
-		for (data : seriesRS1.getData()) {
-			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-				@Override
-				def handle(e : MouseEvent) {
-					displayDronesRoutes(Integer.parseInt(data.XValue))
-					System.out.println("X" + data.XValue + " y : " + data.YValue)
-				}
-			})
-		}
 
 		var seriesRS2 = new XYChart.Series<String, Number>()
 		seriesRS2.setName("Temps Recuit")
 		i = 0
 		for (e : SATime) {
-			seriesRS2.data.add(new XYChart.Data<String, Number>(""+i, e))
+			seriesRS2.data.add(new XYChart.Data<String, Number>("" + i, e))
 			i++
 		}
+		
+		var yAxis = new NumberAxis(min, max, 0.01*(max - min))
+		//this.lineChartRS1 = new LineChart<String,Number>(xAxis, yAxis) //ne met pas a jour
+		this.lineChartRS1.data.addAll(seriesRS1)
+		i = 0
+		for (data : seriesRS1.getData()) {
+			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+				@Override
+				def handle(e : MouseEvent) {
+					displayDronesRoutes(Integer.parseInt(data.XValue))
+					selectedCostLabel.setText("" + data.YValue)
+					selectedDurationLabel.setText("" + SATime.get(data.XValue as int))
+					iamethodLabel.setText("Recuit Simulé")
+					var bestId = mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults)
+					bestCostLabel.setText("" + SACost.get(bestId))
+					bestDurationLabel.setText("" + SATime.get(bestId))
+					System.out.println("X" + data.XValue + " y : " + data.YValue)
+				}
+			})
+			i++
+		}
+
+
 		this.lineChartRS2.data.addAll(seriesRS2)
 		for (data : seriesRS2.getData()) {
 			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 				@Override
 				def handle(e : MouseEvent) {
 					displayDronesRoutes(Integer.parseInt(data.XValue))
+					selectedDurationLabel.setText("" + data.YValue)
+					selectedCostLabel.setText("" + SACost.get(data.XValue as int))
+					iamethodLabel.setText("Recuit Simulé")
+					var bestId = mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults)
+					bestCostLabel.setText("" + SACost.get(bestId))
+					bestDurationLabel.setText("" + SATime.get(bestId))
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})
