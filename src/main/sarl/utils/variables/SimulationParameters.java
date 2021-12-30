@@ -16,4 +16,5 @@ public class SimulationParameters {
 	public static final int MT_NB_STEP = 25;
 	public static final int MT_NB_TEST_BY_STEP = 100;
 	public static final double MT_TEMP_TRESHOLD = 0.1;
+	public static final int MT_NB_EPISODE_Q_LEARNING = 50;
 }

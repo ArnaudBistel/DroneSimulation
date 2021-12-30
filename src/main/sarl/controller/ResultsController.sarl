@@ -52,6 +52,7 @@ import gui.PathEnum
 import solutionSolver.solutionTester.MultiTesterSimulatedAnnealing
 import map.SimulationMap
 import utils.variables.SimulationParameters
+import solutionSolver.solutionTester.MultiTesterQLearning
 
 class ResultsController extends FxViewerController {
 	
@@ -123,6 +124,7 @@ class ResultsController extends FxViewerController {
 	var clients : List<Client> = new ArrayList<Client>()
 
 	var mtSimAnnealing : MultiTesterSimulatedAnnealing
+	var mtQLearning : MultiTesterQLearning
 
 	@Pure
 	def init(mainApp : MainApp, mainWindowController : MainWindowController) {
@@ -207,21 +209,34 @@ class ResultsController extends FxViewerController {
 		//récupération paramètres
 		var nbDrones = createRange(getNbDronesInput).get(0).toInteger
 		var temp = SATempRange
-		var alpha = SAAlphaRange
+		var alphaSA = SAAlphaRange
 		var iter = SAnbIterPalierRange
+		var alphaQL = QLAlphaRange
+		var gamma = QLGammaRange
+		var epsilon = QLEpsilonRange
 		//lancement
 		mtSimAnnealing = new MultiTesterSimulatedAnnealing(
 			simMap, SimulationParameters.MT_NB_STEP, SimulationParameters.MT_NB_TEST_BY_STEP, nbDrones,
 			temp.get(0), temp.get(1),
 			SimulationParameters.MT_TEMP_TRESHOLD, SimulationParameters.MT_TEMP_TRESHOLD,
-			alpha.get(0), alpha.get(1),
+			alphaSA.get(0), alphaSA.get(1),
 			iter.get(0), iter.get(1)
 		)
 		mtSimAnnealing.runMultiTest
+
+		mtQLearning = new MultiTesterQLearning(
+			simMap, SimulationParameters.MT_NB_STEP, SimulationParameters.MT_NB_TEST_BY_STEP, nbDrones,
+		    alphaQL.get(0), alphaQL.get(1),
+		    gamma.get(0), gamma.get(1),
+		    epsilon.get(0), epsilon.get(1),
+			SimulationParameters.MT_NB_EPISODE_Q_LEARNING, SimulationParameters.MT_NB_EPISODE_Q_LEARNING
+		)
+		//mtQLearning.runMultiTest
 		
 		
-		displayCharts(mtSimAnnealing.energyCostResults, mtSimAnnealing.timeCostResults,
-			new ArrayList<Double>(), new ArrayList<Double>()
+		displayCharts(
+			mtSimAnnealing.energyCostResults, mtSimAnnealing.timeCostResults,
+			mtQLearning.energyCostResults, mtQLearning.timeCostResults
 		)
 		displayDronesRoutes(mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults))
 		
@@ -754,6 +769,27 @@ class ResultsController extends FxViewerController {
 		for(e : temp)
 			res.add(e.toInteger)
 		return res
+	}
+
+	def getQLAlphaRange() : List<Float> {
+		var temp = createRange(alphaQTextField.text)
+		if (temp.size == 1) // if only one number, duplicate it
+			temp.add(temp.get(0))
+		return temp
+	}
+
+	def getQLGammaRange() : List<Float> {
+		var temp = createRange(gammaTextField.text)
+		if (temp.size == 1) // if only one number, duplicate it
+			temp.add(temp.get(0))
+		return temp
+	}
+
+	def getQLEpsilonRange() : List<Float> {
+		var temp = createRange(epsilonTextField.text)
+		if (temp.size == 1) // if only one number, duplicate it
+			temp.add(temp.get(0))
+		return temp
 	}
 
 }

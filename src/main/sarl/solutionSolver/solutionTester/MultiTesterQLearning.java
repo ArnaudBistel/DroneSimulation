@@ -47,6 +47,7 @@ public class MultiTesterQLearning extends MultiTester {
 	@Override
 	public boolean runMultiTestStep() {
 
+
 		//calcul des paramètres pour l'étape actuelle
 		double currentAlpha = minAlpha + (  i * (maxAlpha - minAlpha) / this.nbStep);
 		double currentGamma = minGamma + (  i * (maxGamma - minGamma) / this.nbStep);
@@ -56,14 +57,14 @@ public class MultiTesterQLearning extends MultiTester {
 		//calcul de la solution
 		List<List<MapPoint>> sol =
 				sim.Solve((int)currentNbEpisode, currentAlpha, currentGamma, currentEpsilon, -1, 20, -100);
-		
+
+
 		//récupération des résulats
 		double energycost = SolutionSolver.solutionCost(sol);
 		double timeCost = SolutionSolver.solutionTimeCost(sol, nbDrones);
 		this.currentEnergyCosts.add(energycost);
 		this.currentTimeCosts.add(timeCost);
 		this.currentSolutions.add(sol);
-		
 		j++;
 		if(j >= nbTestByStep) { //si tout les tests d'une étapes ont été fait
 			
