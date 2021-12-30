@@ -29,19 +29,19 @@ public class SimulationMap {
 	
 	Graph graph;
 	
-	public SimulationMap(int nbClients, int nbWarehouse) {
-		this(nbClients, nbWarehouse, SimulationParameters.mapWidth, SimulationParameters.mapHeight, 0);
+	public SimulationMap(int nbClients, int nbWarehouse, List<Float> poidsColis) {
+		this(nbClients, nbWarehouse, SimulationParameters.mapWidth, SimulationParameters.mapHeight, 0, poidsColis);
 	}
 	
-	public SimulationMap(int nbClients, int nbWarehouse, int seed) {
-		this(nbClients, nbWarehouse, SimulationParameters.mapWidth, SimulationParameters.mapHeight, seed);
+	public SimulationMap(int nbClients, int nbWarehouse, int seed, List<Float> poidsColis) {
+		this(nbClients, nbWarehouse, SimulationParameters.mapWidth, SimulationParameters.mapHeight, seed, poidsColis);
 	}
 	
 	public SimulationMap(int nbClients, int nbWarehouse, int width, int height) {
-		this(nbClients, nbWarehouse, width, height, 0);
+		this(nbClients, nbWarehouse, width, height, 0, Arrays.asList(1.0f,5.0f));
 	}
 	
-	public SimulationMap(int nbClients, int nbWarehouse, int width, int height, int seed) {
+	public SimulationMap(int nbClients, int nbWarehouse, int width, int height, int seed, List<Float> poidsColis) {
 		this.nbClients = nbClients;
 		this.nbWarehouse = nbWarehouse;
 		this.width = width;
@@ -53,10 +53,10 @@ public class SimulationMap {
 		} else {
 			random = new Random(seed);
 		}
-		generateMap();
+		generateMap(poidsColis);
 	}
 	
-	public void generateMap() {
+	public void generateMap(List<Float> poidsColis) {
 		int x, y;
 		x=0;
 		y=0;
@@ -78,7 +78,15 @@ public class SimulationMap {
 			{
 				x = random.nextInt(this.width);
 				y = random.nextInt(this.height);
-				packageWeight = random.nextFloat() * 5 ;
+				if(poidsColis.size() == 1) {
+					packageWeight = poidsColis.get(0) ;
+				}
+				else {
+					float min = Math.min(poidsColis.get(0), poidsColis.get(1));
+					float max = Math.max(poidsColis.get(0), poidsColis.get(1));
+					packageWeight = min + random.nextFloat() * (max - min) ;
+				}
+				
 				packageWeight = new Float(formatter.format(packageWeight));
 				tmp_client = new MapPoint(x, y, MapPointType.CLIENT, Arrays.asList(packageWeight));
 				MapPoint closest_warehouse = SolutionSolver.getClosestWharehouse(tmp_client, this);

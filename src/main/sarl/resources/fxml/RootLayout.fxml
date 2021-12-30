@@ -15,7 +15,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Fermer" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Résultats de tests">
+          <Menu mnemonicParsing="false" text="Résultats de tests" visible="false">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#handleShowStatistics" text="Voir" />
             </items>

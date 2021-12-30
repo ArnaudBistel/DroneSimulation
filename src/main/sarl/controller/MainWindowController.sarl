@@ -393,13 +393,15 @@ class MainWindowController extends FxViewerController {
 	}
 	
 	def initializeRightPane() {
+		//System.out.println("InitRightPane")
 		Platform.runLater(new Runnable() {
 			@Override
 			def run(){
 				try{
 					emitToAgents(new GetMapInfos(), true)
+					System.out.println("Emit")
 					deliveredPackages.text = "0"
-					initTimer()
+					
 					/* 
 					var temp : float = 0
 					for (c : getClients) {
@@ -525,6 +527,7 @@ class MainWindowController extends FxViewerController {
 			var id = UUID::randomUUID
 			startAgentApplication(typeof(AppManager), id)[]
 			managerId = id
+			Thread.sleep(50)
 		}
 	}
 	 
@@ -979,6 +982,7 @@ class MainWindowController extends FxViewerController {
 	}
 	
 	def updateMapInfos(nbClients : int, nbWarehouse : int, stepTime : int) {
+		//System.out.println("Update Map Infos")
 		Platform.runLater(new Runnable() {
 			@Override
 			def run() {
@@ -994,7 +998,8 @@ class MainWindowController extends FxViewerController {
 				entrepotsRP.text = nbWarehouse.toString
 			}
 		})
-		timeRatio = SolutionSolver.stepNumberToRealTime(1) * 1000 / stepTime
+		this.timeRatio = SolutionSolver.stepNumberToRealTime(1) * 1000 / stepTime
+
 	}
 
 	def initTimer() {
@@ -1011,6 +1016,7 @@ class MainWindowController extends FxViewerController {
 	}
 
 	def updateTimer(refreshRate : int, previousTimer : int) {
+		//System.out.println((this.timeRatio))
 		timeElapsed += previousTimer + refreshRate*this.timeRatio as long
 		formatTimeElapsed(timeElapsed)
 	}

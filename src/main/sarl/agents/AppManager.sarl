@@ -120,9 +120,9 @@ agent AppManager {
 			var nbClients = parameters.get(4) as List<Float>
 			// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
 			var poidsColis = parameters.get(5) as List<Float>
-
+			
 			this.nbWarehouse = nbEntrepotsSim.get(0) as int
-			this.map = new SimulationMap(nbClients.get(0) as int, this.nbWarehouse)
+			this.map = new SimulationMap(nbClients.get(0) as int, this.nbWarehouse, poidsColis)
 
 			if (parameters.get(0) as Boolean) {
 				this.warehouseList.clear
