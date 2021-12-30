@@ -121,3 +121,9 @@ event GetMapInfos {
 		
 	}
 }
+
+event InitializeResultGraph{
+	new {
+		
+	}
+}

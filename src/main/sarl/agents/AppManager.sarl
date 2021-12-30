@@ -109,7 +109,7 @@ agent AppManager {
 		}
 	}
 
-	def generateMap(inputList : ArrayList = this.controller.parameters) {
+	def generateMap(inputList : ArrayList = this.controller.parameters, filename : String = null) {
 		synchronized (this) {
 			cancel(this.autoRestartTask)
 			var parameters = inputList
@@ -142,6 +142,30 @@ agent AppManager {
 				}
 			} else {
 				this.controller.resultsController.updateLists(this.map)
+			}
+		}
+	}
+	
+	def importMap(filename : String) {
+		synchronized (this) {
+			cancel(this.autoRestartTask)
+
+
+			this.map.importData(filename)
+			this.warehouseList.clear
+			for (wh : this.map.getWarehouses()) {
+				// info("Warehouse : " + wh.position.x + "-" + wh.position.y)
+				var warehouseBody = new WarehouseBody(wh.position.x as int, wh.position.y as int, 30, 30, wh)
+				this.controller.addBody(warehouseBody, "WAREHOUSE")
+				this.warehouseList.put(warehouseBody.getId, warehouseBody as WarehouseBody)
+			}
+			for (cl : this.map.getClients()) {
+				var client = new Client(cl, true)
+				controller.addClient(client)
+			}
+			this.controller.initalizeImageView
+			if (!this.controller.stopped) {
+				startApp
 			}
 		}
 	}
@@ -460,7 +484,12 @@ agent AppManager {
 	}
 	
 	on ImportDataEvent{
-		this.importFile = occurrence.filename
+		synchronized (this) {
+			if (getActiveTasks.size != 0) {
+				this.controller.simulateStop
+			}
+			importMap(occurrence.filename)
+		}
 		
 	}
 	
@@ -491,6 +520,10 @@ agent AppManager {
 		}
 	}
 
+	on InitializeResultGraph {
+		this.controller.resultsController.updateLists(this.map)
+	}
+	
 	on Destroy {
 		//info("AppManager destroy")
 		// killMe

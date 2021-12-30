@@ -63,6 +63,7 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import utils.variables.SimulationParameters
 import java.util.Arrays
+import agents.InitializeResultGraph
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -958,6 +959,14 @@ class MainWindowController extends FxViewerController {
 	}
 
 	def importData(filename : String) {
+		this.bodies.clear
+		this.droneBodies.clear
+		this.warehouseBodies.clear
+		this.clients.clear
+		this.drawPane.children.clear
+
+		val gc = drawZone.graphicsContext2D
+		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		emitToAgents(new ImportDataEvent(filename), true)
 	}
 	
@@ -1127,5 +1136,9 @@ class MainWindowController extends FxViewerController {
 	
 	def getTimer() : Timer {
 		return this.timer
+	}
+	
+	def emitInitializeResultGraph{
+		emitToAgents(new InitializeResultGraph(), true)
 	}
 }

@@ -171,6 +171,7 @@ class ResultsController extends FxViewerController {
 				poidsColisTextField.textProperty.addListener(listener)
 			}
 		})
+		this.mainWindowController.emitInitializeResultGraph
 	}
 
 

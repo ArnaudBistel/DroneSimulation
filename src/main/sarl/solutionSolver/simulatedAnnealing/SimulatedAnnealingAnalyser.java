@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -60,7 +61,7 @@ public class SimulatedAnnealingAnalyser {
 			test_seeds[i] = random.nextInt();
 		}
 		
-		SimulationMap map = new SimulationMap(100, 1, test_seeds[0] + TEST_SEED); //generate a map
+		SimulationMap map = new SimulationMap(100, 1, test_seeds[0] + TEST_SEED, Arrays.asList(1.0f,5.0f)); //generate a map
 		SimulatedAnnealing sim = new SimulatedAnnealing(map);
 		double initCost = SolutionSolver.solutionCost(sim.convertListToListOfList(sim.getInitialSolution()));
 
@@ -78,7 +79,7 @@ public class SimulatedAnnealingAnalyser {
 		info(getAvancementStringBar(initTime, 0, -1));//print 0%
 		
 		for(int i = 0; i < NB_TRY_PER_VALUE; i++) {
-			map = new SimulationMap(100, 1, test_seeds[i % test_seeds.length] + TEST_SEED);
+			map = new SimulationMap(100, 1, test_seeds[i % test_seeds.length] + TEST_SEED, Arrays.asList(1.0f,5.0f));
 			for(int j = 0; j < NB_STEP_TEST; j++) {
 				//Temp section
 				double temp = INIT_TEMP + j * STEP_TEMP;
