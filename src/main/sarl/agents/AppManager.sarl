@@ -434,8 +434,7 @@ agent AppManager {
 	
 	on GetMapInfos{
 		info("test : " + this.map.nbClients + " ---  " + this.map.nbWarehouse)
-		
-		this.controller.updateMapInfos(this.map.nbClients, this.map.nbWarehouse)
+		this.controller.updateMapInfos(this.map.nbClients, this.map.nbWarehouse, getStepTime)
 	}
 	
 	

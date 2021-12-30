@@ -46,6 +46,13 @@ import agents.GenerateGraph
 
 import agents.Pause
 import agents.GetMapInfos
+import solutionSolver.SolutionSolver
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -125,7 +132,13 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	var deliveredPackages : Label
 	@FXML
-	var timeElapsed : Label
+	var timeElapsedLabel : Label
+	
+	var timeElapsed : long
+
+	var timer : Timer
+
+	var timeRatio : float 
 	
 	@FXML
 	var droneIndex : Label
@@ -136,8 +149,8 @@ class MainWindowController extends FxViewerController {
 	
 	@FXML
 	var warehouseIndex : Label
-	@FXML
-	var packageWeight : Label
+	
+	var speedRatio : float
 	
 	var simulation : Boolean = true
 	var recuit : Boolean = true
@@ -255,7 +268,6 @@ class MainWindowController extends FxViewerController {
 						}
 
 					}
-
 					field.textProperty.addListener(listener)
 				}
 			})
@@ -334,6 +346,14 @@ class MainWindowController extends FxViewerController {
 				try{
 					emitToAgents(new GetMapInfos(), true)
 					deliveredPackages.text = "0"
+					initTimer()
+					/* 
+					var temp : float = 0
+					for (c : getClients) {
+						temp = c.mapPoint.packageWeight
+					}
+					setAveragePackage(temp / getClients.size)
+					 * */
 				} catch(e : InterruptedException){
 					e.printStackTrace();
 				}
@@ -542,7 +562,8 @@ class MainWindowController extends FxViewerController {
 			emitToAgents(new Restart, true)
 		}
 
-		this.startSimulation();
+		this.startSimulation();		
+		
 	}
 
 	@FXML
@@ -666,7 +687,6 @@ class MainWindowController extends FxViewerController {
 	}
 
 	def startSimulation() {
-
 	       	var timer = new AnimationTimer() {
             @Override
             def handle(now : long) {
@@ -864,7 +884,7 @@ class MainWindowController extends FxViewerController {
 		})
 	}
 	
-	def updateMapInfos(nbClients : int, nbWarehouse : int) {
+	def updateMapInfos(nbClients : int, nbWarehouse : int, stepTime : int) {
 		Platform.runLater(new Runnable() {
 			@Override
 			def run() {
@@ -880,9 +900,27 @@ class MainWindowController extends FxViewerController {
 				entrepotsRP.text = nbWarehouse.toString
 			}
 		})
-		
+		timeRatio = SolutionSolver.stepNumberToRealTime(1) * 1000 / stepTime
 	}
-	
+
+	def initTimer() {
+		val refreshRate = 10
+		this.timeElapsed = 0l
+		var timer = new Timer()
+		var myTask = new TimerTask() {
+			@Override
+			def run() {
+				updateTimer(refreshRate,0)
+            }
+		}
+		timer.schedule(myTask, refreshRate, refreshRate);
+	}
+
+	def updateTimer(refreshRate : int, previousTimer : int) {
+		timeElapsed += previousTimer + refreshRate*this.timeRatio as long
+		formatTimeElapsed(timeElapsed)
+	}
+
 	def newDeposit {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -942,21 +980,21 @@ class MainWindowController extends FxViewerController {
 		this.warehouseIndex.setText(index.toString())
 	}
 	
-	def getTimeElapsed() : void {
-		//récupérer speedTextField
-		//stepTime + speedCoeff = une step tous les cb de temps
-		//
-		//setTimeElapsed(s.stepNumberToRealTime(a.stepTime))
-		//System.out.println("step time" + this.appManager)
+	def formatTimeElapsed(time : long) {
+		val hms = String.format("%02d:%02d:%02d", 
+			TimeUnit.MILLISECONDS.toHours(time),
+			TimeUnit.MILLISECONDS.toMinutes(time) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)),
+			TimeUnit.MILLISECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)));
+		Platform.runLater(new Runnable() {
+			@Override
+			def run() {
+				timeElapsedLabel.text = hms
+			}
+		})
 	}
 	
-	def setTimeElapsed(time : float) {
-		this.timeElapsed.setText(time.toString())
-	}
-
 	def setRemainingPackages(nb : int) {
 		this.remainingPackages.setText(nb.toString())
-		System.out.println(this.getRemainingPackages)
 	}
 	
 	def getRemainingPackages() : int {
@@ -969,5 +1007,25 @@ class MainWindowController extends FxViewerController {
 	
 	def getDeliveredPackages() : int {
 		return Integer.parseInt(this.deliveredPackages.getText())
+	}
+	
+	def setSpeedRatio(nb : float) {
+		this.speedRatio = nb
+	}
+	
+	def getSpeedRatio() : float {
+		return this.speedRatio
+	}
+	
+	def setAveragePackage(nb : float) {
+		this.averagePackage.setText(nb.toString())
+	}
+	
+	def getAveragePackage() : float {
+		return Float.parseFloat(this.averagePackage.getText())
+	}
+	
+	def getTimer() : Timer {
+		return this.timer
 	}
 }
