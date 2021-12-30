@@ -64,6 +64,7 @@ import java.util.concurrent.TimeUnit
 import utils.variables.SimulationParameters
 import java.util.Arrays
 import agents.InitializeResultGraph
+import javafx.scene.effect.DropShadow
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -170,6 +171,7 @@ class MainWindowController extends FxViewerController {
 	var speedRatio : float
     
 	var selectedDrone : DroneBody
+	var selectedBody : Body
     
 	var simulation : Boolean = true
 	var recuit : Boolean = true
@@ -178,7 +180,7 @@ class MainWindowController extends FxViewerController {
 	var inMultiTest = false
 	var stopped = true
 	var pause = true
-	
+	var dropShadow : DropShadow
 	@Pure
 	def setMainApp(mainApp : MainApp ) {
 		this.mainApp = mainApp;
@@ -224,6 +226,11 @@ class MainWindowController extends FxViewerController {
 				}
 			}
 		});
+
+		this.dropShadow = new DropShadow()
+		dropShadow.setRadius(5.0)
+		dropShadow.setSpread(1.0)
+		dropShadow.setColor(Color.WHITE)
 	}
 	
 	
@@ -714,8 +721,8 @@ class MainWindowController extends FxViewerController {
 						throw new UnsupportedOperationException("TODO: auto-generated method stub")
 					}
 				}
-				droneBodies.get(entry.key).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
-		}
+				entry.value.imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)	
+			}
 		} else if (type.equals("WAREHOUSE")) {
 			this.warehouseBodies.put(body.getId, body as WarehouseBody)
 			//add warehouse listener to each warehouse
@@ -729,6 +736,7 @@ class MainWindowController extends FxViewerController {
 				warehouseBodies.get(entry.getKey()).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 		}
 		}
+		
 	}
 	
 	def displayDroneInfos(id : UUID) : void {
@@ -738,6 +746,8 @@ class MainWindowController extends FxViewerController {
 		}
 		droneIndex = pos+1
 		this.selectedDrone = this.bodies.get(id) as DroneBody
+		this.selectedBody = this.selectedDrone as Body
+		
 	}
 	
 	def displayWarehouseInfos(id : UUID) : void {
@@ -747,6 +757,8 @@ class MainWindowController extends FxViewerController {
 			pos = warehouseBodies.headMap(id).size()
 		}
 		warehouseIndex = pos + 1
+		this.selectedBody = this.bodies.get(id) as Body
+		
 	}
 
 	def startSimulation() {
@@ -795,6 +807,12 @@ class MainWindowController extends FxViewerController {
 			imageView.setY(body.position.y)
 			//System.out.println("X : " + test.position.x + " -- Y : " + test.position.y)
 			//System.out.println(test)
+			if (this.selectedBody == body) {
+				imageView.setEffect(this.dropShadow)
+			} else {
+				imageView.setEffect(null)
+				
+			}
 			
 		} 
 		val gc = drawZone.graphicsContext2D
@@ -821,8 +839,9 @@ class MainWindowController extends FxViewerController {
 				CycleMethod.NO_CYCLE, stops);
 			gc.setFill(gradient)
 			gc.fillOval(this.selectedDrone.posX - radius, this.selectedDrone.posY - radius, radius*2, radius*2)
+
 		}
-		else{
+		else {
 			this.droneBatteryCircle.visible = false
 		}
 	}
