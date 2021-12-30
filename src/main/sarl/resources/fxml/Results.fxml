@@ -129,7 +129,7 @@
                               <TextField fx:id="nbDronesTextField" promptText="ex: 5, 10..." />
                            </children>
                         </HBox>
-                        <Button contentDisplay="CENTER" mnemonicParsing="false" styleClass="button-start" text="Démarrer" textAlignment="CENTER" />
+                        <Button fx:id="startButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#startTest" styleClass="button-start" text="Démarrer" textAlignment="CENTER" />
                      </children>
                      <VBox.margin>
                         <Insets />

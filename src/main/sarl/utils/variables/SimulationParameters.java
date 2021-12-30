@@ -11,4 +11,9 @@ public class SimulationParameters {
 	//en france le prix moyen du wh chez le particulier est de 0,1893€
 	public static final double COUT_WH = 0.0001893;
 	public static final double COUT_DRONE = 5000; //a déterminer selon la réponse de la boite
+	
+	//multi test
+	public static final int MT_NB_STEP = 25;
+	public static final int MT_NB_TEST_BY_STEP = 100;
+	public static final double MT_TEMP_TRESHOLD = 0.1;
 }

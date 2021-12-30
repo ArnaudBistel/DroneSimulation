@@ -18,10 +18,10 @@ event NewDrone {
 
 event DronePerception {
 	var id : UUID
-	var perceived : List<Body>
+	var perceived : List<DroneBody>
 	var step : int
 
-	new (id : UUID, perceived : List<Body>, step : int) {
+	new (id : UUID, perceived : List<DroneBody>, step : int) {
 		this.id = id
 		this.perceived = perceived
 		this.step = step

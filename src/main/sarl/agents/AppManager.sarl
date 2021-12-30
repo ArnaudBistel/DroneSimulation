@@ -50,7 +50,7 @@ agent AppManager {
 	uses Logging, Lifecycle, DefaultContextInteractions, Schedules
 
 	var map : SimulationMap
-	var perceptionMap : ArrayList<ArrayList<Body>>
+	var perceptionMap : ArrayList<ArrayList<DroneBody>>
 	var nbRowCell = 0
 	var nbColCell = 0
 	var nbCell = 0
@@ -141,7 +141,7 @@ agent AppManager {
 					startApp
 				}
 			} else {
-				this.controller.resultsController.updateLists(this.map.getWarehouses(), this.map.getClients())
+				this.controller.resultsController.updateLists(this.map)
 			}
 		}
 	}
@@ -155,10 +155,10 @@ agent AppManager {
 			this.stepCounter = 0
 			this.stepLastDelivery = -1
 			this.stepEnd = -1
-			this.perceptionMap = new ArrayList<ArrayList<Body>>
+			this.perceptionMap = new ArrayList<ArrayList<DroneBody>>
 			
 			for (var i = 0; i < this.nbCell; i++) {
-				var tmp = new ArrayList<Body>
+				var tmp = new ArrayList<DroneBody>
 				this.perceptionMap.add(tmp)
 			}
 	
@@ -371,11 +371,11 @@ agent AppManager {
 		}
 	}
 
-	def getDronePerceptions() : Map<UUID, List<Body>> {
+	def getDronePerceptions() : Map<UUID, List<DroneBody>> {
 		synchronized (this) {
-			var ret = new TreeMap<UUID, List<Body>>
+			var ret = new TreeMap<UUID, List<DroneBody>>
 			for (body : this.droneList.entrySet) {
-				var perceived = new ArrayList<Body>
+				var perceived = new ArrayList<DroneBody>
 				var cellIndex = body.value.perceptionMapCellIndex
 				var perceivedIndexes = new HashSet<Integer>
 				perceivedIndexes.add(cellIndex)
@@ -428,7 +428,7 @@ agent AppManager {
 	
 	def autoRestart {
 		if(this.controller.stopped){
-			this.controller.simulateStop
+			this.controller.simulateStart
 		}
 	}
 	

@@ -16,20 +16,21 @@ public class QLearningAnalyser {
 	public static final int TEST_SEED = 0;
 	private static int[] test_seeds;
 	
-	public static final int DFT_REWARD = 10;
-	public static final int DFT_PENALTY = -1;
+	public static final int DFT_REWARD_WH = -1;
+	public static final int DFT_REWARD_C = 20;
+	public static final int DFT_PENALTY = -100;
 	
-	public static final double DFT_ALPHA = 0.9;
-	public static final double DFT_GAMMA = 0.9;
+	public static final double DFT_ALPHA = 0.8;
+	public static final double DFT_GAMMA = 0.8;
 	public static final double DFT_EPSILON = 0.9;
 	
-	public static final double INIT_ALPHA = 0.8;
+	public static final double INIT_ALPHA = 0.1;
 	public static final double STEP_ALPHA = 2;
 	
-	public static final double INIT_GAMMA = 0.8;
+	public static final double INIT_GAMMA = 0.1;
 	public static final double STEP_GAMMA = 2;
 	
-	public static final double INIT_EPSILON = 0.9;
+	public static final double INIT_EPSILON = 0.1;
 	public static final double STEP_EPSILON = 2;
 	
 	public static final int NB_TRY_PER_VALUE = 25;//25
@@ -53,7 +54,7 @@ public class QLearningAnalyser {
 			test_seeds[i] = random.nextInt();
 		}
 		
-		SimulationMap map = new SimulationMap(100, 1, test_seeds[0] + TEST_SEED);
+		SimulationMap map = new SimulationMap(10, 1, test_seeds[0] + TEST_SEED);
 		QLearning sim = new QLearning(map);
 		
 		double[] costResultAlpha = new double[NB_STEP_TEST];
@@ -71,26 +72,26 @@ public class QLearningAnalyser {
 		info(getAvancementStringBar(initTime, 0, -1));
 		
 		for(int i = 0; i < NB_TRY_PER_VALUE; i++) {
-			map = new SimulationMap(100, 1, test_seeds[i % test_seeds.length] + TEST_SEED);
+			map = new SimulationMap(10, 1, test_seeds[i % test_seeds.length] + TEST_SEED);
 			for(int j = 0; j < NB_STEP_TEST; j++) {
 				//alpha section
 				double alphaDiv = 1 + j * STEP_ALPHA;
 				double alpha = 1 - ((1 - INIT_ALPHA)/alphaDiv);
-				double[] r = singleTest(sim, NB_EPISODE, alpha, DFT_GAMMA, DFT_EPSILON, DFT_REWARD, DFT_PENALTY);
+				double[] r = singleTest(sim, NB_EPISODE, alpha, DFT_GAMMA, DFT_EPSILON, DFT_REWARD_WH, DFT_REWARD_C, DFT_PENALTY);
 				costResultAlpha[j] += r[0];
 				timeResultAlpha[j] += r[1];
 				
 				//gamma section
 				double gammaDiv = 1 + j * STEP_GAMMA;
 				double gamma = 1 - ((1 - INIT_GAMMA)/gammaDiv);
-				r = singleTest(sim, NB_EPISODE, DFT_ALPHA, gamma, DFT_EPSILON, DFT_REWARD, DFT_PENALTY);
+				r = singleTest(sim, NB_EPISODE, DFT_ALPHA, gamma, DFT_EPSILON, DFT_REWARD_WH, DFT_REWARD_C, DFT_PENALTY);
 				costResultGamma[j] += r[0];
 				timeResultGamma[j] += r[1];
 
 				//epsilon section
 				double epsilonDiv = 1 + j * STEP_EPSILON;
 				double epsilon = 1 - ((1 - INIT_EPSILON)/epsilonDiv);
-				r = singleTest(sim, NB_EPISODE, DFT_ALPHA, DFT_GAMMA, epsilon, DFT_REWARD, DFT_PENALTY);
+				r = singleTest(sim, NB_EPISODE, DFT_ALPHA, DFT_GAMMA, epsilon, DFT_REWARD_WH, DFT_REWARD_C, DFT_PENALTY);
 				costResultEpsilon[j] += r[0];
 				timeResultEpsilon[j] += r[1];
 				
@@ -119,9 +120,9 @@ public class QLearningAnalyser {
 	}
 	
 	private static double[] singleTest(QLearning sim, int nb_episode, double alpha, 
-			double gamma, double epsilon, int reward, int penalty) {
+			double gamma, double epsilon, int reward_wh, int reward_c, int penalty) {
 			long startTime = System.nanoTime();
-			List<List<MapPoint>> solution = sim.Solve(nb_episode, alpha, gamma, epsilon, reward, penalty);
+			List<List<MapPoint>> solution = sim.Solve(nb_episode, alpha, gamma, epsilon, reward_wh, reward_c, penalty);
 			double stopTime = System.nanoTime();
 			double cost = SolutionSolver.solutionCost(solution);
 			//double newcost = cost /=nb_episode;
