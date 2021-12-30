@@ -625,12 +625,12 @@ class ResultsController extends FxViewerController {
 				@Override
 				def handle(e : MouseEvent) {
 					displayDronesRoutes(Integer.parseInt(data.XValue))
-					selectedCostLabel.setText("" + data.YValue)
-					selectedDurationLabel.setText("" + SATime.get(data.XValue as int))
+					selectedCostLabel.setText("" + String.format("%.2f", data.YValue))
+					selectedDurationLabel.setText("" + String.format("%.2f", SATime.get(data.XValue as int)))
 					iamethodLabel.setText("Recuit Simulé")
 					var bestId = mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults)
-					bestCostLabel.setText("" + SACost.get(bestId))
-					bestDurationLabel.setText("" + SATime.get(bestId))
+					bestCostLabel.setText("" + String.format("%.2f", SACost.get(bestId)))
+					bestDurationLabel.setText("" + String.format("%.2f", SATime.get(bestId)))
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})
@@ -644,12 +644,12 @@ class ResultsController extends FxViewerController {
 				@Override
 				def handle(e : MouseEvent) {
 					displayDronesRoutes(Integer.parseInt(data.XValue))
-					selectedDurationLabel.setText("" + data.YValue)
-					selectedCostLabel.setText("" + SACost.get(data.XValue as int))
+					selectedDurationLabel.setText("" + String.format("%.2f", data.YValue))
+					selectedCostLabel.setText("" + String.format("%.2f", SACost.get(data.XValue as int)))
 					iamethodLabel.setText("Recuit Simulé")
 					var bestId = mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults)
-					bestCostLabel.setText("" + SACost.get(bestId))
-					bestDurationLabel.setText("" + SATime.get(bestId))
+					bestCostLabel.setText("" + String.format("%.2f",  SACost.get(bestId)))
+					bestDurationLabel.setText("" + String.format("%.2f", SATime.get(bestId)))
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})

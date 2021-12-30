@@ -36,7 +36,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                      </padding>
                   </GridPane>
                   <AnchorPane maxHeight="436.0" maxWidth="540.0" minHeight="436.0" minWidth="540.0" prefHeight="436.0" prefWidth="540.0">
@@ -46,7 +46,7 @@
                         <Pane fx:id="drawPane" prefHeight="396.0" prefWidth="510.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="15.0" />
                      </children>
                   </AnchorPane>
-                  <GridPane gridLinesVisible="true">
+                  <GridPane gridLinesVisible="true" styleClass="gridpane-results">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -69,7 +69,7 @@
                         <Label fx:id="selectedDurationLabel" text="/" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                      </children>
                      <padding>
-                        <Insets top="20.0" />
+                        <Insets left="20.0" right="10.0" top="30.0" />
                      </padding>
                   </GridPane>
                </children>
