@@ -188,6 +188,11 @@ class ResultsController extends FxViewerController {
 
 	@FXML
 	def generateGraph() {
+		bestCostLabel.setText("/")
+		bestDurationLabel.setText("/")
+		selectedCostLabel.setText("/")
+		selectedDurationLabel.setText("/")
+		iamethodLabel.setText("Méthode d'IA")
 		drawPaneRoutes.children.clear
 		createParametersList()
 		this.mainWindowController.createParametersList
@@ -590,6 +595,12 @@ class ResultsController extends FxViewerController {
 		this.lineChartRS2.data.clear
 		this.lineChartQL1.data.clear
 		this.lineChartQL2.data.clear
+
+		bestCostLabel.setText("/")
+		bestDurationLabel.setText("/")
+		selectedCostLabel.setText("/")
+		selectedDurationLabel.setText("/")
+		iamethodLabel.setText("Méthode d'IA")
 		
 		var xAxis = new CategoryAxis();
 		
