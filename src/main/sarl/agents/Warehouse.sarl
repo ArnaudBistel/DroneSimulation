@@ -90,26 +90,25 @@ agent Warehouse {
 	
 	on MakeAssignmentPaths {
 		synchronized (this) {
-			// parcourt drones
 			var droneGone = new ArrayList<UUID>
+			// Parcourt des drones disponibles
 			for (drone : warehouseBody.droneBodies.keySet()) {
-				// check si dispo
 				var droneBody = warehouseBody.droneBodies.get(drone)
-				// envoie path to drone
 				if (deliveryList.size() > 0) {
+					// Envoie d'un chemin de livraison au drone
 					var pathAssignment = new DronePathAssignment(deliveryList.get(0))
 					emit(pathAssignment)[it.getID == droneBody.id]
-					// delete path
+					// Suppression du chemin de livraison au sein de l'entrepôt
 					var emptyDelivery = new ArrayList<List<MapPoint>>
 					emptyDelivery.add(deliveryList.get(0));
 					this.deliveryList.removeAll(emptyDelivery)
 					droneGone.add(drone)
 				}
 			}
+			// Suppression des drones partis de l'entrepôt
 			for (i : droneGone) {
 				warehouseBody.droneBodies.remove(i)
 			}
-			// drone va s'auto-envoyer l'action move
 		}
 	}
 

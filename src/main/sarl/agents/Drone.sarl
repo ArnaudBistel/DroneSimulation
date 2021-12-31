@@ -74,8 +74,8 @@ agent Drone {
 					}
 					calcNextDestinationVelocity()
 				} else {
+					// Récupération des drones détectés
 					var bodies = occurrence.perceived as List<DroneBody>
-					
 					if (bodies.size() > 0) {
 						// Si on est près de l'entrepot, on considère que les drones partent d'un étage différent
 						if (Math.abs(this.warehouseBody.position.getX() - this.body.position.x) > 100
@@ -95,6 +95,7 @@ agent Drone {
 									tempY = tmpY 
 								}
 							}
+							// Influence sur les mouvements des drones
 							if (Math.abs(this.body.velocityX) > Math.abs(this.body.velocityY)) {
 								this.body.velocityX = this.body.velocityX / 2
 								closestDrone.velocityY = closestDrone.velocityY / 2
@@ -169,23 +170,17 @@ agent Drone {
 				this.nextDestination = this.path.remove(0).position
 				this.arrivedToNextDestination = false
 			}
-			var distX = this.nextDestination.getX() - this.body.position.x
+			
+			// Distance séparant le drone de sa destination
+			var distX = this.nextDestination.getX() - this.body.position.x 
 			var distY = this.nextDestination.getY() - this.body.position.y
 			var totalDist = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2))
+
+			// Calcul du mouvement du drone
 			var totalVelocity = 3.0;
 			this.body.velocityX = totalVelocity * distX / totalDist;
 			this.body.velocityY = totalVelocity * distY / totalDist;
-			/*if (Math.abs(distX) >= Math.abs(distY)){
-				var vX = 3
-				if (distX < 0) vX = -3
-				this.body.velocityX = vX
-				this.body.velocityY = (vX * distY) / distX
-			} else {
-				var vY = 3
-				if(distY < 0) vY = -3
-				this.body.velocityY = vY
-				this.body.velocityX = (vY * distX) / distY
-			}*/
+			
 		} else { // back to warehouse
 			var action = new Action(ActionType.BACK_TO_WAREHOUSE, #[this.body])
 			var actionEvent = new ActionEvent(action)
