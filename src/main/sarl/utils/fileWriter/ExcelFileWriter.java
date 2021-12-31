@@ -27,7 +27,7 @@ public class ExcelFileWriter {
 	static byte[] RGB_GREY_10_PCT = {(byte)230,(byte)230,(byte)230};
 	static XSSFColor GREY_10_PERCENT = new XSSFColor(RGB_GREY_10_PCT);
 
-	static String costHeader = "Cost (kw/h)";
+	static String costHeader = "Cost (wh)";
 	static String execTimeHeader = "Exec (ms)";
 	static String tempHeader = "Temperature";
 	static String alphaHeader = "Alpha";
