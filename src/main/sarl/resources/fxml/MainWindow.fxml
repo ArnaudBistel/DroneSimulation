@@ -70,24 +70,33 @@
                               <Button fx:id="generateButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#generateGraph" styleClass="button-start" text="Générer Graphe" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
                               <HBox prefHeight="100.0" prefWidth="200.0" spacing="30.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="18">
                                  <children>
-                                    
-                                    <Button fx:id="stopButton" contentDisplay="CENTER" disable="true" layoutX="50.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#stopAgent" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER" />
-      									<ImageView fx:id="playButtonImageView" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
-      										<image>
-      											<Image url="@../img/play.png" />
-      										</image>
-      									</ImageView>
-                                    <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../img/stop.png" />
-                                       </image>
-                                    </ImageView>
-                                                <ImageView fx:id="restartSimulation1" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
-                                                   <image>
-                                                      <Image url="@../img/restarrt.png" />
-                                                   </image>
-                                                </ImageView>
-                                    
+                                    <Button fx:id="startButton" contentDisplay="CENTER" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#startAgent" prefHeight="33.0" prefWidth="33.0" styleClass="button-play" textAlignment="CENTER">
+                                       <graphic>
+                                          <ImageView fx:id="playButtonImageView" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/play.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Button>
+                                    <Button fx:id="stopButton" contentDisplay="CENTER" disable="true" layoutX="50.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#stopAgent" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER">
+                                       <graphic>
+                                          <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/stop.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Button>
+                                    <Button fx:id="restartButton" contentDisplay="CENTER" disable="true" layoutX="176.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#restartSimulation" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER">
+                                       <graphic>
+                                          <ImageView fx:id="restartSimulation1" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../img/restarrt.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Button>
                                  </children>
                                  <padding>
                                     <Insets left="40.0" right="40.0" />
@@ -209,8 +218,6 @@
                               <Insets bottom="30.0" top="10.0" />
                            </VBox.margin>
                         </Label>
-                        <Button fx:id="startButton" contentDisplay="CENTER" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#startAgent" prefHeight="33.0" prefWidth="33.0" styleClass="button-play" textAlignment="CENTER" />
-							  <Button fx:id="restartButton" contentDisplay="CENTER" disable="true" layoutX="176.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#restartSimulation" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER" />
                         <GridPane>
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
