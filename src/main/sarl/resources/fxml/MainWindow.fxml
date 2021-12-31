@@ -41,29 +41,29 @@
                                     <ToggleGroup fx:id="simulationRadioButtonGroup" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="multiTestsRadioButton" mnemonicParsing="false" styleClass="label-bright" text="Tests multiples" toggleGroup="$simulationRadioButtonGroup" GridPane.columnIndex="2" />
+                              <RadioButton fx:id="multiTestsRadioButton" mnemonicParsing="false" styleClass="label-bright" text="Tests multiples" toggleGroup="$simulationRadioButtonGroup" GridPane.columnIndex="1" />
                               <Label styleClass="label-bright" text="Drone / entrepôts" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
-                              <TextField fx:id="nbDronesTextField" promptText="ex: 5, 10..." GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+                              <TextField fx:id="nbDronesTextField" promptText="ex: 5, 10..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
                               <Label styleClass="label-bright" text="Nb d'entrepôts" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
-                              <TextField fx:id="nbEntrepotsTextField" promptText="ex: 1, 3..." GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
+                              <TextField fx:id="nbEntrepotsTextField" promptText="ex: 1, 3..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
                               <Label styleClass="label-bright" text="Nb de clients" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
-                              <TextField fx:id="nbClientsTextField" layoutX="150.0" layoutY="57.0" promptText="ex: 10, 30..." GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
+                              <TextField fx:id="nbClientsTextField" layoutX="150.0" layoutY="57.0" promptText="ex: 10, 30..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
                               <Label styleClass="label-bright" text="Poids des colis" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" />
-                              <TextField fx:id="poidsColisTextField" promptText="ex: 1-5, 5..." GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" />
+                              <TextField fx:id="poidsColisTextField" promptText="ex: 1-5, 5..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" />
                               <Label fx:id="speedLabel" styleClass="label-bright" text="Vitesse du programme" GridPane.rowIndex="7" />
-                              <TextField fx:id="speedTextField" promptText="ex: 0.1, 5" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+                              <TextField fx:id="speedTextField" promptText="ex: 0.1, 5" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                               <Label prefHeight="21.0" prefWidth="234.0" text="Paramètres généraux :" GridPane.columnSpan="2" GridPane.rowIndex="2" />
                               <RadioButton fx:id="recuitRb" mnemonicParsing="false" selected="true" styleClass="label-bright" text="Recuit simulé" GridPane.rowIndex="12">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="aiRadioButtonGroup" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="qlearningRb" mnemonicParsing="false" styleClass="label-bright" text="Q-Learning" toggleGroup="$aiRadioButtonGroup" GridPane.columnIndex="2" GridPane.rowIndex="12" />
+                              <RadioButton fx:id="qlearningRb" mnemonicParsing="false" styleClass="label-bright" text="Q-Learning" toggleGroup="$aiRadioButtonGroup" GridPane.columnIndex="1" GridPane.rowIndex="12" />
                               <Label layoutX="10.0" layoutY="60.0" prefHeight="21.0" prefWidth="234.0" text="Méthode d'IA :" GridPane.columnSpan="2" GridPane.rowIndex="11" />
                               <Label layoutX="10.0" layoutY="300.0" prefHeight="21.0" prefWidth="234.0" text="Paramètres de la méthode d'IA :" GridPane.columnSpan="2" GridPane.rowIndex="13" />
-                              <TextField fx:id="paramTextField1" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 0.1-500.." GridPane.columnIndex="2" GridPane.rowIndex="14" />
-                              <TextField fx:id="paramTextField2" layoutX="135.0" layoutY="452.0" promptText="ex: 0, 0.9..." GridPane.columnIndex="2" GridPane.rowIndex="15" />
-                              <TextField fx:id="paramTextField3" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="2" GridPane.rowIndex="16" />
+                              <TextField fx:id="paramTextField1" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 0.1-500.." GridPane.columnIndex="1" GridPane.rowIndex="14" />
+                              <TextField fx:id="paramTextField2" layoutX="135.0" layoutY="452.0" promptText="ex: 0, 0.9..." GridPane.columnIndex="1" GridPane.rowIndex="15" />
+                              <TextField fx:id="paramTextField3" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="1" GridPane.rowIndex="16" />
                               <Label fx:id="paramLabel1" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="T° initiale/range" GridPane.rowIndex="14" />
                               <Label fx:id="paramLabel2" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Alpha" GridPane.rowIndex="15" />
                               <Label fx:id="paramLabel3" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nb itér. par pallier" GridPane.rowIndex="16" />
@@ -107,7 +107,6 @@
                               <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1" />
                            </children>
                            <columnConstraints>
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints />
