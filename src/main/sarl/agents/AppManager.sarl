@@ -212,7 +212,6 @@ agent AppManager {
 				}
 				this.stepTime = (this.stepTime / speedCoeff) as int
 				this.everyTask = every(this.stepTime)[newStep]
-				
 			}
 		}
 	}

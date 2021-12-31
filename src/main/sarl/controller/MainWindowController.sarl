@@ -54,6 +54,8 @@ import java.util.TimerTask
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import timer.SimTimer
+import timer.Task
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -62,8 +64,11 @@ class MainWindowController extends FxViewerController {
 	var clients : List<Client> = new ArrayList<Client>()
 	var managerId : UUID = null
 	var appManager : AppManager = null
+	var managerInitialized = false
 	var resultsController : ResultsController
 	var mainApp : MainApp;
+	
+	
 	
 	@FXML
 	var startButton : Button
@@ -141,7 +146,8 @@ class MainWindowController extends FxViewerController {
 	
 	var timeElapsed : long
 
-	var timer : Timer
+	var timer : SimTimer
+	var myTask : Task
 
 	var timeRatio : float 
 	
@@ -154,6 +160,10 @@ class MainWindowController extends FxViewerController {
 	
 	@FXML
 	var warehouseIndex : Label
+	@FXML
+	var dronesAtWarehouse : Label
+	@FXML 
+	var dronesPerWarehouse : Label
 	
 	var speedRatio : float
 	
@@ -352,7 +362,6 @@ class MainWindowController extends FxViewerController {
 				try{
 					emitToAgents(new GetMapInfos(), true)
 					deliveredPackages.text = "0"
-					initTimer()
 					/* 
 					var temp : float = 0
 					for (c : getClients) {
@@ -389,7 +398,7 @@ class MainWindowController extends FxViewerController {
 			paramTextField1.setPromptText("ex: 600, 0.1-500..")
 			// alpha
 			paramTextField2.setPromptText("ex: 0, 0.9...")
-			// nombre itérations par pallier
+			// nombre itérations par palier
 			paramTextField3.setPromptText("ex: 10, 2...")
 
 		} else {
@@ -478,6 +487,7 @@ class MainWindowController extends FxViewerController {
 			var id = UUID::randomUUID
 			startAgentApplication(typeof(AppManager), id)[]
 			managerId = id
+			Thread.sleep(50)
 		}
 	}
 	 
@@ -690,10 +700,19 @@ class MainWindowController extends FxViewerController {
 	
 	def displayWarehouseInfos(id : UUID) : void {
 		var pos = -1
+		var dronesLinked = -1
 		if (warehouseBodies.containsKey(id)) {
 			pos = warehouseBodies.headMap(id).size()
+			
+			dronesLinked = warehouseBodies.get(id).droneBodies.size()
 		}
 		warehouseIndex = pos + 1
+		dronesAtWarehouse = dronesLinked
+		if(nbDronesInput.isEmpty){
+			dronesPerWarehouse = 1
+		} else {
+			dronesPerWarehouse = nbDronesInput as int
+		}
 	}
 
 	def startSimulation() {
@@ -921,27 +940,27 @@ class MainWindowController extends FxViewerController {
 				entrepotsRP.text = nbWarehouse.toString
 			}
 		})
-		timeRatio = SolutionSolver.stepNumberToRealTime(1) * 1000 / stepTime
+		
+		if(this.started.get()){
+			timeRatio = SolutionSolver.stepNumberToRealTime(1) * 1000 / stepTime
+        	initTimer
+			System.out.println("timeRatio : "+ timeRatio)
+		}
 	}
 
 	def initTimer() {
 		val refreshRate = 10
 		this.timeElapsed = 0l
-		var timer = new Timer()
-		var myTask = new TimerTask() {
-			@Override
-			def run() {
-				updateTimer(refreshRate,0)
-            }
-		}
-		timer.schedule(myTask, refreshRate, refreshRate);
+		this.timer = new SimTimer()
+		this.timer.start
 	}
-
-	def updateTimer(refreshRate : int, previousTimer : int) {
+	
+	def updateTimer(refreshRate : int, previousTimer : long) {	
+		System.out.println("timeRatio : "+ timeRatio + "   timeElapsed : " + timeElapsed)
 		timeElapsed += previousTimer + refreshRate*this.timeRatio as long
 		formatTimeElapsed(timeElapsed)
 	}
-
+	
 	def newDeposit {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -1001,6 +1020,16 @@ class MainWindowController extends FxViewerController {
 		this.warehouseIndex.setText(index.toString())
 	}
 	
+	def setDronesAtWarehouse(nb : int) {
+		this.dronesAtWarehouse.setText(nb.toString())
+	}
+	
+	def setDronesPerWarehouse(nb : int) {
+		this.dronesPerWarehouse.setText(nb.toString())
+	}
+	
+	
+	
 	def formatTimeElapsed(time : long) {
 		val hms = String.format("%02d:%02d:%02d", 
 			TimeUnit.MILLISECONDS.toHours(time),
@@ -1046,7 +1075,12 @@ class MainWindowController extends FxViewerController {
 		return Float.parseFloat(this.averagePackage.getText())
 	}
 	
-	def getTimer() : Timer {
-		return this.timer
+	def setManagerInitialized(bool : boolean) {
+		this.managerInitialized = bool
 	}
+	
+	def getManagerInitialized() : boolean {
+		return this.managerInitialized
+	}
+	
 }
