@@ -287,7 +287,7 @@ class MainWindowController extends FxViewerController {
 		}
 		// Allow floats
 		fields.clear
-		fields.addAll(paramTextField1)
+		fields.addAll(paramTextField2)
 		for (field : fields) {
 			Platform.runLater(new Runnable() {
 				@Override
@@ -302,8 +302,9 @@ class MainWindowController extends FxViewerController {
 								return
 							}
 
-							if (newValue.matches("[0]+([.][0-9]*)?") ||
-								newValue.matches("[0-1]?")) {
+							if (newValue.matches("[0]+([.][0-9]*)?") || 
+								(!recuit && newValue.matches("[0-1]?")) ||
+								(recuit && newValue.matches("[0]?"))) {
 								field.text = newValue
 							} else {
 								ignore = true
@@ -318,7 +319,7 @@ class MainWindowController extends FxViewerController {
 			})
 		}
 		fields.clear
-		fields.addAll(paramTextField2, paramTextField3)
+		fields.addAll(paramTextField1, paramTextField3)
 		for (field : fields) {
 			Platform.runLater(new Runnable() {
 				@Override

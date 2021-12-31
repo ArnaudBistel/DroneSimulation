@@ -21,7 +21,7 @@ public class SimulatedAnnealingAnalyser {
 	
 	//loop settings
 	public static final int NB_TRY_PER_VALUE = 100;//25
-	public static final int NB_STEP_TEST = 15;//50
+	public static final int NB_STEP_TEST = 25;//50
 	
 	//default values
 	public static final double DFT_TEMP = 200;
@@ -61,7 +61,7 @@ public class SimulatedAnnealingAnalyser {
 			test_seeds[i] = random.nextInt();
 		}
 		
-		SimulationMap map = new SimulationMap(100, 1, test_seeds[0] + TEST_SEED, Arrays.asList(1.0f,5.0f)); //generate a map
+		SimulationMap map = new SimulationMap(100, 1, test_seeds[0] + TEST_SEED, Arrays.asList(0.1f,5.0f)); //generate a map
 		SimulatedAnnealing sim = new SimulatedAnnealing(map);
 		double initCost = SolutionSolver.solutionCost(sim.convertListToListOfList(sim.getInitialSolution()));
 
