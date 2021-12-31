@@ -231,9 +231,17 @@ class MainWindowController extends FxViewerController {
 		dropShadow.setRadius(5.0)
 		dropShadow.setSpread(1.0)
 		dropShadow.setColor(Color.WHITE)
+
+		var eventHandler = new EventHandler<MouseEvent>() {
+			def handle(^event : MouseEvent) {
+				unselectBody
+			}
+				}
+		this.drawPane.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 	}
+
 	
-	
+
 	def initializeParamFields {
 		// Allow only integers
 		var fields = new ArrayList<TextField>
@@ -796,6 +804,11 @@ class MainWindowController extends FxViewerController {
 			c.drawItself(gc);
 
 		}
+	}
+	
+	def unselectBody() {
+		this.selectedDrone = null
+		this.selectedBody = null
 	}
 	
 	def update() {
