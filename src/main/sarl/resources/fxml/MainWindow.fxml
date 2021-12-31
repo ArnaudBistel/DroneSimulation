@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.shape.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.canvas.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
@@ -25,6 +17,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Circle?>
 
 <AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="865.0" prefWidth="1540.0" styleClass="background" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
    <children>
@@ -46,29 +41,29 @@
                                     <ToggleGroup fx:id="simulationRadioButtonGroup" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="multiTestsRadioButton" mnemonicParsing="false" styleClass="label-bright" text="Tests multiples" toggleGroup="$simulationRadioButtonGroup" GridPane.columnIndex="1" />
+                              <RadioButton fx:id="multiTestsRadioButton" mnemonicParsing="false" styleClass="label-bright" text="Tests multiples" toggleGroup="$simulationRadioButtonGroup" GridPane.columnIndex="2" />
                               <Label styleClass="label-bright" text="Drone / entrepôts" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
-                              <TextField fx:id="nbDronesTextField" promptText="ex: 5, 10..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+                              <TextField fx:id="nbDronesTextField" promptText="ex: 5, 10..." GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
                               <Label styleClass="label-bright" text="Nb d'entrepôts" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
-                              <TextField fx:id="nbEntrepotsTextField" promptText="ex: 1, 3..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
+                              <TextField fx:id="nbEntrepotsTextField" promptText="ex: 1, 3..." GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
                               <Label styleClass="label-bright" text="Nb de clients" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
-                              <TextField fx:id="nbClientsTextField" layoutX="150.0" layoutY="57.0" promptText="ex: 10, 30..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
+                              <TextField fx:id="nbClientsTextField" layoutX="150.0" layoutY="57.0" promptText="ex: 10, 30..." GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
                               <Label styleClass="label-bright" text="Poids des colis" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" />
-                              <TextField fx:id="poidsColisTextField" promptText="ex: 1-5, 5..." GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" />
+                              <TextField fx:id="poidsColisTextField" promptText="ex: 1-5, 5..." GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" />
                               <Label fx:id="speedLabel" styleClass="label-bright" text="Vitesse du programme" GridPane.rowIndex="7" />
-                              <TextField fx:id="speedTextField" promptText="ex: 0.1, 5" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                              <TextField fx:id="speedTextField" promptText="ex: 0.1, 5" GridPane.columnIndex="2" GridPane.rowIndex="7" />
                               <Label prefHeight="21.0" prefWidth="234.0" text="Paramètres généraux :" GridPane.columnSpan="2" GridPane.rowIndex="2" />
                               <RadioButton fx:id="recuitRb" mnemonicParsing="false" selected="true" styleClass="label-bright" text="Recuit simulé" GridPane.rowIndex="12">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="aiRadioButtonGroup" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="qlearningRb" mnemonicParsing="false" styleClass="label-bright" text="Q-Learning" toggleGroup="$aiRadioButtonGroup" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                              <RadioButton fx:id="qlearningRb" mnemonicParsing="false" styleClass="label-bright" text="Q-Learning" toggleGroup="$aiRadioButtonGroup" GridPane.columnIndex="2" GridPane.rowIndex="12" />
                               <Label layoutX="10.0" layoutY="60.0" prefHeight="21.0" prefWidth="234.0" text="Méthode d'IA :" GridPane.columnSpan="2" GridPane.rowIndex="11" />
                               <Label layoutX="10.0" layoutY="300.0" prefHeight="21.0" prefWidth="234.0" text="Paramètres de la méthode d'IA :" GridPane.columnSpan="2" GridPane.rowIndex="13" />
-                              <TextField fx:id="paramTextField1" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 0.1-500.." GridPane.columnIndex="1" GridPane.rowIndex="14" />
-                              <TextField fx:id="paramTextField2" layoutX="135.0" layoutY="452.0" promptText="ex: 0, 0.9..." GridPane.columnIndex="1" GridPane.rowIndex="15" />
-                              <TextField fx:id="paramTextField3" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="1" GridPane.rowIndex="16" />
+                              <TextField fx:id="paramTextField1" layoutX="135.0" layoutY="132.0" promptText="ex: 600, 0.1-500.." GridPane.columnIndex="2" GridPane.rowIndex="14" />
+                              <TextField fx:id="paramTextField2" layoutX="135.0" layoutY="452.0" promptText="ex: 0, 0.9..." GridPane.columnIndex="2" GridPane.rowIndex="15" />
+                              <TextField fx:id="paramTextField3" layoutX="10.0" layoutY="12.0" promptText="ex: 10, 2..." GridPane.columnIndex="2" GridPane.rowIndex="16" />
                               <Label fx:id="paramLabel1" layoutX="10.0" layoutY="140.0" styleClass="label-bright" text="T° initiale/range" GridPane.rowIndex="14" />
                               <Label fx:id="paramLabel2" layoutX="10.0" layoutY="460.0" styleClass="label-bright" text="Alpha" GridPane.rowIndex="15" />
                               <Label fx:id="paramLabel3" layoutX="10.0" layoutY="500.0" styleClass="label-bright" text="Nb itér. par pallier" GridPane.rowIndex="16" />
@@ -76,15 +71,22 @@
                               <HBox prefHeight="100.0" prefWidth="200.0" spacing="30.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="18">
                                  <children>
                                     
-                                    <Button fx:id="stopButton" contentDisplay="CENTER" disable="true" layoutX="50.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#stopAgent" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER">
-                                       <graphic>
-                                          <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../img/stop.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                    </Button>
+                                    <Button fx:id="stopButton" contentDisplay="CENTER" disable="true" layoutX="50.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#stopAgent" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER" />
+      									<ImageView fx:id="playButtonImageView" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+      										<image>
+      											<Image url="@../img/play.png" />
+      										</image>
+      									</ImageView>
+                                    <ImageView fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../img/stop.png" />
+                                       </image>
+                                    </ImageView>
+                                                <ImageView fx:id="restartSimulation1" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../img/restarrt.png" />
+                                                   </image>
+                                                </ImageView>
                                     
                                  </children>
                                  <padding>
@@ -96,6 +98,7 @@
                               <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1" />
                            </children>
                            <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints />
@@ -206,24 +209,8 @@
                               <Insets bottom="30.0" top="10.0" />
                            </VBox.margin>
                         </Label>
-                        <Button fx:id="startButton" contentDisplay="CENTER" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#startAgent" prefHeight="33.0" prefWidth="33.0" styleClass="button-play" textAlignment="CENTER">
-                              	<graphic>
-									<ImageView fx:id="playButtonImageView" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
-										<image>
-											<Image url="@../img/play.png" />
-										</image>
-									</ImageView>
-								</graphic>
-							  </Button>
-							  <Button fx:id="restartButton" contentDisplay="CENTER" disable="true" layoutX="176.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#restartSimulation" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER">
-                                       <graphic>
-                                          <ImageView fx:id="restartSimulation1" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../img/restarrt.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                    </Button>
+                        <Button fx:id="startButton" contentDisplay="CENTER" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#startAgent" prefHeight="33.0" prefWidth="33.0" styleClass="button-play" textAlignment="CENTER" />
+							  <Button fx:id="restartButton" contentDisplay="CENTER" disable="true" layoutX="176.0" layoutY="10.0" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#restartSimulation" prefHeight="33.0" prefWidth="33.0" textAlignment="CENTER" />
                         <GridPane>
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -238,13 +225,13 @@
                           </rowConstraints>
                            <children>
                               <Label styleClass="label-bright" text="Drones" />
-                              <Label fx:id="droneRP" text="Label" GridPane.columnIndex="1" />
+                              <Label fx:id="droneRP" text="-" GridPane.columnIndex="1" />
                               <Label styleClass="label-bright" text="Dépôts" GridPane.rowIndex="1" />
-                              <Label fx:id="entrepotsRP" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label fx:id="entrepotsRP" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <Label styleClass="label-bright" text="Colis livrés" GridPane.rowIndex="2" />
-                              <Label fx:id="deliveredPackages" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label fx:id="deliveredPackages" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <Label styleClass="label-bright" text="Colis restants" GridPane.rowIndex="3" />
-                              <Label fx:id="remainingPackages" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label fx:id="remainingPackages" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                               <Label fx:id="timeElapsedLabel" text="00:00:00" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 							  <Label styleClass="label-bright" text="Temps écoulé" GridPane.rowIndex="4" />
                            </children>
@@ -263,23 +250,23 @@
                               <RowConstraints />
                            </rowConstraints>
                            <children>
-                              <Label prefHeight="21.0" prefWidth="112.0" styleClass="label-bright" text="Drone Index" />
-                              <Label fx:id="droneIndex" text="Label" GridPane.columnIndex="1" />
+                              <Label prefHeight="21.0" prefWidth="112.0" styleClass="label-bright" text="Drone n°" />
+                              <Label fx:id="droneIndex" text="-" GridPane.columnIndex="1" />
                               <Label prefHeight="21.0" prefWidth="108.0" styleClass="label-bright" text="stat 2" GridPane.rowIndex="1" />
-                              <Label fx:id="stat2" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Label fx:id="stat2" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <Label prefHeight="21.0" prefWidth="94.0" styleClass="label-bright" text="stat 3" GridPane.rowIndex="2" />
-                              <Label fx:id="stat3" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label fx:id="stat3" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <Label prefHeight="21.0" prefWidth="113.0" styleClass="label-bright" text="stat 4" GridPane.rowIndex="3" />
-                              <Label fx:id="stat4" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label fx:id="stat4" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                            </children>
                         </GridPane>
                         <Separator prefHeight="24.0" prefWidth="240.0" />
                         <Label prefHeight="35.0" prefWidth="240.0" style="-fx-font-size: 30;" styleClass="label-header" text="Entrepôt" />
                         <GridPane>
                           <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="123.0" minWidth="10.0" prefWidth="118.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="75.0" minWidth="10.0" prefWidth="49.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="98.0" minWidth="10.0" prefWidth="22.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="127.0" minWidth="10.0" prefWidth="111.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="75.0" minWidth="10.0" prefWidth="29.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="98.0" minWidth="10.0" prefWidth="24.0" />
                               <ColumnConstraints hgrow="SOMETIMES" maxWidth="98.0" minWidth="10.0" prefWidth="79.0" />
                           </columnConstraints>
                           <rowConstraints>
@@ -289,11 +276,11 @@
                           </rowConstraints>
                            <children>
                               <Label prefHeight="21.0" prefWidth="125.0" styleClass="label-bright" text="Entrepôt n°" />
-                              <Label fx:id="warehouseIndex" text="Label" GridPane.columnIndex="1" />
+                              <Label fx:id="warehouseIndex" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
                               <Label prefHeight="21.0" prefWidth="157.0" styleClass="label-bright" text="Drones revenus" GridPane.rowIndex="1" />
-                              <Label fx:id="dronesAtWarehouse" layoutX="130.0" layoutY="45.0" prefHeight="21.0" prefWidth="47.0" text="Label" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
-                              <Label layoutX="125.0" layoutY="45.0" prefHeight="21.0" prefWidth="42.0" text="/" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <Label fx:id="dronesPerWarehouse" layoutX="121.0" layoutY="45.0" prefHeight="21.0" prefWidth="47.0" text="Label" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
+                              <Label layoutX="125.0" layoutY="45.0" prefHeight="21.0" prefWidth="42.0" text="/" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                              <Label fx:id="dronesPerWarehouse" layoutX="121.0" layoutY="45.0" prefHeight="21.0" prefWidth="47.0" text="-" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
+                              <Label fx:id="dronesAtWarehouse" layoutX="131.0" layoutY="15.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
                      </children>
