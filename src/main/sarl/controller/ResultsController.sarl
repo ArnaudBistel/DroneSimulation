@@ -320,7 +320,7 @@ class ResultsController extends FxViewerController {
 		}
 		// Allow floats or range of floats for SA
 		fields.clear
-		fields.addAll(temperatureTextField, alphaTextField1, nbIterTextField)
+		fields.addAll(temperatureTextField, nbIterTextField)
 		for (field : fields) {
 			Platform.runLater(new Runnable() {
 				@Override
@@ -370,6 +370,55 @@ class ResultsController extends FxViewerController {
 				}
 			})
 		}
+		fields.clear
+		fields.addAll(alphaTextField1)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							var onlyRange = true
+							var concurrents = new ArrayList<TextField>
+							concurrents.addAll(concurrentFields.get(0), concurrentFields.get(1),
+								concurrentFields.get(2), concurrentFields.get(3))
+							for (concurrent : concurrents) {
+								if (concurrent.text.contains("-") && concurrent != field) {
+									onlyRange = false
+									break
+								}
+							}
+
+							if (onlyRange && (newValue.matches("[0]+([.][0-9]*)?(-[0]*([.][0-9]*)?)?") ||
+									newValue.matches("[0]+([.][0-9]*)?(-[1]?)?") ||
+								newValue.matches("[0-1]?"))) {
+								
+								field.text = newValue
+							} else if (!onlyRange && (newValue.matches("[0]+([.][0-9]*)?") ||
+								newValue.matches("[0-1]?"))) {
+								
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
 		// Allow floats or range of floats for Q Learning
 		fields.clear
 		fields.addAll(alphaQTextField, gammaTextField, epsilonTextField)
@@ -398,12 +447,14 @@ class ResultsController extends FxViewerController {
 								}
 							}
 
-							if (onlyRange && (newValue.matches("[0-9]+([.][0-9]*)?(-[0-9]*([.][0-9]*)?)?") ||
-								newValue.matches("[0-9]*"))) {
+							if (onlyRange &&
+								(newValue.matches("[0]+([.][0-9]*)?(-[0]*([.][0-9]*)?)?") ||
+									newValue.matches("[0]+([.][0-9]*)?(-[1]?)?") ||
+								newValue.matches("[0-1]?"))) {
 								
 								field.text = newValue
-							} else if (!onlyRange && (newValue.matches("[0-9]+([.][0-9]*)?") ||
-								newValue.matches("[0-9]*"))) {
+							} else if (!onlyRange && (newValue.matches("[0]+([.][0-9]*)?") ||
+								newValue.matches("[0-1]?"))) {
 								
 								field.text = newValue
 							} else {
