@@ -159,15 +159,15 @@ class MainWindowController extends FxViewerController {
 	
 	var timeElapsed : long
 
-	var timer : SimTimer
-	var myTask : Task
+	var timer : Timer
+	var myTask : TimerTask
 
 	var timeRatio : float 
 	
 	@FXML
 	var droneIndex : Label
 	@FXML
-	var nextClient: Label
+	var packageWeight : Label
 	@FXML
 	var battery : Label
 	
@@ -460,13 +460,6 @@ class MainWindowController extends FxViewerController {
 					emitToAgents(new GetMapInfos(), true)
 					System.out.println("Emit")
 					deliveredPackages.text = "0"
-					/* 
-					var temp : float = 0
-					for (c : getClients) {
-						temp = c.mapPoint.packageWeight
-					}
-					setAveragePackage(temp / getClients.size)
-					 * */
 				} catch(e : InterruptedException){
 					e.printStackTrace();
 				}
@@ -790,14 +783,15 @@ class MainWindowController extends FxViewerController {
 	}
 	
 	def displayDroneInfos(id : UUID) : void {
+		this.selectedDrone = this.bodies.get(id) as DroneBody
+		this.selectedBody = this.selectedDrone as Body
 		var pos = -1
 		if(droneBodies.containsKey(id)){
 			pos = droneBodies.headMap(id).size()
 		}
 		droneIndex = pos+1
-		this.selectedDrone = this.bodies.get(id) as DroneBody
-		this.selectedBody = this.selectedDrone as Body
-		
+		packageWeight  = this.selectedDrone.actualCharge
+		battery = (this.selectedDrone.actualBattery / 16.28) as int
 	}
 	
 	def displayWarehouseInfos(id : UUID) : void {
@@ -1074,7 +1068,6 @@ class MainWindowController extends FxViewerController {
 	}
 	
 	def updateMapInfos(nbClients : int, nbWarehouse : int, stepTime : int) {
-		//System.out.println("Update Map Infos")
 		Platform.runLater(new Runnable() {
 			@Override
 			def run() {
@@ -1090,25 +1083,48 @@ class MainWindowController extends FxViewerController {
 				entrepotsRP.text = nbWarehouse.toString
 			}
 		})
-				
+		var temp : float = 0
+		for (c : getClients) {
+			temp += c.mapPoint.packageWeight as float
+			System.out.println(getClients.size())
+		}
+		temp = temp / getClients.size()
+		System.out.println(temp)
+		setAveragePackage(temp)	
+			
 		if(this.started.get()){
 			timeRatio = SolutionSolver.stepNumberToRealTime(1) * 1000 / stepTime
         	initTimer
-			System.out.println("timeRatio : "+ timeRatio)
+			//System.out.println("timeRatio : "+ timeRatio)
 		}
+		
 
 	}
 
 	def initTimer() {
 		val refreshRate = 10
 		this.timeElapsed = 0l
-		this.timer = new SimTimer()
-		this.timer.start
+		this.timer = new Timer()
+		this.myTask = new TimerTask() {
+			@Override
+			def run() {
+				if (pause) {
+					//System.out.println("paused")
+				}
+				while (!started.get()) {
+				}
+				updateTimer(refreshRate, 0l)
+				if (stopped) {
+					timeElapsed = 0
+				}
+			}
+		}
+		timer.schedule(myTask, refreshRate, refreshRate);
 	}
 
-	def updateTimer(refreshRate : int, previousTimer : int) {
-		//System.out.println((this.timeRatio))
-		timeElapsed += previousTimer + refreshRate*this.timeRatio as long
+	def updateTimer(refreshRate : int, previousTimer : long) {
+		//System.out.println("timeRatio : " + timeRatio + "   timeElapsed : " + timeElapsed)
+		timeElapsed += previousTimer + refreshRate * this.timeRatio as long
 		formatTimeElapsed(timeElapsed)
 	}
 	
@@ -1210,6 +1226,10 @@ class MainWindowController extends FxViewerController {
 		return Integer.parseInt(this.deliveredPackages.getText())
 	}
 	
+	def setBattery(nb : int){
+		this.battery.setText(nb.toString())
+	}
+	
 	def setSpeedRatio(nb : float) {
 		this.speedRatio = nb
 	}
@@ -1224,6 +1244,10 @@ class MainWindowController extends FxViewerController {
 	
 	def getAveragePackage() : float {
 		return Float.parseFloat(this.averagePackage.getText())
+	}
+	
+	def setPackageWeight(nb : float) {
+		this.packageWeight.setText(nb.toString())
 	}
 	
 	def setManagerInitialized(bool : boolean) {
