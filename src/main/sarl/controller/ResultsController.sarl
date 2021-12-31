@@ -52,6 +52,7 @@ import gui.PathEnum
 import solutionSolver.solutionTester.MultiTesterSimulatedAnnealing
 import map.SimulationMap
 import utils.variables.SimulationParameters
+import solutionSolver.solutionTester.MultiTesterQLearning
 
 class ResultsController extends FxViewerController {
 	
@@ -112,7 +113,16 @@ class ResultsController extends FxViewerController {
 	@FXML
 	var lineChartQL2 : LineChart<String, Number>
 
-	
+	@FXML
+	var bestCostLabel : Label
+	@FXML
+	var bestDurationLabel : Label
+	@FXML
+	var selectedCostLabel : Label
+	@FXML
+	var selectedDurationLabel : Label
+	@FXML
+	var iamethodLabel : Label
 
 	var parameters : ArrayList = new ArrayList()
 
@@ -123,6 +133,7 @@ class ResultsController extends FxViewerController {
 	var clients : List<Client> = new ArrayList<Client>()
 
 	var mtSimAnnealing : MultiTesterSimulatedAnnealing
+	var mtQLearning : MultiTesterQLearning
 
 	@Pure
 	def init(mainApp : MainApp, mainWindowController : MainWindowController) {
@@ -171,11 +182,17 @@ class ResultsController extends FxViewerController {
 				poidsColisTextField.textProperty.addListener(listener)
 			}
 		})
+		this.mainWindowController.emitInitializeResultGraph
 	}
 
 
 	@FXML
 	def generateGraph() {
+		bestCostLabel.setText("/")
+		bestDurationLabel.setText("/")
+		selectedCostLabel.setText("/")
+		selectedDurationLabel.setText("/")
+		iamethodLabel.setText("Méthode d'IA")
 		drawPaneRoutes.children.clear
 		createParametersList()
 		this.mainWindowController.createParametersList
@@ -206,21 +223,34 @@ class ResultsController extends FxViewerController {
 		//récupération paramètres
 		var nbDrones = createRange(getNbDronesInput).get(0).toInteger
 		var temp = SATempRange
-		var alpha = SAAlphaRange
+		var alphaSA = SAAlphaRange
 		var iter = SAnbIterPalierRange
+		var alphaQL = QLAlphaRange
+		var gamma = QLGammaRange
+		var epsilon = QLEpsilonRange
 		//lancement
 		mtSimAnnealing = new MultiTesterSimulatedAnnealing(
 			simMap, SimulationParameters.MT_NB_STEP, SimulationParameters.MT_NB_TEST_BY_STEP, nbDrones,
 			temp.get(0), temp.get(1),
 			SimulationParameters.MT_TEMP_TRESHOLD, SimulationParameters.MT_TEMP_TRESHOLD,
-			alpha.get(0), alpha.get(1),
+			alphaSA.get(0), alphaSA.get(1),
 			iter.get(0), iter.get(1)
 		)
 		mtSimAnnealing.runMultiTest
+
+		mtQLearning = new MultiTesterQLearning(
+			simMap, SimulationParameters.MT_NB_STEP, SimulationParameters.MT_NB_TEST_BY_STEP, nbDrones,
+		    alphaQL.get(0), alphaQL.get(1),
+		    gamma.get(0), gamma.get(1),
+		    epsilon.get(0), epsilon.get(1),
+			SimulationParameters.MT_NB_EPISODE_Q_LEARNING, SimulationParameters.MT_NB_EPISODE_Q_LEARNING
+		)
+		//mtQLearning.runMultiTest
 		
 		
-		displayCharts(mtSimAnnealing.energyCostResults, mtSimAnnealing.timeCostResults,
-			new ArrayList<Double>(), new ArrayList<Double>()
+		displayCharts(
+			mtSimAnnealing.energyCostResults, mtSimAnnealing.timeCostResults,
+			mtQLearning.energyCostResults, mtQLearning.timeCostResults
 		)
 		displayDronesRoutes(mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults))
 		
@@ -290,7 +320,7 @@ class ResultsController extends FxViewerController {
 		}
 		// Allow floats or range of floats for SA
 		fields.clear
-		fields.addAll(temperatureTextField, alphaTextField1, nbIterTextField)
+		fields.addAll(temperatureTextField, nbIterTextField)
 		for (field : fields) {
 			Platform.runLater(new Runnable() {
 				@Override
@@ -340,6 +370,55 @@ class ResultsController extends FxViewerController {
 				}
 			})
 		}
+		fields.clear
+		fields.addAll(alphaTextField1)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							var onlyRange = true
+							var concurrents = new ArrayList<TextField>
+							concurrents.addAll(concurrentFields.get(0), concurrentFields.get(1),
+								concurrentFields.get(2), concurrentFields.get(3))
+							for (concurrent : concurrents) {
+								if (concurrent.text.contains("-") && concurrent != field) {
+									onlyRange = false
+									break
+								}
+							}
+
+							if (onlyRange && (newValue.matches("[0]+([.][0-9]*)?(-[0]*([.][0-9]*)?)?") ||
+									newValue.matches("[0]+([.][0-9]*)?(-[1]?)?") ||
+								newValue.matches("[0-1]?"))) {
+								
+								field.text = newValue
+							} else if (!onlyRange && (newValue.matches("[0]+([.][0-9]*)?") ||
+								newValue.matches("[0-1]?"))) {
+								
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
 		// Allow floats or range of floats for Q Learning
 		fields.clear
 		fields.addAll(alphaQTextField, gammaTextField, epsilonTextField)
@@ -368,12 +447,14 @@ class ResultsController extends FxViewerController {
 								}
 							}
 
-							if (onlyRange && (newValue.matches("[0-9]+([.][0-9]*)?(-[0-9]*([.][0-9]*)?)?") ||
-								newValue.matches("[0-9]*"))) {
+							if (onlyRange &&
+								(newValue.matches("[0]+([.][0-9]*)?(-[0]*([.][0-9]*)?)?") ||
+									newValue.matches("[0]+([.][0-9]*)?(-[1]?)?") ||
+								newValue.matches("[0-1]?"))) {
 								
 								field.text = newValue
-							} else if (!onlyRange && (newValue.matches("[0-9]+([.][0-9]*)?") ||
-								newValue.matches("[0-9]*"))) {
+							} else if (!onlyRange && (newValue.matches("[0]+([.][0-9]*)?") ||
+								newValue.matches("[0-1]?"))) {
 								
 								field.text = newValue
 							} else {
@@ -565,6 +646,12 @@ class ResultsController extends FxViewerController {
 		this.lineChartRS2.data.clear
 		this.lineChartQL1.data.clear
 		this.lineChartQL2.data.clear
+
+		bestCostLabel.setText("/")
+		bestDurationLabel.setText("/")
+		selectedCostLabel.setText("/")
+		selectedDurationLabel.setText("/")
+		iamethodLabel.setText("Méthode d'IA")
 		
 		var xAxis = new CategoryAxis();
 		
@@ -582,32 +669,49 @@ class ResultsController extends FxViewerController {
 			seriesRS1.data.add(new XYChart.Data<String, Number>("" + i, e))
 			i++
 		}
-		var yAxis = new NumberAxis(min, max, 0.01*(max - min))
-		//this.lineChartRS1 = new LineChart<String,Number>(xAxis, yAxis) //ne met pas a jour
-		this.lineChartRS1.data.addAll(seriesRS1)
-		for (data : seriesRS1.getData()) {
-			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-				@Override
-				def handle(e : MouseEvent) {
-					displayDronesRoutes(Integer.parseInt(data.XValue))
-					System.out.println("X" + data.XValue + " y : " + data.YValue)
-				}
-			})
-		}
 
 		var seriesRS2 = new XYChart.Series<String, Number>()
 		seriesRS2.setName("Temps Recuit")
 		i = 0
 		for (e : SATime) {
-			seriesRS2.data.add(new XYChart.Data<String, Number>(""+i, e))
+			seriesRS2.data.add(new XYChart.Data<String, Number>("" + i, e))
 			i++
 		}
+		
+		var yAxis = new NumberAxis(min, max, 0.01*(max - min))
+		//this.lineChartRS1 = new LineChart<String,Number>(xAxis, yAxis) //ne met pas a jour
+		this.lineChartRS1.data.addAll(seriesRS1)
+		i = 0
+		for (data : seriesRS1.getData()) {
+			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+				@Override
+				def handle(e : MouseEvent) {
+					displayDronesRoutes(Integer.parseInt(data.XValue))
+					selectedCostLabel.setText("" + String.format("%.2f", data.YValue))
+					selectedDurationLabel.setText("" + String.format("%.2f", SATime.get(data.XValue as int)))
+					iamethodLabel.setText("Recuit Simulé")
+					var bestId = mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults)
+					bestCostLabel.setText("" + String.format("%.2f", SACost.get(bestId)))
+					bestDurationLabel.setText("" + String.format("%.2f", SATime.get(bestId)))
+					System.out.println("X" + data.XValue + " y : " + data.YValue)
+				}
+			})
+			i++
+		}
+
+
 		this.lineChartRS2.data.addAll(seriesRS2)
 		for (data : seriesRS2.getData()) {
 			data.node.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 				@Override
 				def handle(e : MouseEvent) {
 					displayDronesRoutes(Integer.parseInt(data.XValue))
+					selectedDurationLabel.setText("" + String.format("%.2f", data.YValue))
+					selectedCostLabel.setText("" + String.format("%.2f", SACost.get(data.XValue as int)))
+					iamethodLabel.setText("Recuit Simulé")
+					var bestId = mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults)
+					bestCostLabel.setText("" + String.format("%.2f",  SACost.get(bestId)))
+					bestDurationLabel.setText("" + String.format("%.2f", SATime.get(bestId)))
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})
@@ -753,6 +857,27 @@ class ResultsController extends FxViewerController {
 		for(e : temp)
 			res.add(e.toInteger)
 		return res
+	}
+
+	def getQLAlphaRange() : List<Float> {
+		var temp = createRange(alphaQTextField.text)
+		if (temp.size == 1) // if only one number, duplicate it
+			temp.add(temp.get(0))
+		return temp
+	}
+
+	def getQLGammaRange() : List<Float> {
+		var temp = createRange(gammaTextField.text)
+		if (temp.size == 1) // if only one number, duplicate it
+			temp.add(temp.get(0))
+		return temp
+	}
+
+	def getQLEpsilonRange() : List<Float> {
+		var temp = createRange(epsilonTextField.text)
+		if (temp.size == 1) // if only one number, duplicate it
+			temp.add(temp.get(0))
+		return temp
 	}
 
 }

@@ -53,7 +53,8 @@ public class Client extends Circle{
 	
 
 	public StackPane drawItselfResults() {
-		this.setFill(this.getFill());	
+		this.setFill(this.getFill());
+		this.setStroke(Color.BLACK);
 		Text text = new Text(""+mapPoint.getPackageWeight());
 		text.setFont(Font.font ("Segoe UI Semibold", 18));
 		text.setFill(Color.WHITE);

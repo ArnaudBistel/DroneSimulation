@@ -3,6 +3,7 @@ package solutionSolver.qLearning;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -54,7 +55,7 @@ public class QLearningAnalyser {
 			test_seeds[i] = random.nextInt();
 		}
 		
-		SimulationMap map = new SimulationMap(10, 1, test_seeds[0] + TEST_SEED);
+		SimulationMap map = new SimulationMap(10, 1, test_seeds[0] + TEST_SEED, Arrays.asList(1.0f,5.0f));
 		QLearning sim = new QLearning(map);
 		
 		double[] costResultAlpha = new double[NB_STEP_TEST];
@@ -72,7 +73,7 @@ public class QLearningAnalyser {
 		info(getAvancementStringBar(initTime, 0, -1));
 		
 		for(int i = 0; i < NB_TRY_PER_VALUE; i++) {
-			map = new SimulationMap(10, 1, test_seeds[i % test_seeds.length] + TEST_SEED);
+			map = new SimulationMap(10, 1, test_seeds[i % test_seeds.length] + TEST_SEED, Arrays.asList(1.0f,5.0f));
 			for(int j = 0; j < NB_STEP_TEST; j++) {
 				//alpha section
 				double alphaDiv = 1 + j * STEP_ALPHA;

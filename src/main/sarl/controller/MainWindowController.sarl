@@ -31,6 +31,7 @@ import javafx.css.PseudoClass
 import javafx.scene.canvas.Canvas
 import javafx.scene.image.ImageView
 import javafx.scene.image.Image
+import javafx.scene.shape.Circle
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.RadioButton
@@ -39,8 +40,14 @@ import javafx.scene.control.Toggle
 import javafx.scene.control.ToggleGroup
 import javafx.scene.layout.Pane
 import javafx.scene.layout.AnchorPane
-import javafx.^event.EventHandler;
-import javafx.scene.input.MouseEvent;
+import javafx.^event.EventHandler
+import javafx.scene.input.MouseEvent
+import javafx.scene.paint.RadialGradient
+import javafx.scene.paint.Stop;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+
+
 
 import agents.CancelEvery
 import agents.GenerateGraph
@@ -56,6 +63,10 @@ import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import timer.SimTimer
 import timer.Task
+import utils.variables.SimulationParameters
+import java.util.Arrays
+import agents.InitializeResultGraph
+import javafx.scene.effect.DropShadow
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -91,6 +102,8 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	var drawZone : Canvas
 
+	@FXML
+	var droneBatteryCircle : Circle
 	@FXML
 	var rootPane : AnchorPane
 	
@@ -166,7 +179,10 @@ class MainWindowController extends FxViewerController {
 	var dronesPerWarehouse : Label
 	
 	var speedRatio : float
-	
+    
+	var selectedDrone : DroneBody
+	var selectedBody : Body
+    
 	var simulation : Boolean = true
 	var recuit : Boolean = true
 	var parameters : ArrayList = new ArrayList()
@@ -174,7 +190,7 @@ class MainWindowController extends FxViewerController {
 	var inMultiTest = false
 	var stopped = true
 	var pause = true
-	
+	var dropShadow : DropShadow
 	@Pure
 	def setMainApp(mainApp : MainApp ) {
 		this.mainApp = mainApp;
@@ -220,9 +236,22 @@ class MainWindowController extends FxViewerController {
 				}
 			}
 		});
+
+		this.dropShadow = new DropShadow()
+		dropShadow.setRadius(5.0)
+		dropShadow.setSpread(1.0)
+		dropShadow.setColor(Color.WHITE)
+
+		var eventHandler = new EventHandler<MouseEvent>() {
+			def handle(^event : MouseEvent) {
+				unselectBody
+			}
+				}
+		this.drawPane.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 	}
+
 	
-	
+
 	def initializeParamFields {
 		// Allow only integers
 		var fields = new ArrayList<TextField>
@@ -258,7 +287,7 @@ class MainWindowController extends FxViewerController {
 		}
 		// Allow floats
 		fields.clear
-		fields.addAll(speedTextField, paramTextField1, paramTextField2, paramTextField3)
+		fields.addAll(paramTextField1)
 		for (field : fields) {
 			Platform.runLater(new Runnable() {
 				@Override
@@ -273,8 +302,8 @@ class MainWindowController extends FxViewerController {
 								return
 							}
 
-							if (newValue.matches("[0-9]+([.][0-9]*)?") ||
-								newValue.matches("[0-9]*")) {
+							if (newValue.matches("[0]+([.][0-9]*)?") ||
+								newValue.matches("[0-1]?")) {
 								field.text = newValue
 							} else {
 								ignore = true
@@ -284,6 +313,73 @@ class MainWindowController extends FxViewerController {
 						}
 
 					}
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+		fields.clear
+		fields.addAll(paramTextField2, paramTextField3)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							if (recuit && (newValue.matches("[0-9]+([.][0-9]*)?") || newValue.matches("[0-9]*"))) {
+								field.text = newValue
+							}
+							else if (!recuit && (newValue.matches("[0]+([.][0-9]*)?") || newValue.matches("[0-1]?"))) {
+								field.text = newValue
+							}
+							else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+					field.textProperty.addListener(listener)
+				}
+			})
+		}
+		// Allow specific floats for speed
+		fields.clear
+		fields.addAll(speedTextField)
+		for (field : fields) {
+			Platform.runLater(new Runnable() {
+				@Override
+				def run() {
+					var listener = new ChangeListener<String> {
+
+						var ignore : boolean
+
+						def changed(observable : ObservableValue<? extends String>, oldValue : String,
+							newValue : String) {
+							if (ignore || newValue === null) {
+								return
+							}
+
+							if (newValue.matches("[1-4]+([.][0-9]*)?") ||
+								newValue.matches("[0]+([.]([1-9][0-9]*)*)?") || newValue.matches("[1-5]*")) {
+								field.text = newValue
+							} else {
+								ignore = true
+								field.text = oldValue
+								ignore = false
+							}
+						}
+
+					}
+
 					field.textProperty.addListener(listener)
 				}
 			})
@@ -305,7 +401,7 @@ class MainWindowController extends FxViewerController {
 								return
 							}
 
-							if (newValue.matches("[0-9]+([.][0-9]*)?(-[0-9]*([.][0-9]*)?)?") ||
+							if (newValue.matches("[0-5]+([.][0-9]*)?(-[0-5]*([.][0-9]*)?)?") ||
 								newValue.matches("[0-9]*")) {
 								field.text = newValue
 							} else {
@@ -356,11 +452,13 @@ class MainWindowController extends FxViewerController {
 	}
 	
 	def initializeRightPane() {
+		//System.out.println("InitRightPane")
 		Platform.runLater(new Runnable() {
 			@Override
 			def run(){
 				try{
 					emitToAgents(new GetMapInfos(), true)
+					System.out.println("Emit")
 					deliveredPackages.text = "0"
 					/* 
 					var temp : float = 0
@@ -565,6 +663,7 @@ class MainWindowController extends FxViewerController {
 			emitToAgents(new CancelEvery, true)
 
 			emitToAgents(new GetMapInfos, true)
+			this.selectedDrone = null
 		}
 	}
 
@@ -588,8 +687,7 @@ class MainWindowController extends FxViewerController {
 			emitToAgents(new Restart, true)
 		}
 
-		this.startSimulation();		
-		
+		this.startSimulation();
 	}
 
 	@FXML
@@ -673,8 +771,8 @@ class MainWindowController extends FxViewerController {
 						throw new UnsupportedOperationException("TODO: auto-generated method stub")
 					}
 				}
-				droneBodies.get(entry.key).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
-		}
+				entry.value.imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)	
+			}
 		} else if (type.equals("WAREHOUSE")) {
 			this.warehouseBodies.put(body.getId, body as WarehouseBody)
 			//add warehouse listener to each warehouse
@@ -688,6 +786,7 @@ class MainWindowController extends FxViewerController {
 				warehouseBodies.get(entry.getKey()).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 		}
 		}
+		
 	}
 	
 	def displayDroneInfos(id : UUID) : void {
@@ -696,9 +795,14 @@ class MainWindowController extends FxViewerController {
 			pos = droneBodies.headMap(id).size()
 		}
 		droneIndex = pos+1
+		this.selectedDrone = this.bodies.get(id) as DroneBody
+		this.selectedBody = this.selectedDrone as Body
+		
 	}
 	
 	def displayWarehouseInfos(id : UUID) : void {
+		this.selectedDrone = null
+		this.selectedBody = this.bodies.get(id) as Body
 		var pos = -1
 		var dronesLinked = -1
 		if (warehouseBodies.containsKey(id)) {
@@ -713,6 +817,7 @@ class MainWindowController extends FxViewerController {
 		} else {
 			dronesPerWarehouse = nbDronesInput as int
 		}
+		
 	}
 
 	def startSimulation() {
@@ -726,6 +831,7 @@ class MainWindowController extends FxViewerController {
 				}
 			}
         };
+        this.selectedDrone = null
         timer.start();
         initializeRightPane()
 	}
@@ -751,6 +857,11 @@ class MainWindowController extends FxViewerController {
 		}
 	}
 	
+	def unselectBody() {
+		this.selectedDrone = null
+		this.selectedBody = null
+	}
+	
 	def update() {
 		for (c : drawPane.children) {
 			var body = this.bodies.get(UUID.fromString(c.id))
@@ -760,12 +871,42 @@ class MainWindowController extends FxViewerController {
 			imageView.setY(body.position.y)
 			//System.out.println("X : " + test.position.x + " -- Y : " + test.position.y)
 			//System.out.println(test)
+			if (this.selectedBody == body) {
+				imageView.setEffect(this.dropShadow)
+			} else {
+				imageView.setEffect(null)
+				
+			}
 			
 		} 
 		val gc = drawZone.graphicsContext2D
 		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		for (c : this.clients) {
 			c.drawItself(gc);
+		}
+		if (this.selectedDrone !== null){
+			//System.out.println("Body id : " + this.selectedDrone.id)
+			//System.out.println("Body : " + this.selectedDrone)
+			//this.droneBatteryCircle.centerX = this.selectedDrone.posX
+			//this.droneBatteryCircle.centerY = this.selectedDrone.posY
+			var radius = SolutionSolver.droneDistanceAutonomy(this.selectedDrone.actualCharge, this.selectedDrone.actualBattery) 
+			//System.out.println("Actual charge : " + this.selectedDrone.actualCharge)
+			//System.out.println("Actual Battery : " + this.selectedDrone.actualBattery)
+			//System.out.println("Radius : " + radius)
+			radius *= SimulationParameters.mapRatio
+			//this.droneBatteryCircle.radius = radius
+			//this.droneBatteryCircle.visible = true
+			var stops = #[new Stop(0.0, Color.RED.deriveColor(0, 1, 1, 0.4)),
+				new Stop(1.0, Color.WHITE.deriveColor(0, 1, 1, 0.4))]
+			var gradient = new RadialGradient(0, 0, 0.5, 0.5,
+				0.5, true,
+				CycleMethod.NO_CYCLE, stops);
+			gc.setFill(gradient)
+			gc.fillOval(this.selectedDrone.posX - radius, this.selectedDrone.posY - radius, radius*2, radius*2)
+
+		}
+		else {
+			this.droneBatteryCircle.visible = false
 		}
 	}
 	
@@ -901,6 +1042,14 @@ class MainWindowController extends FxViewerController {
 	}
 
 	def importData(filename : String) {
+		this.bodies.clear
+		this.droneBodies.clear
+		this.warehouseBodies.clear
+		this.clients.clear
+		this.drawPane.children.clear
+
+		val gc = drawZone.graphicsContext2D
+		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		emitToAgents(new ImportDataEvent(filename), true)
 	}
 	
@@ -925,6 +1074,7 @@ class MainWindowController extends FxViewerController {
 	}
 	
 	def updateMapInfos(nbClients : int, nbWarehouse : int, stepTime : int) {
+		//System.out.println("Update Map Infos")
 		Platform.runLater(new Runnable() {
 			@Override
 			def run() {
@@ -940,12 +1090,13 @@ class MainWindowController extends FxViewerController {
 				entrepotsRP.text = nbWarehouse.toString
 			}
 		})
-		
+				
 		if(this.started.get()){
 			timeRatio = SolutionSolver.stepNumberToRealTime(1) * 1000 / stepTime
         	initTimer
 			System.out.println("timeRatio : "+ timeRatio)
 		}
+
 	}
 
 	def initTimer() {
@@ -954,9 +1105,9 @@ class MainWindowController extends FxViewerController {
 		this.timer = new SimTimer()
 		this.timer.start
 	}
-	
-	def updateTimer(refreshRate : int, previousTimer : long) {	
-		System.out.println("timeRatio : "+ timeRatio + "   timeElapsed : " + timeElapsed)
+
+	def updateTimer(refreshRate : int, previousTimer : int) {
+		//System.out.println((this.timeRatio))
 		timeElapsed += previousTimer + refreshRate*this.timeRatio as long
 		formatTimeElapsed(timeElapsed)
 	}
@@ -1083,4 +1234,7 @@ class MainWindowController extends FxViewerController {
 		return this.managerInitialized
 	}
 	
+	def emitInitializeResultGraph{
+		emitToAgents(new InitializeResultGraph(), true)
+	}
 }
