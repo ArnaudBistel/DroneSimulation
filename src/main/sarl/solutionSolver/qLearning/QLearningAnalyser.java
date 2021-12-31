@@ -17,8 +17,8 @@ public class QLearningAnalyser {
 	public static final int TEST_SEED = 0;
 	private static int[] test_seeds;
 	
-	public static final int DFT_REWARD_WH = -1;
-	public static final int DFT_REWARD_C = 20;
+	public static final int DFT_REWARD_WH = 0;
+	public static final int DFT_REWARD_C = 2;
 	public static final int DFT_PENALTY = -100;
 	
 	public static final double DFT_ALPHA = 0.8;
@@ -55,7 +55,7 @@ public class QLearningAnalyser {
 			test_seeds[i] = random.nextInt();
 		}
 		
-		SimulationMap map = new SimulationMap(10, 1, test_seeds[0] + TEST_SEED, Arrays.asList(1.0f,5.0f));
+		SimulationMap map = new SimulationMap(100, 1, test_seeds[0] + TEST_SEED, Arrays.asList(1.0f,5.0f));
 		QLearning sim = new QLearning(map);
 		
 		double[] costResultAlpha = new double[NB_STEP_TEST];
@@ -73,7 +73,7 @@ public class QLearningAnalyser {
 		info(getAvancementStringBar(initTime, 0, -1));
 		
 		for(int i = 0; i < NB_TRY_PER_VALUE; i++) {
-			map = new SimulationMap(10, 1, test_seeds[i % test_seeds.length] + TEST_SEED, Arrays.asList(1.0f,5.0f));
+			map = new SimulationMap(100, 1, test_seeds[i % test_seeds.length] + TEST_SEED, Arrays.asList(1.0f,5.0f));
 			for(int j = 0; j < NB_STEP_TEST; j++) {
 				//alpha section
 				double alphaDiv = 1 + j * STEP_ALPHA;
