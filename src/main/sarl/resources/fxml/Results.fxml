@@ -173,7 +173,7 @@
                                     <CategoryAxis side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
-                                    <NumberAxis side="LEFT" />
+                                    <NumberAxis forceZeroInRange="false" side="LEFT" />
                                  </yAxis>
                               </LineChart>
                               <LineChart fx:id="lineChartRS2" prefHeight="290.0">
@@ -181,7 +181,7 @@
                                     <CategoryAxis side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
-                                    <NumberAxis side="LEFT" />
+                                    <NumberAxis forceZeroInRange="false" side="LEFT" />
                                  </yAxis>
                               </LineChart>
                            </children>
@@ -193,7 +193,7 @@
                                     <CategoryAxis side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
-                                    <NumberAxis side="LEFT" />
+                                    <NumberAxis forceZeroInRange="false" side="LEFT" />
                                  </yAxis>
                               </LineChart>
                               <LineChart fx:id="lineChartQL2" prefHeight="290.0">
@@ -201,7 +201,7 @@
                                     <CategoryAxis side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
-                                    <NumberAxis side="LEFT" />
+                                    <NumberAxis forceZeroInRange="false" side="LEFT" />
                                  </yAxis>
                               </LineChart>
                            </children>
