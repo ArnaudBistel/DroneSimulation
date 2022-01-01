@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.commons.logging.impl.AvalonLogger;
 
 public abstract class SolutionSolver {
 	
@@ -264,6 +263,12 @@ public abstract class SolutionSolver {
 			}
 			res.get(currentListId).add(p);
 			
+		}
+		
+		if(endToClosestWarehouse) {	
+			res.get(currentListId).add(getClosestWharehouse(solution.get(solution.size()-1), map));
+		} else {					
+			res.get(currentListId).add(res.get(currentListId).get(0)); //return to origin warehouse 
 		}
 		
 		return res;
