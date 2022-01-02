@@ -608,9 +608,6 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	def startAgent {
 		createParametersList()
-		selectedDronePane.visible = false
-		selectedWarehousePane.visible = false
-		unselectedPane.visible = true
 		this.inMultiTest = false
 		// start
 		if (!started.getAndSet(true)) {
@@ -662,6 +659,9 @@ class MainWindowController extends FxViewerController {
 		createParametersList()
 		this.inMultiTest = false
 		if (started.getAndSet(false)) {
+			selectedDronePane.visible = false
+			selectedWarehousePane.visible = false
+			unselectedPane.visible = true
 			var image = new Image((getClass().getResource("/resources/img/play.png").toExternalForm()), 33, 33, true,true)
 			this.playButtonImageView.setImage(image)
 			this.stopButton.setDisable(true)
