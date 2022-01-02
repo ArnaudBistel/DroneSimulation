@@ -217,15 +217,6 @@
                               <Insets bottom="30.0" top="10.0" />
                            </VBox.margin>
                         </Label>
-                        <Button fx:id="startButton1" contentDisplay="CENTER" maxHeight="33.0" maxWidth="33.0" minHeight="33.0" minWidth="33.0" mnemonicParsing="false" onAction="#startAgent" prefHeight="33.0" prefWidth="33.0" styleClass="button-play" textAlignment="CENTER">
-                           <graphic>
-                              <ImageView fx:id="playButtonImageView1" fitHeight="33.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../img/play.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
                         <GridPane>
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
