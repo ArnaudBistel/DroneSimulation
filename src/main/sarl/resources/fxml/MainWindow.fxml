@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import javafx.scene.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
@@ -21,7 +31,7 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.shape.Circle?>
 
-<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="865.0" prefWidth="1540.0" styleClass="background" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="865.0" prefWidth="1540.0" styleClass="background" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
    <children>
       <HBox prefHeight="790.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -242,54 +252,80 @@
 							  <Label styleClass="label-bright" text="Temps écoulé" GridPane.rowIndex="4" />
                            </children>
                         </GridPane>
-                        <Separator prefHeight="15.0" prefWidth="240.0" />
-                        <Label prefHeight="44.0" prefWidth="240.0" style="-fx-font-size: 30;" styleClass="label-header" text="Drone" />
-                        <GridPane>
-                           <columnConstraints>
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="118.0" minWidth="10.0" prefWidth="112.0" />
-                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="75.0" minWidth="10.0" prefWidth="48.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                           </columnConstraints>
-                           <rowConstraints>
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints />
-                           </rowConstraints>
+                        <Separator prefHeight="15.0" prefWidth="240.0">
+                           <padding>
+                              <Insets bottom="20.0" top="20.0" />
+                           </padding></Separator>
+                        <Group>
                            <children>
-                              <Label prefHeight="21.0" prefWidth="112.0" styleClass="label-bright" text="Drone n°" />
-                              <Label fx:id="droneIndex" text="-" GridPane.columnIndex="1" />
-                              <Label prefHeight="21.0" prefWidth="108.0" styleClass="label-bright" text="Chargement" GridPane.rowIndex="1" />
-                              <Label fx:id="packageWeight" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Label prefHeight="21.0" prefWidth="113.0" styleClass="label-bright" text="Batterie" GridPane.rowIndex="2" />
-                              <Label fx:id="battery" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <Label layoutX="127.0" layoutY="15.0" text="kg" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <Label layoutX="156.0" layoutY="45.0" text="\%" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <GridPane fx:id="selectedWarehousePane" visible="false">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="127.0" minWidth="10.0" prefWidth="111.0" />
+                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="75.0" minWidth="10.0" prefWidth="29.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="98.0" minWidth="10.0" prefWidth="24.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="98.0" minWidth="10.0" prefWidth="79.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label prefHeight="21.0" prefWidth="125.0" styleClass="label-bright" text="Entrepôt n°" GridPane.rowIndex="1" />
+                                    <Label fx:id="warehouseIndex" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                    <Label prefHeight="21.0" prefWidth="157.0" styleClass="label-bright" text="Drones revenus" GridPane.rowIndex="2" />
+                                    <Label layoutX="125.0" layoutY="45.0" prefHeight="21.0" prefWidth="42.0" text="/" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                                    <Label fx:id="dronesPerWarehouse" layoutX="121.0" layoutY="45.0" prefHeight="21.0" prefWidth="47.0" text="-" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" />
+                                    <Label fx:id="dronesAtWarehouse" layoutX="131.0" layoutY="15.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label prefHeight="35.0" prefWidth="240.0" style="-fx-font-size: 24;" styleClass="label-header" text="Entrepôt sélectionné" GridPane.columnSpan="2147483647" />
+                                 </children>
+                              </GridPane>
+                              <GridPane fx:id="selectedDronePane" visible="false">
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="118.0" minWidth="10.0" prefWidth="88.0" />
+                                    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="80.0" minWidth="10.0" prefWidth="80.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="93.0" minWidth="10.0" prefWidth="73.0" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints />
+                                 </rowConstraints>
+                                 <children>
+                                    <Label prefHeight="21.0" prefWidth="112.0" styleClass="label-bright" text="Drone n°" GridPane.rowIndex="1" />
+                                    <Label fx:id="droneIndex" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label prefHeight="21.0" prefWidth="108.0" styleClass="label-bright" text="Chargement" GridPane.rowIndex="2" />
+                                    <Label fx:id="packageWeight" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label prefHeight="21.0" prefWidth="113.0" styleClass="label-bright" text="Batterie" GridPane.rowIndex="3" />
+                                    <Label fx:id="battery" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <Label layoutX="127.0" layoutY="15.0" text="kg" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                    <Label layoutX="156.0" layoutY="45.0" text="\%" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                    <Label layoutX="10.0" layoutY="75.0" prefHeight="21.0" prefWidth="113.0" styleClass="label-bright" text="Colis livrés" GridPane.rowIndex="4" />
+                                    <Label fx:id="deliveredDronePackagesLabel" layoutX="133.0" layoutY="75.0" text="- / - " GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <Label fx:id="nextDestinationTypeLabel" layoutX="121.0" layoutY="105.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                    <Label layoutX="10.0" layoutY="105.0" prefHeight="21.0" prefWidth="236.0" text="Destination suivante" GridPane.columnSpan="2147483647" GridPane.rowIndex="6" />
+                                    <Label layoutX="156.0" layoutY="45.0" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+                                    <Label layoutX="10.0" layoutY="105.0" prefHeight="21.0" prefWidth="113.0" styleClass="label-bright" text="Type" GridPane.rowIndex="7" />
+                                    <Label layoutX="10.0" layoutY="195.0" prefHeight="21.0" prefWidth="113.0" styleClass="label-bright" text="Position" GridPane.rowIndex="8" />
+                                    <Label fx:id="nextPositionLabel" layoutX="130.0" layoutY="195.0" text="-" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="8" />
+                                    <Label prefHeight="44.0" prefWidth="240.0" style="-fx-font-size: 24;" styleClass="label-header" text="Drone sélectionné" GridPane.columnSpan="2147483647" />
+                                 </children>
+                              </GridPane>
+                              <Pane fx:id="unselectedPane">
+                                 <children>
+                                    <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 24;" styleClass="label-header" text="Sélectionnez un drone ou un entrepôt" textAlignment="CENTER" wrappingWidth="220.0" />
+                                 </children>
+                              </Pane>
                            </children>
-                        </GridPane>
-                        <Separator prefHeight="24.0" prefWidth="240.0" />
-                        <Label prefHeight="35.0" prefWidth="240.0" style="-fx-font-size: 30;" styleClass="label-header" text="Entrepôt" />
-                        <GridPane>
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="127.0" minWidth="10.0" prefWidth="111.0" />
-                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="75.0" minWidth="10.0" prefWidth="29.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="98.0" minWidth="10.0" prefWidth="24.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="98.0" minWidth="10.0" prefWidth="79.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
-                           <children>
-                              <Label prefHeight="21.0" prefWidth="125.0" styleClass="label-bright" text="Entrepôt n°" />
-                              <Label fx:id="warehouseIndex" text="-" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-                              <Label prefHeight="21.0" prefWidth="157.0" styleClass="label-bright" text="Drones revenus" GridPane.rowIndex="1" />
-                              <Label layoutX="125.0" layoutY="45.0" prefHeight="21.0" prefWidth="42.0" text="/" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                              <Label fx:id="dronesPerWarehouse" layoutX="121.0" layoutY="45.0" prefHeight="21.0" prefWidth="47.0" text="-" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
-                              <Label fx:id="dronesAtWarehouse" layoutX="131.0" layoutY="15.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                           </children>
-                        </GridPane>
+                        </Group>
                      </children>
                   </VBox>
                </children>

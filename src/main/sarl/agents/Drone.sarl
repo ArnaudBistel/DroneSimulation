@@ -28,9 +28,9 @@ import gui.Body
 import utils.variables.SimulationParameters
 import solutionSolver.SolutionSolver
 
-/** 
+/**
  * @author arnaud
- * 
+ *
  */
 agent Drone {
 	uses Logging, Lifecycle, Schedules, DefaultContextInteractions
@@ -42,10 +42,10 @@ agent Drone {
 	var arrivedToNextDestination : Boolean = true
 	var backToWarehouse : Boolean = true
 
-	
+
 	on Initialize {
 		synchronized (this) {
-		
+
 			// Event trigger before the agent begin to live or to be used.
 			// You should put all the initialization statements in this block of code.
 			// info("The agent Drone was started : " + this.getID)
@@ -53,9 +53,9 @@ agent Drone {
 			this.warehouseBody = occurrence.parameters.get(1) as WarehouseBody
 			this.body.actualBattery = SimulationParameters.DRONE_MAX_ENERGY
 			emit(new AgentInitialized(AgentType.DRONE))
-		}	
+		}
 	}
-	
+
 	on DronePerception {
 		synchronized (this) {
 			if (this.nextDestination !== null) {
@@ -66,11 +66,12 @@ agent Drone {
 					this.nextDestination = null
 					this.arrivedToNextDestination = true
 					if(this.path.size > 0){
-						var action = new Action(ActionType.DEPOSIT, #[this.body.position.x as Integer, this.body.position.y as Integer])
+						var action = new Action(ActionType.DEPOSIT, #[this.body.position.x as Integer, this.body.position.y as Integer, this.body as DroneBody])
 						var actionEvent = new ActionEvent(action)
 						emit(actionEvent)
 					} else {
 						this.backToWarehouse = true
+
 					}
 					calcNextDestinationVelocity
 				} else {
@@ -91,8 +92,8 @@ agent Drone {
 								if (Math.abs(tmpX - this.body.position.x) + Math.abs(tmpY - this.body.position.y) <
 									Math.abs(tempX - this.body.position.x) + Math.abs(tempY - this.body.position.y)) {
 									closestDrone = bodies.get(0)
-									tempX = tmpX 
-									tempY = tmpY 
+									tempX = tmpX
+									tempY = tmpY
 								}
 							}
 							// Influence sur les mouvements des drones
@@ -104,8 +105,8 @@ agent Drone {
 								closestDrone.velocityX = closestDrone.velocityX / 2
 							}
 						}
-			
-						
+
+
 					}
 					var x = this.body.posX + this.body.velocityX
 					var y = this.body.posY + this.body.velocityY
@@ -127,63 +128,71 @@ agent Drone {
 					var action = new Action(ActionType.MOVE, #[x as Integer, y as Integer, this.ID])
 					var actionEvent = new ActionEvent(action)
 					emit(actionEvent)
-					
+
 				}
 			}
-			
+
 		}
 	}
-	
+
 	on DronePathAssignment {
 		synchronized (this) {
 			this.body.setImage(PathEnum.DRONE_LOADED.getPath)
 			this.path = occurrence.path
-			
+
+			this.body.totalPackages = this.path.size - 2
+      		this.body.nbPackages = 0
+
 			// Deleting the initial warehouse
 			this.path.remove(0)
 			this.body.actualCharge = 0
 			for(point : this.path){
 				this.body.actualCharge = this.body.actualCharge + point.packageWeight
 			}
-			
+
 			this.backToWarehouse = false
 			this.arrivedToNextDestination = false
 			this.nextDestination = this.path.remove(0).position
+      this.body.nextDestination = this.nextDestination
+      this.body.finishedDelivering = false
 			calcNextDestinationVelocity()
-			
+
 		}
 	}
-	
+
 	def computeBatteryLoss(x : int, y : int)  {
 		var oldX = this.body.posX
 		var oldY = this.body.posY
 		var dist = Math.sqrt(Math.pow(x-oldX,2) + Math.pow(y-oldY, 2)) / 15
 		this.body.actualBattery = this.body.actualBattery - SolutionSolver.droneEnergyCost(this.body.actualCharge, dist)
-		
+
 	}
-	
+
 	def calcNextDestinationVelocity() {
 		synchronized(this){
 			if (!this.backToWarehouse) {
 				if (this.path.size() == 0) {
 					this.body.setImage(PathEnum.DRONE_EMPTY.getPath)
+          this.body.finishedDelivering = true
 				}
 				if (this.arrivedToNextDestination) {
 					this.body.actualCharge = this.body.actualCharge - this.path.get(0).packageWeight
 					this.nextDestination = this.path.remove(0).position
+          this.body.nextDestination = this.nextDestination
 					this.arrivedToNextDestination = false
+          this.body.finishedDelivering = false
 				}
-				
+
 				// Distance séparant le drone de sa destination
-				var distX = this.nextDestination.getX() - this.body.position.x 
+				var distX = this.nextDestination.getX() - this.body.position.x
 				var distY = this.nextDestination.getY() - this.body.position.y
 				var totalDist = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2))
-	
+
 				// Calcul du mouvement du drone
 				var totalVelocity = 3.0;
 				this.body.velocityX = totalVelocity * distX / totalDist;
 				this.body.velocityY = totalVelocity * distY / totalDist;
-				
+
 			} else { // back to warehouse
 				var action = new Action(ActionType.BACK_TO_WAREHOUSE, #[this.body])
 				var actionEvent = new ActionEvent(action)

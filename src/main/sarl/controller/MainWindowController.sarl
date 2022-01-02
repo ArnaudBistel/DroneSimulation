@@ -67,6 +67,7 @@ import utils.variables.SimulationParameters
 import java.util.Arrays
 import agents.InitializeResultGraph
 import javafx.scene.effect.DropShadow
+import javafx.scene.layout.GridPane
 
 class MainWindowController extends FxViewerController {
 	var bodies : Map<UUID, Body> = new TreeMap<UUID, Body>
@@ -78,9 +79,9 @@ class MainWindowController extends FxViewerController {
 	var managerInitialized = false
 	var resultsController : ResultsController
 	var mainApp : MainApp;
-	
-	
-	
+
+
+
 	@FXML
 	var startButton : Button
 	@FXML
@@ -95,10 +96,10 @@ class MainWindowController extends FxViewerController {
 	var pauseButton : Button
 	val started = new AtomicBoolean
 	var startedBool = false
-	
+
 	var width : Integer
 	var height : Integer
-	
+
 	@FXML
 	var drawZone : Canvas
 
@@ -106,10 +107,10 @@ class MainWindowController extends FxViewerController {
 	var droneBatteryCircle : Circle
 	@FXML
 	var rootPane : AnchorPane
-	
+
 	@FXML
 	var drawPane : Pane
-	
+
 	@FXML
 	var simulationRadioButtonGroup : ToggleGroup = new ToggleGroup
 	@FXML
@@ -143,6 +144,8 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	var paramLabel3 : Label
 
+
+
 	// Right-pane variables
 	@FXML
 	var droneRP : Label
@@ -154,39 +157,57 @@ class MainWindowController extends FxViewerController {
 	var remainingPackages : Label
 	@FXML
 	var deliveredPackages : Label
+
+	@FXML
+	var selectedDronePane : GridPane
+
+	@FXML
+	var selectedWarehousePane : GridPane
+
+	@FXML
+	var unselectedPane : Pane
+
+	@FXML
+	var deliveredDronePackagesLabel : Label
 	@FXML
 	var timeElapsedLabel : Label
-	
+
 	var timeElapsed : long
 
 	var timer : Timer
 	var myTask : TimerTask
 
-	var timeRatio : float 
-	
+	var timeRatio : float
+
 	@FXML
 	var droneIndex : Label
 	@FXML
 	var packageWeight : Label
 	@FXML
 	var battery : Label
-	
+
+	@FXML
+	var nextDestinationTypeLabel : Label
+
+	@FXML
+	var nextPositionLabel : Label
+
 	@FXML
 	var warehouseIndex : Label
 	@FXML
 	var dronesAtWarehouse : Label
-	@FXML 
+	@FXML
 	var dronesPerWarehouse : Label
-	
+
 	var speedRatio : float
-    
+
 	var selectedDrone : DroneBody
 	var selectedWarehouse : WarehouseBody
-    
+
 	var simulation : Boolean = true
 	var recuit : Boolean = true
 	var parameters : ArrayList = new ArrayList()
-	
+
 	var inMultiTest = false
 	var stopped = true
 	var pause = true
@@ -197,17 +218,17 @@ class MainWindowController extends FxViewerController {
 		this.width = drawZone.width as Integer;
 		this.height = drawZone.height as Integer;
 		//System.out.println("Width : " + this.width + " -- height : " + this.height)
-		
+
 		initializeParamFields
 		createParametersList
 
 		// radio button simulation ou multiple tests listener
-		this.simulationRadioButtonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() 
+		this.simulationRadioButtonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
         {
 			def changed(ob : ObservableValue<? extends Toggle>, o : Toggle, n:  Toggle)
             {
                 var rb = simulationRadioButtonGroup.getSelectedToggle() as RadioButton
-  
+
                 if (rb != null) {
                     var s = rb.getText();
                     if (s.equals("Simulation")){
@@ -215,7 +236,7 @@ class MainWindowController extends FxViewerController {
                     }else{
                     	simulation = false
                     }
-					updateTextFields()            
+					updateTextFields()
 				}
             }
         });
@@ -245,12 +266,15 @@ class MainWindowController extends FxViewerController {
 		var eventHandler = new EventHandler<MouseEvent>() {
 			def handle(^event : MouseEvent) {
 				unselectBody
+				selectedDronePane.visible = false
+				selectedWarehousePane.visible = false
+				unselectedPane.visible = true
 			}
 				}
 		this.drawPane.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 	}
 
-	
+
 
 	def initializeParamFields {
 		// Allow only integers
@@ -261,15 +285,15 @@ class MainWindowController extends FxViewerController {
 				@Override
 				def run() {
 					var listener = new ChangeListener<String> {
-						
+
 						var ignore : boolean
-						
+
 						def changed(observable : ObservableValue<? extends String>, oldValue : String,
 							newValue : String) {
 							if(ignore || newValue === null){
 								return
 							}
-							
+
 							if (newValue.matches("\\d*")) {
 								field.text = newValue
 							} else {
@@ -283,7 +307,7 @@ class MainWindowController extends FxViewerController {
 
 					field.textProperty.addListener(listener)
 				}
-			})			
+			})
 		}
 		// Allow floats
 		fields.clear
@@ -302,7 +326,7 @@ class MainWindowController extends FxViewerController {
 								return
 							}
 
-							if (newValue.matches("[0]+([.][0-9]*)?") || 
+							if (newValue.matches("[0]+([.][0-9]*)?") ||
 								(!recuit && newValue.matches("[0-1]?")) ||
 								(recuit && newValue.matches("[0]?"))) {
 								field.text = newValue
@@ -451,7 +475,7 @@ class MainWindowController extends FxViewerController {
 			})
 		}*/
 	}
-	
+
 	def initializeRightPane() {
 		//System.out.println("InitRightPane")
 		Platform.runLater(new Runnable() {
@@ -469,7 +493,7 @@ class MainWindowController extends FxViewerController {
 	}
 
 	def updateTextFields() {
-	 	if (simulation) {		
+	 	if (simulation) {
 			nbDronesTextField.setPromptText("ex: 5, 10...")
 			nbEntrepotsTextField.setPromptText("ex: 1, 3...")
 			nbClientsTextField.setPromptText("ex: 10, 30...")
@@ -484,7 +508,7 @@ class MainWindowController extends FxViewerController {
 			speedTextField.setVisible(false)
 			speedLabel.setVisible(false)
 		}
-		
+
 		if (recuit) {
 			// température initiale
 			paramTextField1.setPromptText("ex: 600, 0.1-500..")
@@ -502,7 +526,7 @@ class MainWindowController extends FxViewerController {
 			paramTextField3.setPromptText("ex: 0.1, 1...")
 		}
 	}
-	
+
 	def updateAIParamLabel() {
 		if (recuit) {
 			paramLabel1.setText("T° initiale/range")
@@ -511,28 +535,28 @@ class MainWindowController extends FxViewerController {
 		} else {
 			paramLabel1.setText("Alpha")
 			paramLabel2.setText("Gamma")
-			paramLabel3.setText("Epsilon")			
+			paramLabel3.setText("Epsilon")
 		}
 	}
 
-	/* 
+	/*
 	 * def initialize {
-	 * 
-	 * if (!started.getAndSet(true)) {			
+	 *
+	 * if (!started.getAndSet(true)) {
 			startAgentApplication(typeof(HelloAgent)) [
 	 * //
 			]
 		}
 	 * }
 	 */
-	 
-	 
+
+
 	@FXML
 	def generateGraph {
 		createParametersList
 		this.inMultiTest = false
-		
-		
+
+
 		if (!this.simulation) {
 			if (this.managerId === null) {
 				mainApp.showStatistics()
@@ -543,12 +567,12 @@ class MainWindowController extends FxViewerController {
 					startAgent
 					mainApp.showStatistics()
 					this.resultsController.generateGraph
-					
+
 				}
 				else {
 					mainApp.showStatistics()
 					this.resultsController.generateGraph
-				}	
+				}
 			}
 		}
 		else {
@@ -561,18 +585,18 @@ class MainWindowController extends FxViewerController {
 				this.warehouseBodies.clear
 				this.clients.clear
 				this.drawPane.children.clear
-	
+
 				val gc = drawZone.graphicsContext2D
 				gc.clearRect(0, 0, drawZone.width, drawZone.height)
 				emitGenerateGraph
 			}
 		}
 	}
-	
+
 	def emitGenerateGraph(param : ArrayList = this.parameters){
 		emitToAgents(new GenerateGraph(param), true)
 	}
-	 
+
 	 def createManager() {
 		if (this.managerId === null) {
 			System.out.println("create app manager")
@@ -582,12 +606,12 @@ class MainWindowController extends FxViewerController {
 			Thread.sleep(50)
 		}
 	}
-	 
+
 	@FXML
 	def startAgent {
 		createParametersList()
 		this.inMultiTest = false
-		// start	
+		// start
 		if (!started.getAndSet(true)) {
 			// lance la simulation
 			if (this.simulation) {
@@ -595,10 +619,10 @@ class MainWindowController extends FxViewerController {
 				this.playButtonImageView.setImage(image)
 				this.stopButton.setDisable(false)
 				this.restartButton.setDisable(false)
-				
+
 				this.stopped = false
 				this.pause = false
-				
+
 				if (this.managerId === null){
 					createManager()
 					var nbDrone = this.nbDronesTextField.text == "" ? 1 : Integer.parseInt(this.nbDronesTextField.text)
@@ -615,7 +639,7 @@ class MainWindowController extends FxViewerController {
 				}
 
 				this.startSimulation();
-			
+
 			} // multi-test
 			else {
 				mainApp.showStatistics();
@@ -623,12 +647,12 @@ class MainWindowController extends FxViewerController {
 				started.set(false)
 				if (this.managerId === null) {
 					createManager()
-				}		
+				}
 			}
-		} else  {		
+		} else  {
 			this.pause = !pause
 			pauseSimulation
-			
+
 		}
 	}
 
@@ -646,7 +670,7 @@ class MainWindowController extends FxViewerController {
 				pauseSimulation
 				this.pause = true
 			} else {
-				
+
 			}
 			this.bodies.clear
 			this.droneBodies.clear
@@ -690,8 +714,8 @@ class MainWindowController extends FxViewerController {
 		if (pause) {
 			image = new Image((getClass().getResource("/resources/img/play.png").toExternalForm()), 33, 33, true, true)
 		}else {
-			image = new Image((getClass().getResource("/resources/img/pause.png").toExternalForm()), 33, 33, true, true)			
-		}		
+			image = new Image((getClass().getResource("/resources/img/pause.png").toExternalForm()), 33, 33, true, true)
+		}
 		this.playButtonImageView.setImage(image)
 		emitToAgents(new Pause, true)
 	}
@@ -718,28 +742,28 @@ class MainWindowController extends FxViewerController {
 		 */
 		this.parameters.add(createRange(getSpeedInput))
 	}
-	
-	
+
+
 	def createRange(st : String) : List<Float> {
 		var ret : List<Float> = new ArrayList()
 		if (st.contains('-')) {
     		var nb = ""
 	        for (var i = 0; i < st.length; i++) {
 	        	if (Character.compare(st.charAt(i) as char, '-') != 0) {
-	        		nb += st.charAt(i)          		      		
+	        		nb += st.charAt(i)
 	        	} else {
 	        		if (0 >= nb as float) {
 	        			ret.add(1f)
 	        		} else {
-		        		ret.add(checkNumbers(nb) as float)	        			
+		        		ret.add(checkNumbers(nb) as float)
 	        		}
-	        		nb = ""    		
+	        		nb = ""
 	        	}
         		if (i == st.length - 1) {
         			if (ret.get(0) > checkNumbers(nb) as float) {
-		        		ret.add(ret.get(0) + 1)        			
+		        		ret.add(ret.get(0) + 1)
         			} else {
-		        		ret.add(checkNumbers(nb) as float)      				
+		        		ret.add(checkNumbers(nb) as float)
         			}
         		}
         	}
@@ -762,10 +786,13 @@ class MainWindowController extends FxViewerController {
 				var eventHandler = new EventHandler<MouseEvent>() {
 					def handle(^event : MouseEvent) {
 						displayDroneInfos(body.id)
+						selectedDronePane.visible = true
+						unselectedPane.visible = false
+						selectedWarehousePane.visible = false
 						throw new UnsupportedOperationException("TODO: auto-generated method stub")
 					}
 				}
-				entry.value.imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)	
+				entry.value.imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 			}
 		} else if (type.equals("WAREHOUSE")) {
 			this.warehouseBodies.put(body.getId, body as WarehouseBody)
@@ -773,6 +800,9 @@ class MainWindowController extends FxViewerController {
 			for (entry : this.warehouseBodies.entrySet()) {
 				var eventHandler = new EventHandler<MouseEvent>() {
 					def handle(^event : MouseEvent) {
+						unselectedPane.visible = false
+						selectedDronePane.visible = false
+						selectedWarehousePane.visible = true
 						displayWarehouseInfos(body.id)
 						throw new UnsupportedOperationException("TODO: auto-generated method stub")
 					}
@@ -780,9 +810,9 @@ class MainWindowController extends FxViewerController {
 				warehouseBodies.get(entry.getKey()).imageView.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
 		}
 		}
-		
+
 	}
-	
+
 	def displayDroneInfos(id : UUID) : void {
 		this.selectedDrone = this.bodies.get(id) as DroneBody
 		var pos = 0
@@ -790,17 +820,24 @@ class MainWindowController extends FxViewerController {
 			pos = droneBodies.headMap(id).size()
 		}
 		droneIndex = pos+1
-		packageWeight  = this.selectedDrone.actualCharge
+		packageWeight = this.selectedDrone.actualCharge
+		deliveredDronePackagesLabel.setText(this.selectedDrone.nbPackages as int + " / " + this.selectedDrone.totalPackages as int )
+		nextPositionLabel.setText(this.selectedDrone.nextDestination.x + ", " + this.selectedDrone.nextDestination.y)
+		if (this.selectedDrone.finishedDelivering) {
+			nextDestinationTypeLabel.setText("Entrepôt")
+		}else {
+			nextDestinationTypeLabel.setText("Client")
+		}
 		battery = (this.selectedDrone.actualBattery / 16.28) as int
 	}
-	
+
 	def displayWarehouseInfos(id : UUID) : void {
 		this.selectedWarehouse = this.bodies.get(id) as WarehouseBody
 		var pos = 0
 		var dronesLinked = 0
 		if (warehouseBodies.containsKey(id)) {
 			pos = warehouseBodies.headMap(id).size()
-			
+
 			dronesLinked = warehouseBodies.get(id).droneBodies.size()
 		}
 		warehouseIndex = pos + 1
@@ -810,7 +847,7 @@ class MainWindowController extends FxViewerController {
 		} else {
 			dronesPerWarehouse = nbDronesInput as int
 		}
-		
+
 	}
 
 	def startSimulation() {
@@ -828,11 +865,11 @@ class MainWindowController extends FxViewerController {
         timer.start();
         initializeRightPane()
 	}
-	
+
 	def initalizeImageView() {
 		for (b : this.bodies.values()) {
 			Platform.runLater(new Runnable() {
-	            @Override 
+	            @Override
 	            def run() {
 					b.imageView.setImage(b.image)
 					b.imageView.setX(b.position.x)
@@ -843,18 +880,18 @@ class MainWindowController extends FxViewerController {
 		}
 
 		val gc = drawZone.graphicsContext2D
-	 
+
 		for (c : this.clients) {
 			c.drawItself(gc);
 
 		}
 	}
-	
+
 	def unselectBody() {
 		this.selectedDrone = null
 		this.selectedWarehouse = null
 	}
-	
+
 	def update() {
 		for (c : drawPane.children) {
 			var body = this.bodies.get(UUID.fromString(c.id))
@@ -868,10 +905,10 @@ class MainWindowController extends FxViewerController {
 				imageView.setEffect(this.dropShadow)
 			} else {
 				imageView.setEffect(null)
-				
+
 			}
-			
-		} 
+
+		}
 		val gc = drawZone.graphicsContext2D
 		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		for (c : this.clients) {
@@ -882,7 +919,7 @@ class MainWindowController extends FxViewerController {
 			//System.out.println("Body : " + this.selectedDrone)
 			//this.droneBatteryCircle.centerX = this.selectedDrone.posX
 			//this.droneBatteryCircle.centerY = this.selectedDrone.posY
-			var radius = SolutionSolver.droneDistanceAutonomy(this.selectedDrone.actualCharge, this.selectedDrone.actualBattery) 
+			var radius = SolutionSolver.droneDistanceAutonomy(this.selectedDrone.actualCharge, this.selectedDrone.actualBattery)
 			//System.out.println("Actual charge : " + this.selectedDrone.actualCharge)
 			//System.out.println("Actual Battery : " + this.selectedDrone.actualBattery)
 			//System.out.println("Radius : " + radius)
@@ -909,7 +946,7 @@ class MainWindowController extends FxViewerController {
 			displayWarehouseInfos(selectedWarehouse.id)
 		}
 	}
-	
+
 	def getHeight() {
 		return this.height;
 	}
@@ -917,7 +954,7 @@ class MainWindowController extends FxViewerController {
 	def getWidth() {
 		return this.width;
 	}
-	
+
 	def getClients() : List<Client>{
 		return this.clients;
 	}
@@ -929,7 +966,7 @@ class MainWindowController extends FxViewerController {
 	def getNbEntrepotsInput() : String {
 		return this.nbEntrepotsTextField.text
 	}
-	
+
 	def getNbClientsInput() : String {
 		return this.nbClientsTextField.text
 	}
@@ -945,18 +982,18 @@ class MainWindowController extends FxViewerController {
 	def getParam1Input() : String {
 		return this.paramTextField1.text
 	}
-	
-	/* 
+
+	/*
 	def getParam1Input() : float {
 		var ret = checkNumbers(this.paramTextField1.text) as float
 		if (recuit) {
 		} else {
-			
+
 		}
 		return ret
 	 * }
 	 */
-	
+
 	def getParam2Input() : float {
 		var ret = checkNumbers(this.paramTextField2.text) as float
 		if (recuit){
@@ -964,11 +1001,11 @@ class MainWindowController extends FxViewerController {
 				ret = 0.9f
 			}
 		} else {
-			
+
 		}
 		return ret
 	}
-	
+
 	def getParam3Input() : float {
 		var ret = checkNumbers(this.paramTextField3.text) as float
 		if (recuit) {
@@ -976,11 +1013,11 @@ class MainWindowController extends FxViewerController {
 				ret = 1
 			}
 		} else {
-			
+
 		}
 		return ret
 	}
-	
+
 	def checkNumbers(text : String) : float {
 		var ret : float
 		try {
@@ -990,18 +1027,18 @@ class MainWindowController extends FxViewerController {
 			}
 		} catch (ex : NumberFormatException) {
 			ret = 1
-		} 
+		}
 		return ret
 	}
-	
+
 	def getStarted() : Boolean {
 		return this.started.get()
 	}
-	
+
 	def getParameters() : ArrayList {
 		return this.parameters
 	}
-	
+
 	def getMultiTestsRadioButton () : RadioButton {
 		return this.multiTestsRadioButton;
 	}
@@ -1013,11 +1050,11 @@ class MainWindowController extends FxViewerController {
 	def getAppManager() {
 		return this.appManager
 	}
-	
+
 	def setAppManager(manager : AppManager){
 		this.appManager = manager
 	}
-	
+
 	def getStopped{
 		return this.stopped
 	}
@@ -1034,7 +1071,7 @@ class MainWindowController extends FxViewerController {
 
 	def getResultsController() : ResultsController {
 		return this.resultsController
-	}	
+	}
 
 	def exportData(filename : String) {
 		System.out.println("Send filename : " + filename)
@@ -1052,7 +1089,7 @@ class MainWindowController extends FxViewerController {
 		gc.clearRect(0, 0, drawZone.width, drawZone.height)
 		emitToAgents(new ImportDataEvent(filename), true)
 	}
-	
+
 	def simulateStop() {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -1072,7 +1109,7 @@ class MainWindowController extends FxViewerController {
 			}
 		})
 	}
-	
+
 	def updateMapInfos(nbClients : int, nbWarehouse : int, stepTime : int) {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -1086,11 +1123,11 @@ class MainWindowController extends FxViewerController {
 					droneRP.text = ""
 				}
 				deliveredPackages.text = "0"
-				entrepotsRP.text = nbWarehouse.toString			
+				entrepotsRP.text = nbWarehouse.toString
 			}
 		})
 		/*
-		 * 
+		 *
 		if (!getClients.isEmpty) {
 			var temp : float = 0
 			for (c : getClients) {
@@ -1099,13 +1136,13 @@ class MainWindowController extends FxViewerController {
 			temp = temp / getClients.size()
 			setAveragePackage(temp)
 		 */
-		
+
 		if(this.started.get()){
 			timeRatio = SolutionSolver.stepNumberToRealTime(1) * 1000 / stepTime
         	initTimer
 			//System.out.println("timeRatio : "+ timeRatio)
 		}
-		
+
 	}
 
 	def initTimer() {
@@ -1134,7 +1171,7 @@ class MainWindowController extends FxViewerController {
 		timeElapsed += previousTimer + refreshRate * this.timeRatio as long
 		formatTimeElapsed(timeElapsed)
 	}
-	
+
 	def newDeposit {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -1146,41 +1183,41 @@ class MainWindowController extends FxViewerController {
 				deliveredPackages.text = nbDelivered.toString
 			}
 		})
-		
+
 	}
-	
+
 	def getManagerId() : UUID {
 		return this.managerId
 	}
-	
+
 	def getInMultiTest{
 		return this.inMultiTest
 	}
-	
+
 	def setInMultiTest (inMultiTest : boolean){
 		this.inMultiTest = inMultiTest
 	}
-	
+
 	def getDroneRP() : String {
 		return this.droneRP.toString()
 	}
-	
-	
+
+
 	def setDroneRP(nb : String) {
 		this.droneRP.setText(nb)
 	}
-	
+
 	def getEntrepotsRP() : String {
 		return this.entrepotsRP.toString()
 	}
-	
+
 	def setEntrepotsRP(nb : String){
 		this.entrepotsRP.setText(nb)
 	}
-		
+
 	def getDroneIndex() : String {
-		return this.droneIndex.toString() 
-	} 
+		return this.droneIndex.toString()
+	}
 
 	def setDroneIndex(index : int){
 		this.droneIndex.setText(index.toString())
@@ -1193,19 +1230,19 @@ class MainWindowController extends FxViewerController {
 	def setWarehouseIndex(index : int) {
 		this.warehouseIndex.setText(index.toString())
 	}
-	
+
 	def setDronesAtWarehouse(nb : int) {
 		this.dronesAtWarehouse.setText(nb.toString())
 	}
-	
+
 	def setDronesPerWarehouse(nb : int) {
 		this.dronesPerWarehouse.setText(nb.toString())
 	}
-	
-	
-	
+
+
+
 	def formatTimeElapsed(time : long) {
-		val hms = String.format("%02d:%02d:%02d", 
+		val hms = String.format("%02d:%02d:%02d",
 			TimeUnit.MILLISECONDS.toHours(time),
 			TimeUnit.MILLISECONDS.toMinutes(time) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)),
 			TimeUnit.MILLISECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)));
@@ -1216,55 +1253,55 @@ class MainWindowController extends FxViewerController {
 			}
 		})
 	}
-	
+
 	def setRemainingPackages(nb : int) {
 		this.remainingPackages.setText(nb.toString())
 	}
-	
+
 	def getRemainingPackages() : int {
 		return Integer.parseInt(this.remainingPackages.getText())
 	}
-	
+
 	def setDeliveredPackages(nb : int) {
 		this.deliveredPackages.setText(nb.toString())
 	}
-	
+
 	def getDeliveredPackages() : int {
 		return Integer.parseInt(this.deliveredPackages.getText())
 	}
-	
+
 	def setBattery(nb : int){
 		this.battery.setText(nb.toString())
 	}
-	
+
 	def setSpeedRatio(nb : float) {
 		this.speedRatio = nb
 	}
-	
+
 	def getSpeedRatio() : float {
 		return this.speedRatio
 	}
-	
+
 	def setAveragePackage(nb : float) {
 		this.averagePackage.setText(nb.toString())
 	}
-	
+
 	def getAveragePackage() : float {
 		return Float.parseFloat(this.averagePackage.getText())
 	}
-	
+
 	def setPackageWeight(nb : float) {
 		this.packageWeight.setText(nb.toString())
 	}
-	
+
 	def setManagerInitialized(bool : boolean) {
 		this.managerInitialized = bool
 	}
-	
+
 	def getManagerInitialized() : boolean {
 		return this.managerInitialized
 	}
-	
+
 	def emitInitializeResultGraph{
 		emitToAgents(new InitializeResultGraph(), true)
 	}

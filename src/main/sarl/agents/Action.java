@@ -30,7 +30,8 @@ public class Action {
 			case DEPOSIT :
 				int x2 = (int) params.get(0);
 				int y2 = (int) params.get(1);
-				this.params = new DepositActionParams(x2, y2);
+				DroneBody body = (DroneBody) params.get(2);
+				this.params = new DepositActionParams(x2, y2, body);
 				break;
 			case BACK_TO_WAREHOUSE :
 				DroneBody droneBody = (DroneBody) params.get(0);

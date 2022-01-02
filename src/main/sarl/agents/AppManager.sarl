@@ -42,9 +42,9 @@ import solutionSolver.qLearning.QLearning
 import io.sarl.core.AgentTask
 import solutionSolver.solutionTester.MultiTesterSimulatedAnnealing
 
-/** 
+/**
  * @author arnaud
- * 
+ *
  */
 agent AppManager {
 	uses Logging, Lifecycle, DefaultContextInteractions, Schedules
@@ -61,7 +61,7 @@ agent AppManager {
 	var stepCounter = 0
 	var stepLastDelivery = -1
 	var stepEnd = -1
-	
+
 	var importFile : String = null
 
 	var controller : MainWindowController
@@ -72,11 +72,11 @@ agent AppManager {
 
 	var nbWarehouse : int
 	var nbDrones : int
-	
+
 	var initWarehouse : int
 	var initDrones : int
 	var initialized : boolean
-	
+
 	var solution : List<List<MapPoint>>
 	var actionList = new ArrayList<Action>
 
@@ -103,9 +103,9 @@ agent AppManager {
 			var parameters = this.controller.parameters
 			var simulation = parameters.get(0) as Boolean
 			//if (simulation) {
-				generateMap	
+				generateMap
 			//}
-			
+
 		}
 	}
 
@@ -120,7 +120,7 @@ agent AppManager {
 			var nbClients = parameters.get(4) as List<Float>
 			// List de Float, taille 1 ou 2 (cas d'un range de poids de colis)
 			var poidsColis = parameters.get(5) as List<Float>
-			
+
 			this.nbWarehouse = nbEntrepotsSim.get(0) as int
 			this.map = new SimulationMap(nbClients.get(0) as int, this.nbWarehouse, poidsColis)
 
@@ -145,7 +145,7 @@ agent AppManager {
 			}
 		}
 	}
-	
+
 	def importMap(filename : String) {
 		synchronized (this) {
 			cancel(this.autoRestartTask)
@@ -180,12 +180,12 @@ agent AppManager {
 			this.stepLastDelivery = -1
 			this.stepEnd = -1
 			this.perceptionMap = new ArrayList<ArrayList<DroneBody>>
-			
+
 			for (var i = 0; i < this.nbCell; i++) {
 				var tmp = new ArrayList<DroneBody>
 				this.perceptionMap.add(tmp)
 			}
-	
+
 			var parameters = this.controller.parameters
 			// true pour simulation, false pour multitests
 			var simulation = parameters.get(0) as Boolean
@@ -204,19 +204,19 @@ agent AppManager {
 			var speedCoeff = speedCoeffTemp.get(0)
 			if (speedCoeff < 0.1) speedCoeff = 0.1f
 			if(speedCoeff > 5) speedCoeff = 5.0f
-		
+
 			if (recuit) {
 				var simulatedAnnealing = new SimulatedAnnealing(map)
 				this.solution = simulatedAnnealing.Solve()
-	
+
 			} else {
 				var QLearning = new QLearning(map)
 				this.solution = QLearning.Solve()
 				// solution = new ArrayList<List<MapPoint>>
 			}
-	
-				
-				
+
+
+
 			this.deliveryLists = new TreeMap<UUID, ArrayList<List<MapPoint>>>
 			if (simulation) {
 				this.nbDrones = nbDronesSim.get(0) as int
@@ -249,7 +249,7 @@ agent AppManager {
 			var colCell = Math.floor(body.position.x / SimulationParameters.perceptionMapCellSize) as Integer
 			var index = rowCell * this.nbColCell + colCell
 			body.perceptionMapCellIndex = index
-			this.perceptionMap.get(index).add(body)			
+			this.perceptionMap.get(index).add(body)
 		}
 	}
 
@@ -281,17 +281,17 @@ agent AppManager {
 						var pathAssignment = new MakeAssignmentPaths()
 						emit(pathAssignment)[it.getID == warehouseBody.id]
 			        }
-					
+
 					applyActions(actionList, this.stepCounter)
 					actionList.clear
-		
+
 					// perception de warehouse ?
 					// On met à jour la perception de chaque agent drone
 					for (e : getDronePerceptions.entrySet) {
 						var eventPerception = new DronePerception(e.key, e.value, this.stepCounter)
 						emit(eventPerception)[it.getID == e.key]
 					}
-					
+
 					// test livraison
 					/*if (this.stepCounter % 100 == 0) {
 						var rd = this.random.nextInt(this.controller.clients.size)
@@ -310,7 +310,7 @@ agent AppManager {
 						if (end) {
 							this.stepLastDelivery = this.stepCounter
 							info("Last client delivered after " + SolutionSolver.stepNumberToRealTime(this.stepCounter) + " seconds")
-						}	
+						}
 					}
 					else{
 						var end = true
@@ -324,13 +324,13 @@ agent AppManager {
 							this.stepEnd = this.stepCounter
 							info("Last drone returned after " + SolutionSolver.stepNumberToRealTime(this.stepCounter) +
 									" seconds")
-									
+
 							this.controller.simulateStop
 							this.autoRestartTask =  in(2000) [autoRestart]
 						}
 					}
 					this.stepCounter++
-					
+
 				}
 				/* else {
 					for (id : warehouseList.keySet){
@@ -340,12 +340,12 @@ agent AppManager {
 						emit(new Restart)[it.UUID == id]
 					}
 				}*/
-							
+
 			}
 		}
 	}
 
-	
+
 
 	def applyActions(actionList : List<Action>, step : int) {
 		for (action : actionList) {
@@ -355,7 +355,7 @@ agent AppManager {
 				var x = params.x
 				var y = params.y
 				if (x<0){
-					x = 0	
+					x = 0
 				}
 				if (x>= this.width){
 					x = this.width -1
@@ -364,7 +364,7 @@ agent AppManager {
 					y = 0
 				}
 				if (y >= this.height){
-					y = this.height - 1 
+					y = this.height - 1
 				}
 				dronebody.move(x, y)
 				//System.out.println("X : " + x + " -- Y : " + y)
@@ -375,19 +375,21 @@ agent AppManager {
 					this.perceptionMap.get(dronebody.perceptionMapCellIndex).remove(dronebody)
 					this.perceptionMap.get(index).add(dronebody)
 					dronebody.perceptionMapCellIndex = index
-				}			
+				}
 			} else if (action.type == ActionType.DEPOSIT) {
 				var params = action.params as DepositActionParams
 				var x = params.x
 				var y = params.y
+       			 var body = params.body
 				var client = 0
 				var i = 0
 				for (cl : this.controller.clients) {
 					if (cl.getMapPoint().position.getX() == x && cl.getMapPoint().position.getY() == y) {
 						client = i
-					}		
-					i = i+1		
+					}
+					i = i+1
 				}
+       			body.nbPackages = body.nbPackages + 1
 				this.controller.clients.get(client).delivered = true
 				this.controller.newDeposit
 			}
@@ -404,7 +406,7 @@ agent AppManager {
 				perceivedIndexes.add(cellIndex)
 				var leftCol = Arrays.asList(cellIndex - 1,
 						cellIndex - this.nbColCell - 1,
-						cellIndex + this.nbColCell - 1) 
+						cellIndex + this.nbColCell - 1)
 				var rightCol = Arrays.asList(cellIndex +1,
 						cellIndex - this.nbColCell +1,
 						cellIndex + this.nbColCell + 1)
@@ -422,12 +424,12 @@ agent AppManager {
 				if (cellIndex < this.nbColCell){
 					perceivedIndexes.removeAll(topRow)
 						// info("Remove Top Row")
-				
+
 				}
 				if (cellIndex >= this.nbCell - this.nbColCell){
 					perceivedIndexes.removeAll(bottomRow)
 						// info("Remove Bottom Row")
-					
+
 				}
 				if (cellIndex % this.nbColCell == 0){
 					perceivedIndexes.removeAll(leftCol)
@@ -448,19 +450,19 @@ agent AppManager {
 			return ret
 		}
 	}
-	
+
 	def autoRestart {
 		if(this.controller.stopped){
 			this.controller.simulateStart
 		}
 	}
-	
+
 	on GetMapInfos{
 		info("test : " + this.map.nbClients + " ---  " + this.map.nbWarehouse)
 		this.controller.updateMapInfos(this.map.nbClients, this.map.nbWarehouse, getStepTime)
 	}
-	
-	
+
+
 	on CancelEvery {
 		synchronized(this){
 			cancel(this.everyTask)
@@ -477,11 +479,11 @@ agent AppManager {
 			this.controller.initalizeImageView
 		}
 	}
-	
+
 	on ExportDataEvent {
 		this.map.exportData(occurrence.filename)
 	}
-	
+
 	on ImportDataEvent{
 		synchronized (this) {
 			if (getActiveTasks.size != 0) {
@@ -489,9 +491,9 @@ agent AppManager {
 			}
 			importMap(occurrence.filename)
 		}
-		
+
 	}
-	
+
 	on AgentInitialized {
 		synchronized(this){
 			//info("Agent : " + occurrence.type.type + " initialized")
@@ -522,7 +524,7 @@ agent AppManager {
 	on InitializeResultGraph {
 		this.controller.resultsController.updateLists(this.map)
 	}
-	
+
 	on Destroy {
 		//info("AppManager destroy")
 		// killMe
@@ -537,15 +539,15 @@ agent AppManager {
 		//info("Restart App Manager")
 		startApp
 	}
-	
+
 	on Pause {
 		//info("Pause")
 		this.onPause = !this.onPause
 	}
-	
+
 	def getStepTime() : int {
 		synchronized(this){
-			return this.stepTime			
+			return this.stepTime
 		}
 	}
 }

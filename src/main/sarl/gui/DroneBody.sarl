@@ -1,28 +1,32 @@
 package gui
 
 import java.util.UUID
+import org.arakhne.afc.math.geometry.d2.i.Point2i
 
-/** 
+/**
  * @author arnaud
- * 
+ *
  */
 class DroneBody extends Body {
 	var velocityX : double = -3
 	var velocityY : double = -3
 	var posX : double = 0
 	var posY : double = 0
+ 	var nextDestination : Point2i = null
 	var warehouseId : UUID
-	var nbPackages : int
+	var nbPackages : int = 0
+	var totalPackages : int
 	var actualBattery : double
 	var actualCharge : float
+	var finishedDelivering : Boolean
 
 	new (x : int, y : int, h : int, w : int, warehouseId : UUID) {
 		super(x, y, h, w, PathEnum.DRONE_EMPTY.getPath)
 		this.warehouseId = warehouseId
-		this.posX = x as double 
+		this.posX = x as double
 		this.posY = y as double
 	}
-	
+
 	def move() {
 		if (this.position.x >= 1020 || this.position.x <= 0) {
 			this.velocityX = this.velocityX * -1 as Integer
@@ -34,17 +38,17 @@ class DroneBody extends Body {
 		this.position.x = x
 		this.position.y = y
 	}
-	
+
 	def switchStateView(state : DroneState){
 		switch(state) {
 			case DroneState.DRONE_LOADED :
 				setImage(PathEnum.DRONE_LOADED.getPath)
-				
+
 			case DroneState.DRONE_EMPTY :
 				setImage(PathEnum.DRONE_EMPTY.getPath)
-		}		
+		}
 	}
-	
+
 	def getVelocityX() : double {
 		return this.velocityX
 	}
@@ -67,7 +71,7 @@ class DroneBody extends Body {
 	}
 
 	def getPosX() : double {
-		return this.posX 
+		return this.posX
 	}
 
 	def getPosY() : double {
@@ -81,29 +85,54 @@ class DroneBody extends Body {
 	def setPosY(y : double) {
 		this.posY = y
 	}
-	
+
 	def getNbPackages() {
 		return this.nbPackages
 	}
-	
+
 	def setNbPackages(nb : int) {
 		this.nbPackages = nb
 	}
-	
+
+  def getTotalPackages() {
+  		return this.totalPackages
+  	}
+
+  def setTotalPackages(nb : int) {
+  		this.totalPackages = nb
+  }
+
 	def getActualBattery {
 		return this.actualBattery
 	}
-	
+
 	def setActualBattery ( actualBattery : double) {
 		this.actualBattery = actualBattery
 	}
-	
+
 	def getActualCharge {
 		return this.actualCharge
 	}
-	
+
 	def setActualCharge (actualCharge : float) {
 		this.actualCharge = actualCharge
 	}
+
+
+    def getNextDestination() {
+      return this.nextDestination
+    }
+
+  def setNextDestination(position : Point2i) {
+    this.nextDestination = position
+  }
+
+  def getFinishedDelivering() {
+    return this.finishedDelivering
+  }
+
+  def setFinishedDelivering(finished : Boolean){
+    this.finishedDelivering = finished
+  }
 
 }
