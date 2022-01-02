@@ -266,9 +266,7 @@ class MainWindowController extends FxViewerController {
 		var eventHandler = new EventHandler<MouseEvent>() {
 			def handle(^event : MouseEvent) {
 				unselectBody
-				selectedDronePane.visible = false
-				selectedWarehousePane.visible = false
-				unselectedPane.visible = true
+
 			}
 				}
 		this.drawPane.addEventHandler(MouseEvent.MOUSE_PRESSED, eventHandler)
@@ -610,6 +608,9 @@ class MainWindowController extends FxViewerController {
 	@FXML
 	def startAgent {
 		createParametersList()
+		selectedDronePane.visible = false
+		selectedWarehousePane.visible = false
+		unselectedPane.visible = true
 		this.inMultiTest = false
 		// start
 		if (!started.getAndSet(true)) {
@@ -894,6 +895,9 @@ class MainWindowController extends FxViewerController {
 		this.selectedDrone = null
 		this.selectedBody = null
 		this.selectedWarehouse = null
+		selectedDronePane.visible = false
+		selectedWarehousePane.visible = false
+		unselectedPane.visible = true
 	}
 
 	def update() {

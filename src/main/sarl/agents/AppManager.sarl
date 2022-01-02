@@ -453,6 +453,7 @@ agent AppManager {
 
 	def autoRestart {
 		if(this.controller.stopped){
+			//this.controller.unselectBody
 			this.controller.simulateStart
 		}
 	}
