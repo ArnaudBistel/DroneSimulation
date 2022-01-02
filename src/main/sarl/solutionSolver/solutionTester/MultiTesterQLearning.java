@@ -56,7 +56,7 @@ public class MultiTesterQLearning extends MultiTester {
 		
 		//calcul de la solution
 		List<List<MapPoint>> sol =
-				sim.Solve((int)currentNbEpisode, currentAlpha, currentGamma, currentEpsilon, -1, 20, -100);
+				sim.Solve((int)currentNbEpisode, currentAlpha, currentGamma, currentEpsilon, -100);
 
 
 		//récupération des résulats
@@ -66,7 +66,7 @@ public class MultiTesterQLearning extends MultiTester {
 		this.currentTimeCosts.add(timeCost);
 		this.currentSolutions.add(sol);
 		j++;
-		if(j >= nbTestByStep) { //si tout les tests d'une étapes ont été fait
+		if(j >= nbTestByStep) {
 			
 			//calcul des moyennes
 			this.energyCostResults.add(meanOfList(currentEnergyCosts));

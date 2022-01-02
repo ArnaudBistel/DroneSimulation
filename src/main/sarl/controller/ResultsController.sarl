@@ -245,7 +245,7 @@ class ResultsController extends FxViewerController {
 		    epsilon.get(0), epsilon.get(1),
 			SimulationParameters.MT_NB_EPISODE_Q_LEARNING, SimulationParameters.MT_NB_EPISODE_Q_LEARNING
 		)
-		//mtQLearning.runMultiTest
+		mtQLearning.runMultiTest
 		
 		
 		displayCharts(

@@ -17,8 +17,6 @@ public class QLearningAnalyser {
 	public static final int TEST_SEED = 0;
 	private static int[] test_seeds;
 	
-	public static final int DFT_REWARD_WH = 0;
-	public static final int DFT_REWARD_C = 2;
 	public static final int DFT_PENALTY = -100;
 	
 	public static final double DFT_ALPHA = 0.8;
@@ -78,21 +76,21 @@ public class QLearningAnalyser {
 				//alpha section
 				double alphaDiv = 1 + j * STEP_ALPHA;
 				double alpha = 1 - ((1 - INIT_ALPHA)/alphaDiv);
-				double[] r = singleTest(sim, NB_EPISODE, alpha, DFT_GAMMA, DFT_EPSILON, DFT_REWARD_WH, DFT_REWARD_C, DFT_PENALTY);
+				double[] r = singleTest(sim, NB_EPISODE, alpha, DFT_GAMMA, DFT_EPSILON, DFT_PENALTY);
 				costResultAlpha[j] += r[0];
 				timeResultAlpha[j] += r[1];
 				
 				//gamma section
 				double gammaDiv = 1 + j * STEP_GAMMA;
 				double gamma = 1 - ((1 - INIT_GAMMA)/gammaDiv);
-				r = singleTest(sim, NB_EPISODE, DFT_ALPHA, gamma, DFT_EPSILON, DFT_REWARD_WH, DFT_REWARD_C, DFT_PENALTY);
+				r = singleTest(sim, NB_EPISODE, DFT_ALPHA, gamma, DFT_EPSILON, DFT_PENALTY);
 				costResultGamma[j] += r[0];
 				timeResultGamma[j] += r[1];
 
 				//epsilon section
 				double epsilonDiv = 1 + j * STEP_EPSILON;
 				double epsilon = 1 - ((1 - INIT_EPSILON)/epsilonDiv);
-				r = singleTest(sim, NB_EPISODE, DFT_ALPHA, DFT_GAMMA, epsilon, DFT_REWARD_WH, DFT_REWARD_C, DFT_PENALTY);
+				r = singleTest(sim, NB_EPISODE, DFT_ALPHA, DFT_GAMMA, epsilon, DFT_PENALTY);
 				costResultEpsilon[j] += r[0];
 				timeResultEpsilon[j] += r[1];
 				
@@ -121,9 +119,9 @@ public class QLearningAnalyser {
 	}
 	
 	private static double[] singleTest(QLearning sim, int nb_episode, double alpha, 
-			double gamma, double epsilon, int reward_wh, int reward_c, int penalty) {
+			double gamma, double epsilon, int penalty) {
 			long startTime = System.nanoTime();
-			List<List<MapPoint>> solution = sim.Solve(nb_episode, alpha, gamma, epsilon, reward_wh, reward_c, penalty);
+			List<List<MapPoint>> solution = sim.Solve(nb_episode, alpha, gamma, epsilon, penalty);
 			double stopTime = System.nanoTime();
 			double cost = SolutionSolver.solutionCost(solution);
 			//double newcost = cost /=nb_episode;

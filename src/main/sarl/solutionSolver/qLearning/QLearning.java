@@ -22,10 +22,10 @@ public class QLearning extends SolutionSolver {
 	
 	@Override
 	public List<List<MapPoint>> Solve() {
-		return Solve(20,0.9,0.9,0.8,20,10,-5);
+		return Solve(50,0.9,0.9,0.8,-100);
 	}
 	
-	public List<List<MapPoint>> Solve(int nb_episode, double alpha, double gamma, double epsilon, int reward_wh, int reward_c, int penalty) {
+	public List<List<MapPoint>> Solve(int nb_episode, double alpha, double gamma, double epsilon, int penalty) {
 
 		List<MapPoint> warehouse = new ArrayList<MapPoint>(map.getWarehouses());
 		List<List<Integer>> T = initializeT();
@@ -34,57 +34,37 @@ public class QLearning extends SolutionSolver {
 		List<MapPoint> voyage_drone = new ArrayList<MapPoint>();
 		List<MapPoint> clients_opti = new ArrayList<>(optiListClient());
 		
-		List<List<Double>> Q_star = Learn(nb_episode,alpha, gamma, epsilon, reward_wh, reward_c, penalty);
+		List<List<Double>> Q_star = Learn(nb_episode,alpha, gamma, epsilon, penalty);
 		
-		//System.out.println("********************** NEW SOLVE ********************");
-		//System.out.println("Q_star "+Q_star);
 		int pos_list = 0;
 		MapPoint e = warehouse.get(pos_list);
 		way_drone.add(e);
 		voyage_drone.add(e);
 		int index_etat = pos_list;
 		
-		while (clients_opti.size()!=0) {
-			//System.out.println(clients_opti.size());
-			//System.out.println(way_drone.size());
-			//System.out.println(e);
-			
+		while (clients_opti.size()!=0) {	
 			int index_action = getMaxAction(index_etat,Q_star,T_temp);
 			e = getNextLocation(index_etat,index_action,T);	
-			
-			//System.out.println(Q_star);
-			//System.out.println(e);
 			
 			way_drone.add(e);
 			voyage_drone.add(e);
 			clients_opti.remove(e);
 			
-			
 			int new_index_etat = T.get(index_etat).get(index_action);
 			if (e.getType()==MapPointType.CLIENT) {
 				T_temp = updateT(T_temp,new_index_etat);
 			} else {
-				//double cout_livraison = pathEnergyCost(voyage_drone);
-				//System.out.println("cout livraison "+cout_livraison+" "+voyage_drone.size()+" "+voyage_drone);
 				voyage_drone.clear();
 				voyage_drone.add(e);
 			}
-			
-			
-			//System.out.println(new_index_etat);
-			//System.out.println(T_temp);
-			//System.out.println(Q_star);
-			
+		
 			index_etat = new_index_etat;
 		}
-		//System.out.println(way_drone.size());
 		List<List<MapPoint>> final_way = convertListToListOfList(way_drone);
-		//System.out.println(way_drone);
-		//System.out.println(final_way);
 		return final_way;
 	}
 	
-	public List<List<Double>> Learn(int nb_episode, double alpha, double gamma, double epsilon, int reward_wh, int reward_c, int penalty) {
+	public List<List<Double>> Learn(int nb_episode, double alpha, double gamma, double epsilon, int penalty) {
 
 		List<MapPoint> warehouse = new ArrayList<MapPoint>(map.getWarehouses());
 		List<List<Integer>> T = initializeT_negawarehouse();
@@ -93,7 +73,7 @@ public class QLearning extends SolutionSolver {
 		
 		for (int episode=0;episode<nb_episode;episode++) {
 			List<MapPoint> clients_opti = new ArrayList<>(optiListClient());
-			List<List<Integer>> R = initializeR(clients_opti,T,reward_wh,reward_c,penalty);
+			List<List<Double>> R = initializeR(T,penalty);
 			List<MapPoint> voyage_drone = new ArrayList<MapPoint>();
 			List<List<Integer>> T_temp = initializeT_negawarehouse();
 			
@@ -102,36 +82,29 @@ public class QLearning extends SolutionSolver {
 			voyage_drone.add(e);
 			int index_etat = pos_list;
 			
-			//System.out.println("***** NEW EPISODE *****");
-			//System.out.println(Q);
-			
 			while (clients_opti.size()!=0) {
 				
-				int index_action = getNextAction(index_etat,0.01,Q,T_temp);
-				e = getNextLocation(index_etat,index_action,T);
+				int index_action = getNextAction(index_etat,epsilon,Q,T_temp);
+				e = getNextLocation(index_etat,index_action,T_positif);
 				
 				if (e.getType()==MapPointType.CLIENT) {
 					voyage_drone.add(e);
 					MapPoint f = getClosestWharehouse(e,map);
 					voyage_drone.add(f);
-					//double cout_chemin = solutionCost(convertListToListOfList(voyage_drone),true);
 					double cout_chemin = pathEnergyCost(voyage_drone);
-					
 					if (cout_chemin <= SimulationParameters.DRONE_MAX_ENERGY) {
 						clients_opti.remove(e);
 						voyage_drone.remove(voyage_drone.size()-1);
 					} else {
 						e = getClosestWharehouse(e,map);
 						int index_warehouse = 0;
-						//Recup de index_action
 						for (int j=0;j<warehouse.size();j++) {
 							MapPoint g = warehouse.get(j);
 							if (g==e) {
-								index_warehouse = j-1;
+								index_warehouse = j;
 							}
 						}
 						for (int k=0; k<warehouse.size();k++) {
-							//System.out.println(T.get(index_etat).get(k));
 							if (T_positif.get(index_etat).get(k)==index_warehouse) {
 								index_action = k;
 							}
@@ -144,15 +117,11 @@ public class QLearning extends SolutionSolver {
 					voyage_drone.add(e);
 				}
 				int new_index_etat = T_positif.get(index_etat).get(index_action);
-				//System.out.println("new index "+new_index_etat+" est un "+e.getType()+" "+e);
-				int rew = R.get(index_etat).get(index_action);
+				double rew = R.get(index_etat).get(index_action);
 				
 				if (e.getType()==MapPointType.CLIENT) {
 					T_temp = updateT(T_temp,new_index_etat);
-					//System.out.println("T_temp update "+T_temp);
 				}
-				//System.out.println("verif T "+T_temp);
-				//System.out.println("verif Q "+Q);
 
 				double old_Q_value = Q.get(index_etat).get(index_action);
 				double new_Q_value = old_Q_value + alpha * (rew + (gamma * getQmax(new_index_etat,Q)) - old_Q_value);
@@ -261,36 +230,45 @@ public class QLearning extends SolutionSolver {
         }
 		return Q;
     }
-    
-    private List<List<Integer>> initializeR(List<MapPoint> clients_opti, List<List<Integer>> T, int reward_warehouse, int reward_client, int penalty) {
+	
+	private List<List<Double>> initializeR(List<List<Integer>> T, int penalty) {
+		
     	int index_warehouse = map.getWarehouses().size()-1;
-    	List<MapPoint> clients_total =  map.getClients();
-    	List<Integer> num_clients_eviter = new ArrayList<Integer>();
-    	for (int i=0;i<clients_total.size();i++) {
-    		MapPoint e = clients_total.get(i);
-    		if (clients_opti.contains(e)==false) {
-    			num_clients_eviter.add(i+map.getWarehouses().size());
-    		}
-    	}
-		List<List<Integer>> R = new ArrayList<>();
-        for (List<Integer> listVoisin : T){
-        	List<Integer> Liste = new ArrayList<Integer>();
-            for(int element : listVoisin){
-				if (element<=index_warehouse) {
-					Liste.add(reward_warehouse);
+		List<List<Double>> R = new ArrayList<>();
+		
+		for (int j=0; j<T.size();j++) {
+			MapPoint a;
+			MapPoint b;
+			List<Double> newList = new ArrayList<Double>();
+			
+			if (j <= index_warehouse) {
+				a = map.getWarehouses().get(j);
+			} else {
+				a = map.getClients().get(j-map.getWarehouses().size());
+			}
+				
+			List<Integer> list = T.get(j);
+			for (int k=0; k<list.size();k++) {
+				
+				int val = T.get(j).get(k);
+				if (val <= index_warehouse) {
+					//b = map.getWarehouses().get(val);
+					newList.add(0.0);
 				} else {
-					//System.out.println(element);
-					if (num_clients_eviter.contains(element)==true) {
-						Liste.add(penalty);
+					b = map.getClients().get(val-map.getWarehouses().size());
+					double distance = getDistanceBetweenTwoPoints(a,b);
+					if (distance <= SimulationParameters.DRONE_MAX_ENERGY) {
+						newList.add(1/distance);
 					} else {
-						Liste.add(reward_client);				
+						newList.add(1.0*penalty);
 					}
+					
 				}
-            }
-            R.add(Liste);
-        }
+			}
+			R.add(newList);
+		}
 		return R;
-    }
+	}
     
     private List<List<Integer>> updateT(List<List<Integer>> T_temp, int index_etat) {
     	int start_count = map.getWarehouses().size();
@@ -316,25 +294,23 @@ public class QLearning extends SolutionSolver {
     	return T_temp;
     }
     
-    private int getNextAction(int index_etat, double epsilon, List<List<Double>> Q, List<List<Integer>> T_temp) {
+    private int getNextAction(int index_etat, double epsilon, List<List<Double>> Q, List<List<Integer>> T) {
 
-    	List<Integer> get_possible = T_temp.get(index_etat);
-    	//System.out.println(epsilon + " "+ index_etat +" "+ get_possible);
+    	List<Integer> get_possible = T.get(index_etat);
     	List<Double> get_list = Q.get(index_etat);
 
     	double nb_random = Math.random();
     	if (nb_random < epsilon) {
     		int action_random = random.nextInt(get_list.size());
-    		while (T_temp.get(index_etat).get(action_random) < 0) {
+    		while (T.get(index_etat).get(action_random) < 0) {
     			action_random = random.nextInt(get_list.size());
     		}
     		return action_random;
     		
     	} else {
     		double temp = -1;
-    		int result = 0;
+    		int result = -1;
     		for (int i=0;i<get_list.size();i++) {
-    			//System.out.println(new_temp);
     			if (get_possible.get(i)>=0) {
     				double new_temp = Q.get(index_etat).get(i);
     				if (temp < new_temp) {
@@ -347,16 +323,9 @@ public class QLearning extends SolutionSolver {
     	}
     }
     
-    private int getMaxAction(int index_etat, List<List<Double>> Q, List<List<Integer>> T_temp) {
+    private int getMaxAction(int index_etat, List<List<Double>> Q, List<List<Integer>> T) {
     	List<Double> get_list = Q.get(index_etat);
-    	List<Integer> get_possible = T_temp.get(index_etat);
-    	//System.out.println(get_possible);
-    	for (int k=0;k<get_possible.size();k++) {
-    		if (get_possible.get(k)<0) {
-    			
-    			//Q.get(index_etat).set(k, -10000000000.0);
-    		}
-    	}
+    	List<Integer> get_possible = T.get(index_etat);
 		double tempo = -10000000.0;
 		int result = 0;
 		for (int i=0;i<get_list.size();i++) {
@@ -367,7 +336,6 @@ public class QLearning extends SolutionSolver {
 					result = i;
 				}
 			}
-			//System.out.println(new_temp);
 
 		}
 		return result;
