@@ -31,33 +31,32 @@ public class MultiTesterQLearning extends MultiTester {
 
 		this.minAlpha = minAlpha;
 		this.maxAlpha = maxAlpha;
-		this.minAlpha = minGamma;
-		this.maxAlpha = maxGamma;
-		this.minAlpha = minEpsilon;
-		this.maxAlpha = maxEpsilon;
+		this.minGamma = minGamma;
+		this.maxGamma = maxGamma;
+		this.minEpsilon = minEpsilon;
+		this.maxEpsilon = maxEpsilon;
 		this.minNbEpisode = minNbEpisode;
 		this.maxNbEpisode = maxNbEpisode;
 
 		this.currentEnergyCosts = new ArrayList<>();
 		this.currentTimeCosts = new ArrayList<>();
 		this.currentSolutions = new ArrayList<>();
+		
 	}
 	
 	@Override
 	public boolean runMultiTestStep() {
 
-
 		//calcul des paramètres pour l'étape actuelle
 		double currentAlpha = minAlpha + (  i * (maxAlpha - minAlpha) / this.nbStep);
 		double currentGamma = minGamma + (  i * (maxGamma - minGamma) / this.nbStep);
 		double currentEpsilon = minEpsilon + (  i * (maxEpsilon - minEpsilon) / this.nbStep);
-		double currentNbEpisode = minNbEpisode + (  i * (maxNbEpisode - minNbEpisode) / this.nbStep);
+		//double currentNbEpisode = minNbEpisode + (  i * (maxNbEpisode - minNbEpisode) / this.nbStep);
 		
 		//calcul de la solution
 		List<List<MapPoint>> sol =
-				sim.Solve((int)currentNbEpisode, currentAlpha, currentGamma, currentEpsilon, -100);
-
-
+				sim.Solve(minNbEpisode, currentAlpha, currentGamma, currentEpsilon, -100);
+		
 		//récupération des résulats
 		double energycost = SolutionSolver.solutionCost(sol);
 		double timeCost = SolutionSolver.solutionTimeCost(sol, nbDrones);
