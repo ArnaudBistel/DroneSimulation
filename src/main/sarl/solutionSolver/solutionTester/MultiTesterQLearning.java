@@ -41,7 +41,8 @@ public class MultiTesterQLearning extends MultiTester {
 		this.currentEnergyCosts = new ArrayList<>();
 		this.currentTimeCosts = new ArrayList<>();
 		this.currentSolutions = new ArrayList<>();
-		
+		System.out.println("alpha" + this.minAlpha + " az : " + this.maxAlpha);
+
 	}
 	
 	@Override
