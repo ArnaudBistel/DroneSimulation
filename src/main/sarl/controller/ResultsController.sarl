@@ -149,7 +149,6 @@ class ResultsController extends FxViewerController {
 		gc.fillRect(0, 0, backgroundCanvas.getWidth(), backgroundCanvas.getHeight());	
 		initializeFieldsValues
 		initializeParamFields
-
 		/*
 		this.lineChartRS1.setLegendVisible(false);
 		this.lineChartRS2.setLegendVisible(false);
@@ -228,6 +227,7 @@ class ResultsController extends FxViewerController {
 		var alphaQL = QLAlphaRange
 		var gamma = QLGammaRange
 		var epsilon = QLEpsilonRange
+		 		
 		//lancement
 		mtSimAnnealing = new MultiTesterSimulatedAnnealing(
 			simMap, SimulationParameters.MT_NB_STEP, SimulationParameters.MT_NB_TEST_BY_STEP, nbDrones,
@@ -253,6 +253,7 @@ class ResultsController extends FxViewerController {
 			mtQLearning.energyCostResults, mtQLearning.timeCostResults
 		)
 		displayDronesRoutes(mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults))
+		this.updateTextFields
 		
 		
 		//TODO if no manager -> generate graph
@@ -260,6 +261,32 @@ class ResultsController extends FxViewerController {
 		// Display charts with the values computed
 	}
 	
+	def updateTextFields() {	
+		this.nbEntrepotsTextField.setText("" + this.simMap.nbWarehouse)
+		this.nbClientsTextField.setText("" + this.simMap.nbClients)
+		this.nbDronesTextField.setText("" + createRange(getNbDronesInput).get(0).toInteger)
+		
+		var st : String
+		var poidsDrones = this.simMap.poidsColis as ArrayList
+		if (poidsDrones.size  == 1) {
+			this.poidsColisTextField.setText("" + poidsDrones.get(0))	
+		} else {
+			st = poidsDrones.get(0) + "-" + poidsDrones.get(1)
+			this.poidsColisTextField.setText(st)	
+		}
+
+		/*
+		this.temperatureTextField.setText(SATempRange.get(0) + "-" + SATempRange.get(1))
+		this.alphaTextField1.setText(SAAlphaRange.get(0) + "-" + SAAlphaRange.get(1))
+		//this.alphaTextField1.setText(SAAlphaRange.get(0) + "-" + SAAlphaRange.get(1))
+		this.nbIterTextField.setText(""+ SAnbIterPalierRange.get(0) + "-" + SAnbIterPalierRange.get(1))
+		
+		this.alphaQTextField.setText(QLAlphaRange.get(0) + "-" + QLAlphaRange.get(1))
+		this.gammaTextField.setText(QLGammaRange.get(0) + "-" + QLGammaRange.get(1))
+	 	this.epsilonTextField.setText(QLEpsilonRange.get(0) + "-" + QLEpsilonRange.get(1))
+	 */
+	}
+
 	def initializeFieldsValues {
 		
 		nbDronesTextField.text = this.mainWindowController.nbDronesInput
@@ -573,10 +600,7 @@ class ResultsController extends FxViewerController {
 		this.parameters.add(getParam2Input)
 		this.parameters.add(getParam3Input)
 		*/
-		/*for (var j = 0; j < this.parameters.size; j++) {
-		 * System.out.println("this.parameters["+j+"] : " + this.parameters.get(j))
-		 * }
-		 */
+		 
 		//this.parameters.add(createRange(getSpeedInput))
 	}
 
@@ -734,6 +758,12 @@ class ResultsController extends FxViewerController {
 				@Override
 				def handle(e : MouseEvent) {
 					displayDronesRoutes(Integer.parseInt(data.XValue))
+					selectedCostLabel.setText("" + String.format("%.2f", data.YValue))
+					selectedDurationLabel.setText("" + String.format("%.2f", QTime.get(data.XValue as int)))
+					iamethodLabel.setText("Q-Learning")
+					var bestId = mtQLearning.bestSolution(mtQLearning.energyCostResults)
+					bestCostLabel.setText("" + String.format("%.2f", QCost.get(bestId)))
+					bestDurationLabel.setText("" + String.format("%.2f", QTime.get(bestId)))					
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})
@@ -755,6 +785,12 @@ class ResultsController extends FxViewerController {
 				@Override
 				def handle(e : MouseEvent) {
 					displayDronesRoutes(Integer.parseInt(data.XValue))
+					selectedDurationLabel.setText("" + String.format("%.2f", data.YValue))
+					selectedCostLabel.setText("" + String.format("%.2f", QCost.get(data.XValue as int)))
+					iamethodLabel.setText("Q-Learning")
+					var bestId = mtSimAnnealing.bestSolution(mtSimAnnealing.energyCostResults)
+					bestCostLabel.setText("" + String.format("%.2f", QCost.get(bestId)))
+					bestDurationLabel.setText("" + String.format("%.2f", QTime.get(bestId)))					
 					System.out.println("X" + data.XValue + " y : " + data.YValue)
 				}
 			})

@@ -45,7 +45,7 @@ public class MultiTesterSimulatedAnnealing extends MultiTester {
 	
 	@Override
 	public boolean runMultiTestStep() {
-
+		
 		//calcul des paramètres pour l'étape actuelle
 		double currentTempInit = minTempInit + (  i * (maxTempInit - minTempInit) / this.nbStep);
 		double currentTreshold = minTreshold + (  i * (maxTreshold - minTreshold) / this.nbStep);

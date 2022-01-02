@@ -25,6 +25,7 @@ public class SimulationMap {
 
 	int nbClients, nbWarehouse, width, height;
 	List<MapPoint> clientList, warehouseList;
+	List<Float> poidsColis;
 	Random random;
 	
 	Graph graph;
@@ -44,6 +45,7 @@ public class SimulationMap {
 	public SimulationMap(int nbClients, int nbWarehouse, int width, int height, int seed, List<Float> poidsColis) {
 		this.nbClients = nbClients;
 		this.nbWarehouse = nbWarehouse;
+		this.poidsColis = poidsColis;
 		this.width = width;
 		this.height = height;
 		this.clientList = new ArrayList<MapPoint>();
@@ -181,5 +183,9 @@ public class SimulationMap {
 	
 	public int getNbWarehouse () {
 		return this.nbWarehouse;
+	}
+	
+	public List<Float> getPoidsColis () {
+		return this.poidsColis;
 	}
 }
