@@ -202,8 +202,8 @@ class MainWindowController extends FxViewerController {
 	var speedRatio : float
 
 	var selectedDrone : DroneBody
+	var selectedBody : Body
 	var selectedWarehouse : WarehouseBody
-
 	var simulation : Boolean = true
 	var recuit : Boolean = true
 	var parameters : ArrayList = new ArrayList()
@@ -815,6 +815,7 @@ class MainWindowController extends FxViewerController {
 
 	def displayDroneInfos(id : UUID) : void {
 		this.selectedDrone = this.bodies.get(id) as DroneBody
+		this.selectedBody = this.selectedDrone as Body
 		var pos = 0
 		if(droneBodies.containsKey(id)){
 			pos = droneBodies.headMap(id).size()
@@ -833,6 +834,8 @@ class MainWindowController extends FxViewerController {
 
 	def displayWarehouseInfos(id : UUID) : void {
 		this.selectedWarehouse = this.bodies.get(id) as WarehouseBody
+		this.selectedDrone = null
+		this.selectedBody = this.bodies.get(id) as Body
 		var pos = 0
 		var dronesLinked = 0
 		if (warehouseBodies.containsKey(id)) {
@@ -889,6 +892,7 @@ class MainWindowController extends FxViewerController {
 
 	def unselectBody() {
 		this.selectedDrone = null
+		this.selectedBody = null
 		this.selectedWarehouse = null
 	}
 
@@ -900,8 +904,8 @@ class MainWindowController extends FxViewerController {
 			imageView.setX(body.position.x)
 			imageView.setY(body.position.y)
 			//System.out.println("X : " + test.position.x + " -- Y : " + test.position.y)
-			//System.out.println(test)
-			if (this.selectedWarehouse == body || this.selectedDrone == body) {
+			// System.out.println(test)
+			if (this.selectedBody == body) {
 				imageView.setEffect(this.dropShadow)
 			} else {
 				imageView.setEffect(null)
