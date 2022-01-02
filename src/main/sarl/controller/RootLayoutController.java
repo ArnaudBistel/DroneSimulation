@@ -3,10 +3,12 @@ package controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.BorderPane;
-
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import java.io.File;
-
+import javafx.application.HostServices;
 import gui.MainApp;
 import javafx.stage.FileChooser;
 
@@ -39,8 +41,17 @@ public class RootLayoutController {
     private void handleAbout() {
     	Alert alert = new Alert(AlertType.INFORMATION);
     	alert.setTitle("Drone Simulation");
-    	alert.setHeaderText("About");
-    	alert.setContentText("Drone sim");
+    	alert.setHeaderText("Lien vers notre dépôt GitHub :");
+    	Hyperlink link = new Hyperlink();
+    	link.setText("https://github.com/ArnaudBistel/DroneSimulation");
+    	link.setOnAction(new EventHandler<ActionEvent>() {
+    	    @Override
+    	    public void handle(ActionEvent e) {
+    	    	mainApp.getHostServices().showDocument("https://github.com/ArnaudBistel/DroneSimulation");
+    	    }
+    	});
+    	
+    	alert.getDialogPane().setContent(link);
     	alert.showAndWait();
     }
 

@@ -22,7 +22,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="A propos">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="Read me" />
+              <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="Lien GitHub" />
             </items>
           </Menu>
         </menus>
