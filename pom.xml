@@ -69,6 +69,30 @@
                 <encoding>UTF-8</encoding>
              </configuration>
           </plugin>
+          <plugin>
+          	<groupId>org.apache.maven.plugins</groupId>
+          	<artifactId>maven-assembly-plugin</artifactId>
+          	<version>3.3.0</version>
+          	<executions>
+			    <execution>
+			      <id>make-assembly-with-deps</id>
+			      <phase>package</phase>
+			      <goals>
+			        <goal>single</goal>
+			      </goals>
+			      <configuration>
+			        <descriptors>
+			          <descriptor>with-dependencies.xml</descriptor>
+			        </descriptors>
+			        <archive>
+			        	<manifest>
+			        		<mainClass>DroneSimulation</mainClass>
+			        	</manifest>
+			        </archive>
+			      </configuration>
+			    </execution>
+			  </executions>
+          </plugin>
 		</plugins>
 	</build>
 </project>

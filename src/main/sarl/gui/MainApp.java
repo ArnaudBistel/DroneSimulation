@@ -56,6 +56,8 @@ public class MainApp extends FxApplication {
             loader.setLocation(MainApp.class.getResource("/resources/fxml/RootLayout.fxml"));
             rootLayout = (BorderPane) loader.load();
             Scene scene = new Scene(rootLayout);
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add(this.getClass().getResource("style/style.css").toExternalForm());
             primaryStage.setScene(scene);
             /*
             primaryStage.setHeight(900);
@@ -80,7 +82,8 @@ public class MainApp extends FxApplication {
         	FXMLLoader loader = new FXMLLoader();
         	loader.setLocation(MainApp.class.getResource("/resources/fxml/MainWindow.fxml"));
         	AnchorPane mainApp = (AnchorPane) loader.load();
-        	
+        	mainApp.getStylesheets().clear();
+        	mainApp.getStylesheets().add(this.getClass().getResource("style/style.css").toExternalForm());
         	rootLayout.setCenter(mainApp);
             
         	mainWindowController  = loader.getController();
@@ -119,6 +122,8 @@ public class MainApp extends FxApplication {
     		dialogStage.initModality(Modality.WINDOW_MODAL);
     		dialogStage.initOwner(primaryStage);
     		Scene scene = new Scene(page);
+    		scene.getStylesheets().clear();
+            scene.getStylesheets().add(this.getClass().getResource("style/style.css").toExternalForm());
     		dialogStage.setScene(scene);
     		ResultsController controller = loader.getController();
     		controller.init(this, this.mainWindowController);
