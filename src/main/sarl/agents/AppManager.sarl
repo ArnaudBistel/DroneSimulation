@@ -194,7 +194,7 @@ agent AppManager {
 			// List de Float, taille 1 ou 2 (cas d'un range pour multitests)
 			var nbDronesSim = parameters.get(2) as List<Float>
 			// Temperature intiale ou Range de température si recuit, alpha si qlearning
-			var param1 = parameters.get(6) as List<Float>
+			var param1 = Float.parseFloat(parameters.get(6) as String)
 			// alpha si recuit, gamme si qlearning
 			var param2 = parameters.get(7) as Float
 			// nombre d'itérations par palier si recuit, epsilon si qlearning
